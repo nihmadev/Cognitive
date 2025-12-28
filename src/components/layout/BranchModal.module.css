@@ -1,0 +1,309 @@
+.overlayRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1px);
+}
+
+.modal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: #252526;
+  border-radius: 0.375rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #454545;
+  overflow: hidden;
+  color: #cccccc;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 0.875rem;
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
+.modal:not([style*="top"]) {
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.inputWrapper {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #3c3c3c;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #cccccc;
+  font-size: 0.8125rem;
+  line-height: normal;
+  height: auto;
+  padding: 2px 0;
+  margin: 0;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.actions {
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.actionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  cursor: pointer;
+  color: #cccccc;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid rgba(60, 60, 60, 0.3);
+  transition: background-color 0.1s, color 0.1s;
+}
+
+.actionItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.actionItem:last-child {
+  border-bottom: none;
+}
+
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+.actionItem:hover .actionIcon {
+  color: #cccccc;
+}
+
+.error {
+  padding: 0.5rem 0.875rem;
+  background: rgba(220, 38, 38, 0.1);
+  border-left: 3px solid #dc2626;
+  color: #fca5a5;
+  font-size: 0.75rem;
+}
+
+.loading {
+  padding: 1rem 0.875rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.8125rem;
+}
+
+.branchList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.branchGroup {
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.branchGroup:last-child {
+  border-bottom: none;
+}
+
+.groupTitle {
+  padding: 0.5rem 0.875rem;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.branchItem {
+  padding: 0.5rem 0.875rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(60, 60, 60, 0.3);
+  transition: background-color 0.1s;
+}
+
+.branchItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.branchItem:last-child {
+  border-bottom: none;
+}
+
+.currentBranch {
+  background: rgba(0, 122, 204, 0.1);
+}
+
+.currentBranch:hover {
+  background: rgba(0, 122, 204, 0.15);
+}
+
+.branchInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.branchName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.currentIndicator {
+  color: #007acc;
+  font-size: 0.75rem;
+}
+
+.branchMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.commitMessage {
+  color: #9ca3af;
+}
+
+.commitTime {
+  color: #6b7280;
+}
+
+/* Create Branch Form */
+.createForm {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.formHeader h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: color 0.1s, background-color 0.1s;
+}
+
+.closeButton:hover {
+  color: #cccccc;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #cccccc;
+}
+
+.select {
+  background: #1e1e1e;
+  border: 1px solid #454545;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  color: #cccccc;
+  font-size: 0.8125rem;
+  outline: none;
+  transition: border-color 0.1s;
+}
+
+.select:focus {
+  border-color: #007acc;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid #454545;
+  color: #cccccc;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #6b7280;
+}
+
+.createButton {
+  background: #007acc;
+  border: 1px solid #007acc;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color 0.1s, border-color 0.1s;
+}
+
+.createButton:hover:not(:disabled) {
+  background: #005a9e;
+  border-color: #005a9e;
+}
+
+.createButton:disabled {
+  background: #454545;
+  border-color: #454545;
+  color: #6b7280;
+  cursor: not-allowed;
+}

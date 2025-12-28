@@ -1,0 +1,144 @@
+/* Commit Tooltip */
+.commitTooltip {
+    position: fixed;
+    z-index: 1000;
+    background-color: #1f1f23;
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.tooltipHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tooltipAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #3f3f46;
+}
+
+.tooltipAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarFallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3b82f6;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tooltipAuthorInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tooltipAuthor {
+    font-size: 13px;
+    font-weight: 500;
+    color: #3b82f6;
+}
+
+.tooltipTime {
+    font-size: 11px;
+    color: #71717a;
+}
+
+.tooltipMessage {
+    font-size: 13px;
+    color: #e4e4e7;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.tooltipStats {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: #a1a1aa;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #27272a;
+}
+
+.insertions {
+    color: #73c991;
+}
+
+.deletions {
+    color: #f14c4c;
+}
+
+.tooltipBranches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.tooltipBranch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.localBranch {
+    background-color: rgba(115, 201, 145, 0.2);
+    color: #73c991;
+}
+
+.remoteBranch {
+    background-color: rgba(192, 132, 252, 0.2);
+    color: #c084fc;
+}
+
+.tooltipFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid #27272a;
+}
+
+.tooltipHash {
+    font-family: monospace;
+    font-size: 11px;
+    color: #71717a;
+}
+
+.tooltipLink {
+    font-size: 11px;
+    color: #3b82f6;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+}
+
+.tooltipLink:hover {
+    text-decoration: underline;
+}

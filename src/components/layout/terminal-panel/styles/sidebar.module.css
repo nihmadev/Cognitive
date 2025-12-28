@@ -1,0 +1,119 @@
+/* Terminal sidebar */
+.terminalSidebar {
+  width: 250px;
+  background: #252526;
+  border-left: 1px solid #333333;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333333;
+  height: 35px;
+  flex-shrink: 0;
+}
+
+.sidebarHeader h4 {
+  margin: 0;
+  color: #cccccc;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.sidebarCloseButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.sidebarCloseButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.terminalList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.terminalListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.terminalListItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeTerminalItem {
+  background-color: #094771;
+}
+
+.terminalItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.terminalItemName {
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminalItemStatus {
+  font-size: 11px;
+  color: #858585;
+}
+
+.terminalItemClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+}
+
+.terminalListItem:hover .terminalItemClose {
+  opacity: 1;
+}
+
+.terminalItemClose:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
+}

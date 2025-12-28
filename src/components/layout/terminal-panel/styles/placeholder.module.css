@@ -1,0 +1,15 @@
+/* Placeholder content for empty panels */
+.placeholderContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #858585;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.placeholderText {
+  color: #858585;
+  font-size: 13px;
+}

@@ -1,0 +1,108 @@
+.overlayRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1px);
+}
+
+.modal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: #252526;
+  border-radius: 0.375rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #454545;
+  overflow: hidden;
+  color: #cccccc;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 0.875rem;
+  width: 600px;
+  max-width: 90vw;
+}
+
+.modal:not([style*="top"]) {
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.inputWrapper {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #3c3c3c;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #cccccc;
+  font-size: 0.8125rem;
+  line-height: normal;
+  height: auto;
+  padding: 2px 0;
+  margin: 0;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.error {
+  padding: 0.5rem 0.875rem;
+  background: rgba(220, 38, 38, 0.1);
+  border-left: 3px solid #dc2626;
+  color: #fca5a5;
+  font-size: 0.75rem;
+}
+
+.footer {
+  padding: 0.5rem 0.875rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sourceOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #cccccc;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0;
+}
+
+.sourceOption:hover {
+  color: #ffffff;
+}
+
+.githubIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.remoteSourcesLink {
+  color: #6b7280;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.remoteSourcesLink:hover {
+  color: #9ca3af;
+}

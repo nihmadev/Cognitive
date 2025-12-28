@@ -1,0 +1,250 @@
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-background);
+  color: var(--theme-foreground-muted);
+  padding: 2rem;
+}
+
+.emptyInner {
+  text-align: center;
+  max-width: 42rem;
+}
+
+.brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.brandIcon {
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 1rem;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  pointer-events: none;
+}
+
+.title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--theme-foreground);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: var(--theme-background-secondary);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--theme-border);
+}
+
+.cardTitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--theme-foreground);
+  margin-bottom: 0.5rem;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.kbd {
+  background: var(--theme-background-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--theme-border);
+}
+
+.root {
+  flex: 1;
+  min-height: 0;
+  background: var(--theme-background);
+}
+
+.container {
+  height: 100%;
+  min-height: 0;
+}
+
+.splitContainer {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.splitEditorContainer {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.splitEditorHeader {
+  padding: 8px;
+  background: var(--theme-background-secondary);
+  border-bottom: 1px solid var(--theme-border);
+  flex-shrink: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.splitHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.splitHeaderBadge {
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--theme-border);
+  color: var(--theme-foreground-muted);
+  background: var(--theme-background-tertiary);
+  flex-shrink: 0;
+}
+
+.splitHeaderFile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--theme-foreground);
+  font-size: 12px;
+}
+
+.splitHeaderFileName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.splitHeaderMeta {
+  font-size: 11px;
+  color: var(--theme-foreground-subtle);
+  flex-shrink: 0;
+}
+
+.splitEmpty {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  color: var(--theme-foreground-muted);
+  background: var(--theme-background);
+}
+
+.splitEmptyInner {
+  max-width: 340px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.splitDivider {
+  width: 3px;
+  background: var(--theme-border);
+  cursor: col-resize;
+  position: relative;
+}
+
+.splitDivider:hover {
+  background: var(--theme-border-active);
+}
+
+.splitDivider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+}
+
+.binaryWarning {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-background);
+  height: 100%;
+}
+
+.binaryWarningContent {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #352a05;
+  border: 1px solid #665500;
+  border-left: 3px solid #cca700;
+  border-radius: 3px;
+  max-width: 500px;
+}
+
+.binaryWarningIcon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  color: #cca700;
+  margin-top: 2px;
+}
+
+.binaryWarningTextWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.binaryWarningText {
+  color: #cccccc;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.binaryWarningFile {
+  color: #8a8a8a;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}

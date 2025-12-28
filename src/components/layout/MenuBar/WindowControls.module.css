@@ -1,0 +1,138 @@
+.root {
+    display: flex;
+    -webkit-app-region: no-drag;
+    height: 100%;
+    align-items: stretch;
+    flex-shrink: 0;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground);
+    transition: background-color 0.1s;
+    cursor: default;
+    position: relative;
+    /* Ensure icons are crisp */
+    -webkit-font-smoothing: antialiased;
+}
+
+.button:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.button.close:hover {
+    background-color: #c42b1c;
+    color: #ffffff;
+}
+
+.icon {
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+}
+
+/* Maximize button specifically to handle the snappy menu */
+.maximizeContainer {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.snapMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 260px;
+    background-color: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    z-index: 9999;
+    /* Prevent interaction when hidden */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.1s ease-in;
+    pointer-events: none;
+    cursor: default;
+}
+
+.maximizeContainer:hover .snapMenu,
+.snapMenu:hover {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.2s;
+    /* Small delay before showing to emulate OS feel */
+}
+
+.snapGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.layoutPreview {
+    display: flex;
+    gap: 2px;
+    height: 60px;
+    width: 80px;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.layoutPreview:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.zone {
+    background-color: var(--theme-background-tertiary);
+    border-radius: 1px;
+    transition: background-color 0.1s;
+}
+
+.layoutPreview:hover .zone {
+    background-color: var(--theme-foreground-subtle);
+}
+
+.layoutPreview:hover .zone:hover {
+    background-color: var(--theme-accent);
+}
+
+/* Specific layout styles */
+.split50 {
+    flex: 1;
+}
+
+.split60 {
+    flex: 3;
+}
+
+.split40 {
+    flex: 2;
+}
+
+.col3 {
+    flex: 1;
+}
+
+/* Grid for Quarters */
+.quarters {
+    flex-wrap: wrap;
+}
+
+.quarter {
+    width: calc(50% - 1px);
+    height: calc(50% - 1px);
+}

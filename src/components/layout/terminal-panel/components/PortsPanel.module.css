@@ -1,0 +1,155 @@
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--theme-background);
+    overflow: hidden;
+}
+
+.tableWrapper {
+    flex: 1;
+    overflow: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    background: var(--theme-background-secondary);
+    z-index: 1;
+}
+
+.table th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--theme-foreground-muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--theme-border);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 6px 12px;
+    color: var(--theme-foreground-muted);
+    border-bottom: 1px solid var(--theme-border);
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.portColumn {
+    width: 200px;
+    min-width: 200px;
+}
+
+.filterInput {
+    width: 100%;
+    padding: 4px 8px;
+    background: var(--theme-input-background);
+    border: 1px solid var(--theme-accent);
+    border-radius: 2px;
+    color: var(--theme-foreground);
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+}
+
+.filterInput::placeholder {
+    color: var(--theme-foreground-subtle);
+}
+
+.filterInput:focus {
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 0 1px var(--theme-accent);
+}
+
+.portCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.portNumber {
+    color: var(--theme-accent);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.protocol {
+    font-size: 11px;
+    color: var(--theme-foreground-subtle);
+    background: var(--theme-background-tertiary);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.addressCell {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    color: var(--theme-syntax-variable);
+}
+
+.processCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pid {
+    font-size: 11px;
+    color: var(--theme-foreground-subtle);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.originCell {
+    color: var(--theme-success);
+}
+
+.emptyRow {
+    text-align: center;
+    color: var(--theme-foreground-subtle);
+    padding: 24px !important;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--theme-foreground-subtle);
+    font-size: 13px;
+}
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    color: var(--theme-error);
+    font-size: 13px;
+}
+
+.retryButton {
+    padding: 6px 12px;
+    background: var(--theme-button-background);
+    color: #ffffff;
+    border: none;
+    border-radius: 2px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.retryButton:hover {
+    background: var(--theme-button-hover-background);
+}

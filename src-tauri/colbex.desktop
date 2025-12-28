@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Colbex IDE
+Comment=New Era Of Coding
+Exec=colbex %U
+Icon=Colbex
+Terminal=false
+Categories=Development;IDE;TextEditor;
+MimeType=text/plain;text/html;text/css;text/javascript;text/json;text/xml;text/markdown;
+Keywords=editor;code;development;programming;
+StartupNotify=true
+StartupWMClass=colbex

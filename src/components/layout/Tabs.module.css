@@ -1,0 +1,268 @@
+/* VS Code-style Tab Bar Container */
+.tabsContainer {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--theme-tab-inactive-background);
+  height: 35px;
+  overflow: visible;
+  user-select: none;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* Tab Bar - Scrollable Container */
+.tabBar {
+  display: flex;
+  height: 35px;
+  background-color: var(--theme-tab-inactive-background);
+  overflow-x: auto;
+  overflow-y: hidden;
+  user-select: none;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe WPC', 'Ubuntu', 'Droid Sans', sans-serif;
+  position: relative;
+  flex-shrink: 1;
+  flex: 1;
+  /* Firefox - thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-scrollbar-thumb) var(--theme-tab-inactive-background);
+}
+
+/* Webkit scrollbar styling (Chrome, Safari, Opera, Edge) */
+.tabBar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tabBar::-webkit-scrollbar-track {
+  background: var(--theme-tab-inactive-background);
+}
+
+.tabBar::-webkit-scrollbar-thumb {
+  background-color: var(--theme-scrollbar-thumb);
+  height: 6px;
+  width: 6px;
+  border-radius: 4px;
+  /* Use an inner box-shadow to simulate a border without affecting layout sizing */
+  box-shadow: inset 0 0 0 1px var(--theme-tab-inactive-background);
+}
+
+/* Ensure scrollbar thumb size doesn't enlarge on hover (_tabs) */
+.tabBar::-webkit-scrollbar-thumb:hover {
+  transform: none;
+  height: 3px;
+  width: 4px;
+}
+
+
+/* Individual Tab */
+.tab {
+  display: flex;
+  align-items: stretch;
+  height: 35px;
+  min-width: 80px;
+  max-width: 240px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.tabContent {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Active Tab */
+.tabActive {
+  background-color: var(--theme-tab-active-background);
+  color: var(--theme-foreground);
+}
+
+/* Second Editor Tab (in split view) */
+.tabSecondEditor {
+  background-color: var(--theme-background-tertiary);
+  color: var(--theme-foreground);
+  border-left: 3px solid var(--theme-foreground-muted);
+}
+
+.tabSecondEditor:hover {
+  background-color: var(--theme-background-tertiary);
+  color: var(--theme-foreground);
+}
+
+/* Inactive Tab */
+.tabInactive {
+  background-color: var(--theme-tab-inactive-background);
+  color: var(--theme-foreground-muted);
+}
+
+.tabInactive:hover {
+  background-color: var(--theme-background-tertiary);
+  color: var(--theme-foreground);
+}
+
+/* Tab Separator - vertical line between tabs */
+.tabInactive:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background-color: var(--theme-border);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tabInactive:hover::after,
+.tabActive::after,
+.tabActive + .tabInactive::after {
+  display: none;
+}
+
+/* Tab Icon */
+.tabIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.tabActive .tabIcon {
+  opacity: 1;
+}
+
+/* Tab Label */
+.tabLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  font-size: 13px;
+  line-height: 35px;
+  font-weight: normal;
+  min-width: 0;
+}
+
+/* Deleted file tab */
+.tabDeleted {
+  color: var(--theme-error);
+}
+
+.tabLabelDeleted {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* Close Button */
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s ease, background-color 0.1s ease;
+  color: inherit;
+  position: relative;
+}
+
+.closeButtonActive {
+  opacity: 1;
+}
+
+.tab:hover .closeButton {
+  opacity: 1;
+}
+
+.closeButton:hover {
+  background-color: var(--theme-hover-overlay-strong);
+}
+
+.closeButton:active {
+  background-color: var(--theme-hover-overlay-strong);
+}
+
+/* Close Icon */
+.closeIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--theme-foreground-muted);
+  opacity: 0.7;
+  transition: opacity 0.1s ease;
+}
+
+.closeButton:hover .closeIcon {
+  opacity: 1;
+}
+
+/* Unsaved Changes Indicator */
+.closeButtonUnsaved {
+  opacity: 1 !important;
+}
+
+.unsavedDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--theme-foreground-muted);
+  margin: 0;
+  opacity: 0.9;
+}
+
+.tabActive .unsavedDot {
+  background-color: var(--theme-foreground-muted);
+}
+
+.tabInactive .unsavedDot {
+  background-color: var(--theme-foreground-subtle);
+}
+
+.closeButton:hover .unsavedDot {
+  opacity: 1;
+}
+
+/* Unsaved Close Icon - hidden by default, shown on hover */
+.unsavedCloseIcon {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.closeButton:hover .unsavedCloseIcon {
+  opacity: 0.7;
+}
+
+.closeButton:hover .unsavedDot {
+  opacity: 0;
+}
+
+
+/* Diff Label */
+.diffLabel {
+  font-size: 11px;
+  color: var(--theme-foreground-subtle);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.tabActive .diffLabel {
+  color: var(--theme-foreground-muted);
+}

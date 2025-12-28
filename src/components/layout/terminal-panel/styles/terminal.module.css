@@ -1,0 +1,66 @@
+.terminalView {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #cccccc;
+    overflow: hidden;
+    position: relative;
+}
+
+.output {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.output::-webkit-scrollbar {
+    width: 10px;
+}
+
+.output::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.output::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 5px;
+}
+
+.output::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+.line {
+    min-height: 1.4em;
+}
+
+.cursor {
+    opacity: 0;
+    color: #ffffff;
+    animation: none;
+}
+
+.cursor.visible {
+    opacity: 1;
+}
+
+.hiddenInput {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Selection styles */
+.output ::selection {
+    background: rgba(255, 255, 255, 0.25);
+}

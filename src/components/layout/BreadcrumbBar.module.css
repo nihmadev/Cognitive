@@ -1,0 +1,87 @@
+.breadcrumbBar {
+  height: 24px;
+  background: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 12px;
+  font-family: var(--vscode-font-family);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.breadcrumbContent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.breadcrumbContent::-webkit-scrollbar {
+  display: none;
+}
+
+.segment {
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: background-color 0.1s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.segment:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.segmentIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.fileSegment {
+  font-weight: 500;
+  color: var(--vscode-foreground);
+}
+
+.symbolHierarchy {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.symbolSegment {
+  background-color: var(--vscode-breadcrumb-background);
+  border: 1px solid var(--vscode-breadcrumb-border);
+  margin-left: 2px;
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: var(--vscode-symbolIcon-functionForeground);
+}
+
+.symbolSegment .segmentIcon {
+  opacity: 0.9;
+}
+
+.symbolSegment:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  color: var(--vscode-foreground);
+}
+
+.separator {
+  color: var(--vscode-descriptionForeground);
+  flex-shrink: 0;
+  margin: 0 2px;
+}

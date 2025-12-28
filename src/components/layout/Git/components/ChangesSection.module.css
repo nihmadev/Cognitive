@@ -1,0 +1,165 @@
+/* Changes Section */
+.changesSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background-color: #1f1f22;
+    border-top: 1px solid #27272a;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sectionHeader:hover {
+    background-color: #252528;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #e4e4e7;
+}
+
+.sectionCount {
+    background: #3f3f46;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: #d4d4d8;
+}
+
+.sectionActions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.sectionHeader:hover .sectionActions {
+    opacity: 1;
+}
+
+.sectionBtn {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #a1a1aa;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.sectionBtn:hover {
+    background-color: #3f3f46;
+    color: #e4e4e7;
+}
+
+.filesList {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.fileItem {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    cursor: pointer;
+    gap: 6px;
+}
+
+.fileItem:hover {
+    background-color: #2a2a35;
+}
+
+.fileIcon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.filePath {
+    color: #71717a;
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+.fileStatus {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 4px;
+    border-radius: 2px;
+}
+
+.statusM {
+    color: #e9a23b;
+}
+
+.statusU {
+    color: #73c991;
+}
+
+.statusD {
+    color: #f14c4c;
+}
+
+.fileActions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.fileItem:hover .fileActions {
+    opacity: 1;
+}
+
+.fileActionBtn {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #a1a1aa;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.fileActionBtn:hover {
+    background-color: #3f3f46;
+    color: #e4e4e7;
+}
+
+.emptySection {
+    padding: 12px;
+    text-align: center;
+    color: #52525b;
+    font-size: 12px;
+}

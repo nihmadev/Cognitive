@@ -1,0 +1,55 @@
+/* New item input styles */
+.newItemRow {
+  --depth: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: calc(var(--depth) * 8px + 8px);
+  padding-right: 8px;
+  font-size: 13px;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.newItemInput {
+  flex: 1;
+  min-width: 0;
+  background: var(--theme-input-background);
+  border: 1px solid var(--theme-accent);
+  border-radius: 2px;
+  color: var(--theme-foreground-muted);
+  font-size: 13px;
+  padding: 2px 6px;
+  outline: none;
+}
+
+.newItemInput:focus {
+  border-color: var(--theme-accent);
+  background: var(--theme-input-background);
+}
+
+.newItemInput::placeholder {
+  color: var(--theme-foreground-subtle);
+}
+
+.newItemInputError {
+  border-color: var(--theme-error);
+}
+
+.newItemError {
+  position: absolute;
+  top: 100%;
+  left: calc(var(--depth) * 8px + 8px);
+  right: 8px;
+  background: #5a1d1d;
+  border: 1px solid var(--theme-error);
+  color: var(--theme-error);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  z-index: 100;
+  margin-top: 2px;
+}

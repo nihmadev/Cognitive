@@ -1,0 +1,208 @@
+/* Profile Details Styles */
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--theme-background);
+}
+
+.contentHeader {
+    padding: 16px 24px;
+    background-color: var(--theme-background-secondary);
+    border-bottom: 1px solid var(--theme-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profileTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activeBadge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    background-color: var(--theme-accent-muted);
+    color: var(--theme-accent);
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.headerActions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: transparent;
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    color: var(--theme-foreground-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.actionBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    border-color: var(--theme-border-active);
+    color: var(--theme-foreground);
+}
+
+.contentBody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+}
+
+.contentBody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.contentBody::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.contentBody::-webkit-scrollbar-thumb {
+    background-color: var(--theme-scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.contentBody::-webkit-scrollbar-thumb:hover {
+    background-color: var(--theme-scrollbar-thumb-hover);
+}
+
+/* Sections */
+.section {
+    margin-bottom: 24px;
+}
+
+.sectionTitle {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--theme-foreground-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.sectionDesc {
+    font-size: 12px;
+    color: var(--theme-foreground-subtle);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+/* Checkbox */
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--theme-foreground-muted);
+    cursor: pointer;
+}
+
+.checkbox input {
+    display: none;
+}
+
+.checkmark {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--theme-border);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    transition: all 0.15s;
+}
+
+.checkbox input:checked + .checkmark {
+    background-color: var(--theme-accent);
+    border-color: var(--theme-accent);
+}
+
+.checkbox input:checked + .checkmark::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+}
+
+/* Contents List */
+.contentsList {
+    background-color: var(--theme-background-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.contentsHeader {
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--theme-foreground-muted);
+    background-color: var(--theme-background-secondary);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.contentItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--theme-foreground-muted);
+    cursor: pointer;
+}
+
+.contentItem:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.contentItemClickable {
+    cursor: pointer;
+}
+
+.contentItemClickable:hover {
+    background-color: var(--theme-hover-overlay-strong);
+}
+
+.contentItemArrow {
+    margin-left: auto;
+    opacity: 0.5;
+}
+
+.contentItemClickable:hover .contentItemArrow {
+    opacity: 1;
+}
+
+.contentItemSpacer {
+    width: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contentBody {
+        padding: 16px;
+    }
+}

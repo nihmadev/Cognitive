@@ -1,0 +1,538 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  min-height: 200px;
+  background: #1e1e1e;
+  border-top: 1px solid #333333;
+  flex-shrink: 0;
+}
+
+/* Header with tabs and controls */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  background: #252526;
+  border-bottom: 1px solid #333333;
+  flex-shrink: 0;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  border-bottom: 2px solid transparent;
+  position: relative;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tabActive {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border-bottom-color: #007acc;
+}
+
+.badge {
+  background: #cc3e3e;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Right side controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 8px;
+  height: 100%;
+}
+
+/* Action dropdown with plus button */
+.actionDropdown {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.dropdownArrow {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+}
+
+.actionDropdownMenu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
+  background: #2d2d30;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  min-width: 280px;
+  max-width: 400px;
+  max-height: 500px;
+  overflow: visible;
+  padding: 4px 0;
+}
+
+.actionDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.3;
+  min-height: 30px;
+  white-space: nowrap;
+}
+
+.actionDropdownItem:hover {
+  background-color: #094771;
+}
+
+.actionDropdownItem svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #cccccc;
+}
+
+.keyboardShortcut {
+  margin-left: auto;
+  font-size: 11px;
+  color: #969696;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: transparent;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid #3e3e42;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dropdownDivider {
+  border: none;
+  border-top: 1px solid #3e3e42;
+  margin: 2px 8px;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.actionButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionButton:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Content area */
+.mainContent {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  background: #1e1e1e;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #1e1e1e;
+}
+
+.terminalContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.terminalsWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.terminalTabs {
+  display: flex;
+  background: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  flex-shrink: 0;
+  height: 35px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.terminalTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 100%;
+  border-bottom: 2px solid transparent;
+  position: relative;
+}
+
+.terminalTab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.terminalTabActive {
+  color: #ffffff;
+  background: #1e1e1e;
+  border-bottom-color: #007acc;
+}
+
+.terminalTabClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.terminalTab:hover .terminalTabClose {
+  opacity: 1;
+}
+
+.terminalTabClose:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
+}
+
+.terminalTabAdd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  flex-shrink: 0;
+}
+
+.terminalTabAdd:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #858585;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  gap: 12px;
+}
+
+.emptyStateText {
+  color: #858585;
+  font-size: 13px;
+}
+
+.createTerminalButton {
+  padding: 6px 12px;
+  background: #007acc;
+  color: #ffffff;
+  border: none;
+  border-radius: 2px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.createTerminalButton:hover {
+  background: #1177bb;
+}
+
+.placeholderContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #858585;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.placeholderText {
+  color: #858585;
+  font-size: 13px;
+}
+
+/* Hint text at bottom */
+.hint {
+  padding: 4px 12px;
+  background: #1e1e1e;
+  border-top: 1px solid #333333;
+  color: #858585;
+  font-size: 11px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+/* Terminal sidebar */
+.terminalSidebar {
+  width: 250px;
+  background: #252526;
+  border-left: 1px solid #333333;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333333;
+  height: 35px;
+  flex-shrink: 0;
+}
+
+.sidebarHeader h4 {
+  margin: 0;
+  color: #cccccc;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.sidebarCloseButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.sidebarCloseButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.terminalList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.terminalListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.terminalListItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeTerminalItem {
+  background-color: #094771;
+}
+
+.terminalItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.terminalItemName {
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminalItemStatus {
+  font-size: 11px;
+  color: #858585;
+}
+
+.terminalItemClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+}
+
+.terminalListItem:hover .terminalItemClose {
+  opacity: 1;
+}
+
+.terminalItemClose:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
+}
+
+/* Problems container */
+.problemsContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #1e1e1e;
+}
+
+.problemsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.problemItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.problemItem.error {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid #f14c4c;
+}
+
+.problemItem.warning {
+  background-color: rgba(255, 204, 0, 0.1);
+  border-left: 3px solid #ffcc02;
+}
+
+.problemIcon {
+  color: #f14c4c;
+  font-weight: bold;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.problemItem.warning .problemIcon {
+  color: #ffcc02;
+}
+
+.problemDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.problemMessage {
+  color: #cccccc;
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.problemLocation {
+  color: #858585;
+  font-size: 11px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}

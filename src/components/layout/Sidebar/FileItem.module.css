@@ -1,0 +1,158 @@
+.fileItemWrap {
+  user-select: none;
+  position: relative;
+}
+
+.fileRow {
+  --depth: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: calc(var(--depth) * 8px + 4px);
+  padding-right: 4px;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  font-size: 13px;
+  position: relative;
+  color: var(--theme-foreground-muted);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.fileRow:hover {
+  background: color-mix(in srgb, var(--theme-background-tertiary) 40%, transparent);
+}
+
+.fileRowActive {
+  background: color-mix(in srgb, var(--theme-background-tertiary) 50%, transparent);
+  color: var(--theme-foreground);
+}
+
+.fileRowSelected {
+  background: color-mix(in srgb, var(--theme-accent-muted) 30%, transparent);
+  color: var(--theme-foreground);
+}
+
+.fileRowSelected:hover {
+  background: color-mix(in srgb, var(--theme-accent-muted) 40%, transparent);
+}
+
+.fileRowSticky {
+  background: var(--theme-background-secondary);
+}
+
+.fileRowStickyActive {
+  background: color-mix(in srgb, var(--theme-background-tertiary) 50%, transparent);
+}
+
+.activeIndicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--theme-accent);
+}
+
+.chevronSlot {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 2px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  transition: opacity 150ms ease;
+  min-width: 16px;
+}
+
+.fileRow:hover .chevronSlot {
+  opacity: 1;
+}
+
+.placeholderChevron {
+  width: 14px;
+}
+
+.iconSlot {
+  margin-right: 0.25rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.125rem 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.nameError {
+  color: var(--theme-error);
+}
+
+.nameWarning {
+  color: var(--theme-warning);
+}
+
+.indentationLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--depth) * 8px + 4px);
+  width: 1px;
+  background: var(--theme-border);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.indentationLine::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 12px;
+  height: 1px;
+  background: var(--theme-border);
+  opacity: 0.4;
+}
+
+.childrenWrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.renameForm {
+  flex: 1;
+  min-width: 0;
+  margin: 0 4px;
+}
+
+.renameInput {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--theme-accent);
+  color: var(--theme-foreground);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  outline: none;
+  box-sizing: border-box;
+  margin: -2px 0;
+}
+
+.renameInput:focus {
+  box-shadow: 0 0 0 1px var(--theme-accent);
+}

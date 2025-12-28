@@ -1,0 +1,174 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0.25rem;
+    background: var(--theme-background-secondary);
+    cursor: pointer;
+    border-top: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
+    transition: background-color 150ms ease;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.sectionHeader:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--theme-foreground-muted);
+}
+
+.chev {
+    margin-right: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.sectionActions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.sectionHeader:hover .sectionActions {
+    opacity: 1;
+}
+
+.actionBtn {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    color: var(--theme-foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtn:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.sectionBody {
+    padding: 0.25rem 0;
+    max-height: 400px;
+    min-height: 60px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.loading,
+.empty {
+    padding: 0.75rem 1rem;
+    color: var(--theme-foreground-subtle);
+    font-size: 12px;
+    text-align: center;
+}
+
+.symbolList {
+    display: flex;
+    flex-direction: column;
+}
+
+.symbolItemWrap {
+    user-select: none;
+}
+
+.symbolRow {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--theme-foreground-muted);
+    transition: background-color 150ms ease;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.symbolRow:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.symbolRowActive {
+    background: var(--theme-accent-muted);
+    color: var(--theme-foreground);
+}
+
+.symbolRowActive:hover {
+    background: var(--theme-accent-muted);
+}
+
+.chevronSlot {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2px;
+    opacity: 0.7;
+    flex-shrink: 0;
+    transition: opacity 150ms ease;
+}
+
+.symbolRow:hover .chevronSlot {
+    opacity: 1;
+}
+
+.chevronPlaceholder {
+    width: 14px;
+}
+
+.symbolIcon {
+    margin-right: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+}
+
+.symbolName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.symbolDetail {
+    margin-left: 8px;
+    color: var(--theme-foreground-subtle);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+    max-width: 80px;
+}
+
+.symbolChildren {
+    display: flex;
+    flex-direction: column;
+}

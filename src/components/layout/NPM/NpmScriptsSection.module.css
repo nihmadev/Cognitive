@@ -1,0 +1,217 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0.3rem;
+    background: var(--theme-background-secondary);
+    cursor: pointer;
+    border-top: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
+    transition: background-color 150ms ease;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 28px;
+}
+
+.sectionHeader:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--theme-foreground);
+    gap: 0.3rem;
+}
+
+.chev {
+    display: flex;
+    align-items: center;
+    transition: transform 150ms ease;
+}
+
+.sectionActions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.sectionHeader:hover .sectionActions {
+    opacity: 1;
+}
+
+.actionBtn {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    color: var(--theme-foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtn:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.sectionBody {
+    padding: 0.1rem 0;
+    max-height: 300px;
+    min-height: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.loading,
+.empty,
+.error {
+    padding: 0.75rem 1rem;
+    color: var(--theme-foreground-subtle);
+    font-size: 12px;
+    text-align: center;
+}
+
+.error {
+    color: var(--theme-error);
+}
+
+.scriptList {
+    display: flex;
+    flex-direction: column;
+}
+
+.scriptItem {
+    user-select: none;
+}
+
+.scriptRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 6px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--theme-foreground-muted);
+    transition: background-color 150ms ease;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 3px;
+    margin: 1px 3px;
+    min-height: 22px;
+}
+
+.scriptRow:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.scriptInfo {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.scriptName {
+    font-weight: 500;
+    color: var(--theme-foreground);
+    display: block;
+    font-size: 11px;
+}
+
+.scriptIcon {
+    color: var(--theme-foreground-muted);
+    flex-shrink: 0;
+}
+
+.scriptCommand {
+    color: var(--theme-foreground-subtle);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scriptDescription {
+    color: var(--theme-foreground-subtle);
+    font-size: 10px;
+    display: block;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scriptActions {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    flex-shrink: 0;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.scriptRow:hover .scriptActions {
+    opacity: 1;
+}
+
+.scriptBtn {
+    padding: 2px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms ease;
+    min-width: 18px;
+    min-height: 18px;
+}
+
+.runBtn {
+    color: var(--theme-success);
+    background: transparent;
+}
+
+.runBtn:hover {
+    background: var(--theme-success-muted);
+    color: var(--theme-success);
+}
+
+.debugBtn {
+    color: var(--theme-foreground-muted);
+    background: transparent;
+}
+
+.debugBtn:hover {
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground);
+}
+
+.stopBtn {
+    color: var(--theme-error);
+    background: transparent;
+}
+
+.stopBtn:hover {
+    background: var(--theme-error-muted);
+    color: var(--theme-error);
+}

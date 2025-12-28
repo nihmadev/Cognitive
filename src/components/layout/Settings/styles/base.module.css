@@ -1,0 +1,254 @@
+/* Settings Pane - Base Layout */
+
+.settingsPane {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: var(--theme-background);
+  color: var(--theme-foreground);
+  overflow: hidden;
+  font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Content Area */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--theme-background);
+}
+
+.contentHeader {
+  padding: 16px 24px;
+  background-color: var(--theme-sidebar-background);
+  border-bottom: 1px solid var(--theme-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contentHeaderInfo {
+  flex: 1;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.breadcrumb {
+  font-size: 11px;
+  color: var(--theme-foreground-subtle);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbLink {
+  color: var(--theme-accent);
+}
+
+.breadcrumbClickable {
+  cursor: pointer;
+}
+
+.breadcrumbClickable:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+  color: var(--theme-foreground-subtle);
+}
+
+.contentTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-foreground);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contentTitleIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-foreground-muted);
+}
+
+.contentDescription {
+  font-size: 12px;
+  color: var(--theme-foreground-subtle);
+  margin-top: 2px;
+}
+
+.contentBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Settings Sections */
+.settingsSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--theme-foreground-muted);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--theme-border);
+}
+
+/* Setting Item */
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  background-color: var(--theme-background-secondary);
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.settingItem:hover {
+  background-color: var(--theme-background-tertiary);
+}
+
+.settingInfo {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.settingLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  margin-bottom: 2px;
+}
+
+.settingDescription {
+  font-size: 12px;
+  color: var(--theme-foreground-subtle);
+  line-height: 1.4;
+}
+
+.settingControl {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Scrollbar styling */
+.contentBody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.contentBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.contentBody::-webkit-scrollbar-thumb {
+  background-color: var(--theme-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.contentBody::-webkit-scrollbar-thumb:hover {
+  background-color: var(--theme-scrollbar-thumb-hover);
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--theme-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-foreground-subtle);
+  margin-bottom: 16px;
+}
+
+.emptyStateTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  margin-bottom: 4px;
+}
+
+.emptyStateText {
+  font-size: 12px;
+  color: var(--theme-foreground-subtle);
+  max-width: 280px;
+}
+
+/* Info Card */
+.infoCard {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: var(--theme-accent-muted);
+  border: 1px solid var(--theme-accent);
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.infoCardIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--theme-info);
+  flex-shrink: 0;
+}
+
+.infoCardContent {
+  flex: 1;
+}
+
+.infoCardTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  margin-bottom: 2px;
+}
+
+.infoCardText {
+  font-size: 12px;
+  color: var(--theme-foreground-muted);
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contentBody {
+    padding: 16px;
+  }
+  
+  .contentHeader {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+}

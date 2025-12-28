@@ -1,0 +1,194 @@
+/* Graph Section */
+.graphSection {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #27272a;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background-color: #1f1f22;
+    border-top: 1px solid #27272a;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sectionHeader:hover {
+    background-color: #252528;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #e4e4e7;
+}
+
+.graphActions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.graphActionBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #a1a1aa;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.graphActionBtn:hover {
+    background-color: #3f3f46;
+    color: #e4e4e7;
+}
+
+.graphIconBtn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #71717a;
+    cursor: pointer;
+}
+
+.graphIconBtn:hover {
+    background-color: #3f3f46;
+    color: #e4e4e7;
+}
+
+.graphContent {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.commitsList {
+    display: flex;
+    flex-direction: column;
+}
+
+.commitRow {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.commitRow:hover {
+    background-color: #2a2a35;
+}
+
+.graphLine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 16px;
+    position: relative;
+}
+
+.graphNode {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    border: 2px solid #1e3a5f;
+    z-index: 1;
+}
+
+.graphNodeHead {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+    border: 2px solid #3b82f6;
+}
+
+.graphConnector {
+    position: absolute;
+    top: 12px;
+    width: 2px;
+    height: calc(100% + 8px);
+    background-color: #3b82f6;
+}
+
+.commitInfo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.commitNumber {
+    font-size: 11px;
+    color: #71717a;
+    font-weight: 500;
+}
+
+.commitMessage {
+    font-size: 12px;
+    color: #e4e4e7;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.commitBranches {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.branchBadge {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.localBranch {
+    background-color: rgba(115, 201, 145, 0.2);
+    color: #73c991;
+}
+
+.remoteBranch {
+    background-color: rgba(192, 132, 252, 0.2);
+    color: #c084fc;
+}
+
+.pushBtn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #71717a;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.pushBtn:hover {
+    background-color: #3f3f46;
+    color: #e4e4e7;
+}

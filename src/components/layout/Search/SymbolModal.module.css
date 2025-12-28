@@ -1,0 +1,227 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modalContent {
+  background: #1e1e1e;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  width: 400px;
+  max-width: 80vw;
+  max-height: 50vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  background: var(--vscode-editor-background);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.searchContainer {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--vscode-foreground);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 40px;
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  color: var(--vscode-input-foreground);
+  font-size: 14px;
+  font-family: var(--vscode-font-family);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+.resultsContainer {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 200px;
+}
+
+.loading,
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--vscode-foreground);
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.resultsList {
+  padding: 8px 0;
+}
+
+.symbolItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.symbolItem:hover,
+.symbolItem.selected {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.symbolItem.selected {
+  border-left-color: var(--vscode-list-activeSelectionBorder);
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.symbolLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.symbolIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.symbolInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.symbolName {
+  font-weight: 500;
+  color: var(--vscode-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.symbolKind {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  text-transform: lowercase;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.symbolRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.symbolLocation {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-font-family);
+}
+
+.symbolDetail {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.7;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  border-top: 1px solid var(--vscode-panel-border);
+  background: var(--vscode-editor-background);
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Scrollbar styling */
+.resultsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.resultsContainer::-webkit-scrollbar-track {
+  background: var(--vscode-editor-background);
+}
+
+.resultsContainer::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSliderBackground);
+  border-radius: 4px;
+}
+
+.resultsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSliderHoverBackground);
+}

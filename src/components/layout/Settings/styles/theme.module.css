@@ -1,0 +1,108 @@
+/* Settings Pane - Theme Section */
+
+/* Theme Preview Grid */
+.themePreview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.themeCard {
+  background-color: var(--theme-background-secondary);
+  border: 2px solid var(--theme-border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.themeCard:hover {
+  border-color: var(--theme-foreground-subtle);
+}
+
+.themeCardActive {
+  border-color: var(--theme-accent);
+}
+
+.themePreviewImage {
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.themePreviewColors {
+  display: flex;
+  gap: 4px;
+}
+
+.themePreviewColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.themeName {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  text-align: center;
+  background-color: var(--theme-sidebar-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Font Preview */
+.fontPreview {
+  background-color: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.fontPreviewCode {
+  font-family: var(--font-family, 'JetBrains Mono', 'Consolas', monospace);
+  font-size: var(--font-size, 14px);
+  line-height: var(--line-height, 1.5);
+  color: var(--theme-foreground);
+  white-space: pre;
+}
+
+.fontPreviewKeyword {
+  color: var(--theme-syntax-keyword);
+}
+
+.fontPreviewString {
+  color: var(--theme-syntax-string);
+}
+
+.fontPreviewFunction {
+  color: var(--theme-syntax-function);
+}
+
+.fontPreviewComment {
+  color: var(--theme-syntax-comment);
+  font-style: italic;
+}
+
+.fontPreviewType {
+  color: var(--theme-syntax-type);
+}
+
+.fontPreviewVariable {
+  color: var(--theme-syntax-variable);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .themePreview {
+    grid-template-columns: 1fr;
+  }
+}

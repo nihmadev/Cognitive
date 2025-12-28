@@ -1,0 +1,40 @@
+/* Profile Menu Styles */
+
+.profileMenu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background-color: var(--theme-background-tertiary);
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 140px;
+}
+
+.profileMenuItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    color: var(--theme-foreground);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.profileMenuItem:hover {
+    background-color: var(--theme-hover-overlay-strong);
+}
+
+.profileMenuItem.deleteItem {
+    color: var(--theme-error);
+}
+
+.profileMenuItem.deleteItem:hover {
+    background-color: color-mix(in srgb, var(--theme-error) 15%, transparent);
+}

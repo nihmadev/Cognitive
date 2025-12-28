@@ -1,0 +1,201 @@
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: #1e1e1e;
+    overflow: hidden;
+}
+
+.list {
+    flex: 1;
+    overflow-y: auto;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+.placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #858585;
+    font-size: 13px;
+    gap: 12px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    font-size: 16px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.retryButton {
+    padding: 4px 12px;
+    background: #0e639c;
+    color: #ffffff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.retryButton:hover {
+    background: #1177bb;
+}
+
+/* File group */
+.fileGroup {
+    border-bottom: 1px solid #2d2d30;
+}
+
+.fileHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: #cccccc;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.fileHeader:hover {
+    background: #2a2d2e;
+}
+
+.chevron {
+    color: #858585;
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+    transition: transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.chevronExpanded {
+    transform: rotate(90deg);
+}
+
+.fileIcon {
+    color: #519aba;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.fileName {
+    color: #e8e8e8;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.filePath {
+    color: #858585;
+    font-size: 12px;
+    margin-left: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.problemCount {
+    background: #4d4d4d;
+    color: #cccccc;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Problems list */
+.problemsList {
+    padding-left: 24px;
+}
+
+.problemItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    user-select: none;
+}
+
+.problemItem:hover {
+    background: #2a2d2e;
+}
+
+.problemItem:active {
+    background: #094771;
+}
+
+.problemIcon {
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.errorIcon {
+    color: #f14c4c;
+}
+
+.warningIcon {
+    color: #cca700;
+}
+
+.problemMessage {
+    color: #cccccc;
+    flex: 1;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.problemCode {
+    color: #858585;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.problemLocation {
+    color: #858585;
+    font-size: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+/* Stats bar */
+.statsBar {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #252526;
+    border-bottom: 1px solid #2d2d30;
+    color: #6a9955;
+    font-size: 11px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.scanStats {
+    color: #6a9955;
+    font-size: 11px;
+}
+
+.errorText {
+    color: #f14c4c;
+}
