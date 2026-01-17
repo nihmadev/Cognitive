@@ -37,7 +37,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     onClose(); // Close the modal after opening the file
   };
 
-  const handleFileOpenAtLine = (filePath: string, line: number) => {
+  const handleFileOpenAtLine = (filePath: string, _line: number) => {
     openFile(filePath);
     // TODO: Navigate to specific line - this would need to be implemented in the editor
     onClose(); // Close the modal after opening the file

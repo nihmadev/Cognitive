@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
-import { useUIStore } from '../../store/uiStore';
 import { useEditorStore } from '../../store/editorStore';
 import { getFileIcon, getFolderIcon } from '../../utils/fileIcons';
 import { ChevronRight, ChevronDown } from 'lucide-react';
@@ -241,7 +240,7 @@ export const BreadcrumbBar = ({ filePath, className }: BreadcrumbBarProps) => {
       toggleFolderExpansion(item, { stopPropagation: () => { } } as React.MouseEvent);
     } else {
       // Open file using the project store's openFile function
-      openFile(item.path);
+      openFile(item.path || '');
       setMiniExplorerOpen(false);
     }
   };
@@ -261,7 +260,7 @@ export const BreadcrumbBar = ({ filePath, className }: BreadcrumbBarProps) => {
             >
               <span className={styles.segmentIcon}>
                 {segment.type === 'file' ? (
-                  getFileIcon(segment.name, activeFile)
+                  getFileIcon(segment.name, activeFile || undefined)
                 ) : segment.type === 'folder' ? (
                   getFolderIcon(segment.name)
                 ) : null}

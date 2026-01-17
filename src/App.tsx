@@ -8,7 +8,6 @@ import { TerminalPanel } from './components/layout/terminal-panel';
 import { MenuBar } from './components/layout/MenuBar';
 import { AIAssistant } from './components/ai';
 import { TabBar } from './components/layout/Tabs';
-import { BreadcrumbBar } from './components/layout/BreadcrumbBar';
 import { StatusBar } from './components/layout/StatusBar';
 import { ActivityBar, type ActivityId } from './components/layout/ActivityBar';
 import { WelcomeScreen } from './components/layout/WelcomeScreen';

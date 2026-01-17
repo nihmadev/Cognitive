@@ -15,7 +15,6 @@ import { ProfilesPane } from '../Profiles';
 import { EditorWelcome } from './EditorWelcome';
 import { BinaryWarning } from './BinaryWarning';
 import { useEditorEvents } from './useEditorEvents';
-import { getFileIcon } from '../../../utils/fileIcons';
 import { AudioViewer } from '../AudioViewer';
 import { VideoViewer } from '../VideoViewer';
 import { BreadcrumbBar } from '../BreadcrumbBar';
@@ -34,8 +33,6 @@ import styles from './Editor.module.css';
 export const CodeEditor = () => {
     const {
         activeFile,
-        openFiles,
-        openFile,
         setCursorPosition,
         setFileContent,
         fileContents,
@@ -69,9 +66,6 @@ export const CodeEditor = () => {
     const diagnosticsListenerRef = useRef<any>(null);
     const monacoConfiguredRef = useRef<boolean>(false);
     const themesRegisteredRef = useRef<boolean>(false);
-
-    const getFileName = (path: string) => path.split(/[\\/]/).pop() || path;
-
 
     const { collectDiagnostics, updateOutlineDebounced } = useEditorEvents({
         activeFile,

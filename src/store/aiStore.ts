@@ -30,6 +30,9 @@ export type ApiKeys = {
     google: string;
     xai: string;
     zhipu: string;
+    yandex: string;
+    gigachat: string;
+    agentrouter: string;
 };
 
 export type OllamaLocalModel = {
@@ -92,6 +95,9 @@ export const useAIStore = create<AIState>()(
                 google: '',
                 xai: '',
                 zhipu: '',
+                yandex: '',
+                gigachat: '',
+                agentrouter: '',
             },
             ollamaLocalModels: [],
             isAssistantOpen: false,
