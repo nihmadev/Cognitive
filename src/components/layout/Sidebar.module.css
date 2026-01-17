@@ -11,7 +11,7 @@
   overflow: hidden;
   contain: layout;
   flex-shrink: 0;
-  transition: width 0.2s ease, min-width 0.2s ease, background-color 0.2s ease;
+  transition: width 0.05s ease, min-width 0.05s ease, background-color 0.05s ease;
 }
 
 @media (max-width: 768px) {
@@ -91,7 +91,7 @@
   font-size: 13px;
   color: var(--theme-foreground-muted);
   text-align: left;
-  transition: background-color 100ms ease;
+  transition: background-color 0.05s ease;
 }
 
 .explorerMenuItem:hover {
@@ -137,7 +137,7 @@
   cursor: pointer;
   border-top: 1px solid var(--theme-border);
   border-bottom: 1px solid var(--theme-border);
-  transition: background-color 150ms ease;
+  transition: background-color 0.05s ease;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -178,7 +178,7 @@
   padding: 0.25rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
-  transition: background-color 150ms ease;
+  transition: background-color 0.05s ease;
   color: var(--theme-foreground-muted);
 }
 
@@ -213,7 +213,7 @@
   opacity: 0;
   padding: 0.125rem;
   border-radius: 0.25rem;
-  transition: opacity 150ms ease, background-color 150ms ease;
+  transition: opacity 0.05s ease, background-color 0.05s ease;
 }
 
 .openEditorRow:hover .closeBtn {
@@ -232,7 +232,7 @@
   background: var(--theme-background-secondary);
   cursor: pointer;
   border-top: 1px solid var(--theme-border);
-  transition: background-color 150ms ease;
+  transition: background-color 0.05s ease;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -248,7 +248,7 @@
   gap: 2px;
   color: var(--theme-foreground-muted);
   opacity: 0;
-  transition: opacity 150ms ease;
+  transition: opacity 0.05s ease;
   padding-right: 0.25rem;
 }
 
@@ -295,7 +295,7 @@
   border-radius: 2px;
   font-size: 0.875rem;
   color: #ffffff;
-  transition: background-color 150ms ease;
+  transition: background-color 0.05s ease;
 }
 
 .openFolderBtn:hover {
@@ -316,7 +316,7 @@
   padding-left: calc(var(--depth) * 8px + 4px);
   padding-right: 4px;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition: background-color 0.05s ease, color 0.05s ease;
   font-size: 13px;
   position: relative;
   color: var(--theme-foreground-muted);
@@ -369,7 +369,7 @@
   margin-right: 2px;
   opacity: 0.7;
   flex-shrink: 0;
-  transition: opacity 150ms ease;
+  transition: opacity 0.05s ease;
   min-width: 16px;
 }
 

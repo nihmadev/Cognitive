@@ -8,7 +8,7 @@
   user-select: none;
   position: relative;
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.05s ease;
 }
 
 /* Tab Bar - Scrollable Container */
@@ -122,7 +122,7 @@
 
 .tabInactive:hover::after,
 .tabActive::after,
-.tabActive + .tabInactive::after {
+.tabActive+.tabInactive::after {
   display: none;
 }
 
@@ -179,7 +179,7 @@
   margin-left: auto;
   flex-shrink: 0;
   opacity: 0;
-  transition: opacity 0.1s ease, background-color 0.1s ease;
+  transition: opacity 0.05s ease, background-color 0.05s ease;
   color: inherit;
   position: relative;
 }
@@ -206,7 +206,7 @@
   height: 14px;
   color: var(--theme-foreground-muted);
   opacity: 0.7;
-  transition: opacity 0.1s ease;
+  transition: opacity 0.05s ease;
 }
 
 .closeButton:hover .closeIcon {
@@ -243,7 +243,7 @@
 .unsavedCloseIcon {
   position: absolute;
   opacity: 0;
-  transition: opacity 0.1s ease;
+  transition: opacity 0.05s ease;
 }
 
 .closeButton:hover .unsavedCloseIcon {

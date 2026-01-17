@@ -27,7 +27,7 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 3px;
-  transition: background-color 0.2s;
+  transition: background-color 0.05s;
 }
 
 .menuItem:hover {
@@ -90,7 +90,7 @@
   width: 4px;
   cursor: col-resize;
   background: var(--theme-border, #333);
-  transition: background 0.2s;
+  transition: background 0.05s;
   flex-shrink: 0;
 }
 
@@ -126,8 +126,7 @@
   }
 }
 
-@media (max-width: 640px) {
-}
+@media (max-width: 640px) {}
 
 .statusBar {
   height: 1.5rem;
