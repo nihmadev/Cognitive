@@ -7,5 +7,3 @@ mod watcher;
 
 // Re-export public API
 pub use commands::*;
-pub use store::SettingsStore;
-pub use types::*;

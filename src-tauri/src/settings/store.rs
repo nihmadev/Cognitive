@@ -2,7 +2,6 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::RwLock;
 
-use super::defaults::*;
 use super::types::*;
 use super::validation::validate_settings;
 

@@ -81,7 +81,7 @@ impl SettingsWatcher {
                             last_event_time = now;
 
                             // Determine source based on path
-                            let source = if event.paths.iter().any(|p| {
+                            let _source = if event.paths.iter().any(|p| {
                                 p.to_string_lossy().contains(".cognitive")
                             }) {
                                 "workspace"

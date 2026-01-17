@@ -455,7 +455,7 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
     // Get local user config
     let config = repo.config().ok();
     let local_email = config.as_ref().and_then(|c| c.get_string("user.email").ok());
-    let local_name = config.as_ref().and_then(|c| c.get_string("user.name").ok());
+    let _local_name = config.as_ref().and_then(|c| c.get_string("user.name").ok());
     
     // Build commit to branches mapping
     let mut commit_branches: HashMap<git2::Oid, Vec<String>> = HashMap::new();
@@ -503,7 +503,7 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
                 
                 // Format date
                 let date = {
-                    use std::time::{SystemTime, UNIX_EPOCH, Duration};
+                    use std::time::{UNIX_EPOCH, Duration};
                     let dt = UNIX_EPOCH + Duration::from_secs(timestamp as u64);
                     let datetime: chrono::DateTime<chrono::Utc> = dt.into();
                     datetime.format("%Y-%m-%d %H:%M:%S").to_string()
