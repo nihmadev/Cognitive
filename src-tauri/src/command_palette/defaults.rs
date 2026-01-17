@@ -104,8 +104,6 @@ fn view_commands() -> Vec<Command> {
         cmd("view.toggleWordWrap", "Toggle Word Wrap", CommandCategory::View, Some("editorFocus")),
         cmd("view.toggleMinimap", "Toggle Minimap", CommandCategory::View, None),
         cmd("view.toggleBreadcrumbs", "Toggle Breadcrumbs", CommandCategory::View, None),
-        cmd("view.splitEditor", "Split Editor", CommandCategory::View, Some("editorFocus")),
-        cmd("view.splitEditorDown", "Split Editor Down", CommandCategory::View, Some("editorFocus")),
     ]
 }
 

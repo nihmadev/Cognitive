@@ -63,7 +63,7 @@ export const AIInput: React.FC<AIInputProps> = ({
         onChange={handleChange}
         onKeyDown={onKeyDown}
         placeholder={variant === 'home' 
-          ? (activeMode === 'responder' ? "Ask anything (Ctrl+L)" : "Agent mode: AI can take actions and execute tasks")
+          ? (activeMode === 'responder' ? "Ask anything (Ctrl+L)" : "Agent mode: Agent can take actions and execute tasks")
           : (activeMode === 'responder' ? "Ask a question..." : "Give the agent a task...")
         }
         className={styles.textArea}
@@ -105,7 +105,7 @@ export const AIInput: React.FC<AIInputProps> = ({
                   {
                     mode: 'agent',
                     title: 'Agent',
-                    description: 'AI can take actions and execute tasks. Use for coding, file operations, or complex workflows.'
+                    description: 'Agent can take actions and execute tasks. Use for coding, file operations, or complex workflows.'
                   }
                 ].map(({ mode, title, description }) => (
                   <div

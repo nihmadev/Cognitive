@@ -24,7 +24,7 @@ impl SessionStore {
     pub fn new() -> Self {
         let config_dir = dirs::config_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join("colbex");
+            .join("cognitive");
 
         Self {
             global_session: RwLock::new(default_global_session()),

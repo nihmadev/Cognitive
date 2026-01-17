@@ -57,17 +57,32 @@
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
+  background: hsl(240 10% 4%);
+  color: hsl(210 40% 98%);
+  position: relative;
   overflow: hidden;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+.app::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: hsl(var(--background));
-  color: hsl(var(--foreground));
+  z-index: -2;
+  pointer-events: none;
 }
 
 .main {
   display: flex;
   flex: 1;
   overflow: hidden;
+  isolation: isolate;
+  background: hsl(240 10% 4%);
 }
 
 .content {
@@ -77,6 +92,8 @@
   min-width: 0;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+  background: hsl(var(--background));
 }
 
 .aiPanelWrapper {

@@ -40,7 +40,7 @@ export interface FileSlice {
     setWorkspace: (path: string) => Promise<void>;
     closeWorkspace: () => Promise<void>;
     openFile: (path: string) => void;
-    closeFile: (path: string) => void;
+    closeFile: (path: string, force?: boolean) => void;
     closeAllFiles: () => void;
     closeAllSavedFiles: () => void;
     toggleTabsLock: () => void;
@@ -192,11 +192,11 @@ export const createFileSlice: StateCreator<
         });
     },
 
-    closeFile: (path: string) => {
+    closeFile: (path: string, force: boolean = false) => {
         const { openFiles, activeFile, history, historyIndex, errors, warnings, deletedFiles, tabsLocked } = get();
         
-        // Prevent closing files if tabs are locked
-        if (tabsLocked) {
+        // Prevent closing files if tabs are locked (unless forced)
+        if (tabsLocked && !force) {
             return;
         }
         
@@ -294,6 +294,7 @@ export const createFileSlice: StateCreator<
 
     navigateHistory: (direction: 'back' | 'forward') => {
         const { history, historyIndex } = get();
+        
         if (direction === 'back' && historyIndex > 0) {
             const newIndex = historyIndex - 1;
             set({ historyIndex: newIndex, activeFile: history[newIndex] });
@@ -361,7 +362,14 @@ export const createFileSlice: StateCreator<
     },
 
     saveFile: async (filePath: string) => {
-        const { fileContents, originalContents } = get();
+        const { fileContents, originalContents, deletedFiles } = get();
+        
+        // Check if file is deleted
+        if (deletedFiles[filePath]) {
+            console.error('[Save] Cannot save deleted file:', filePath);
+            throw new Error('Cannot save deleted file');
+        }
+        
         const content = fileContents[filePath];
         
         if (content !== undefined) {
@@ -374,6 +382,7 @@ export const createFileSlice: StateCreator<
                 set({ originalContents: newOriginalContents });
             } catch (error) {
                 console.error('Failed to save file:', error);
+                throw error;
             }
         }
     },
@@ -506,27 +515,46 @@ export const createFileSlice: StateCreator<
         const { currentWorkspace } = get();
         if (currentWorkspace) {
             try {
+                console.log('[FileWatcher] Starting file watcher for workspace:', currentWorkspace);
                 await tauriApi.startFileWatcher(currentWorkspace);
-                console.log('File watcher started for workspace:', currentWorkspace);
+                console.log('[FileWatcher] File watcher started successfully for workspace:', currentWorkspace);
             } catch (error) {
-                console.error('Failed to start file watcher:', error);
+                console.error('[FileWatcher] Failed to start file watcher:', error);
             }
+        } else {
+            console.warn('[FileWatcher] No workspace to watch');
         }
     },
 
     stopFileWatcher: async () => {
-        try {
-            await tauriApi.stopFileWatcher();
-            console.log('File watcher stopped');
-        } catch (error) {
-            console.error('Failed to stop file watcher:', error);
+        const { currentWorkspace } = get();
+        if (currentWorkspace) {
+            try {
+                await tauriApi.stopFileWatcher(currentWorkspace);
+                console.log('File watcher stopped for workspace:', currentWorkspace);
+            } catch (error) {
+                console.error('Failed to stop file watcher:', error);
+            }
         }
     },
 
     markPathDeleted: (path: string) => {
         if (!path) return;
-        const { deletedFiles } = get();
-        set({ deletedFiles: { ...deletedFiles, [path]: true } });
+        const { deletedFiles, openFiles } = get();
+        
+        console.log('[FileStore] markPathDeleted called for:', path);
+        console.log('[FileStore] Currently open files:', openFiles);
+        console.log('[FileStore] Is file open?', openFiles.includes(path));
+        
+        // Mark as deleted but keep the file open so user can see it's deleted
+        const newDeletedFiles = { ...deletedFiles, [path]: true };
+        
+        console.log('[FileStore] Updated deletedFiles:', newDeletedFiles);
+        
+        set({
+            deletedFiles: newDeletedFiles,
+            fileSystemVersion: get().fileSystemVersion + 1 // Force UI update
+        });
     },
 
     markPathRestored: (path: string) => {

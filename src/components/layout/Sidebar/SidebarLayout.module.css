@@ -1,7 +1,9 @@
 .sidebar {
   width: var(--sidebar-width, 16rem);
   height: 100%;
+  min-height: 100%;
   background: var(--theme-background-secondary);
+  background-clip: padding-box;
   border-right: 1px solid var(--theme-border);
   display: flex;
   flex-direction: column;
@@ -10,6 +12,19 @@
   contain: layout;
   flex-shrink: 0;
   position: relative;
+  isolation: isolate;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--theme-background-secondary);
+  z-index: -1;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {
@@ -92,7 +107,7 @@
   cursor: pointer;
   border-top: 1px solid var(--theme-border);
   border-bottom: 1px solid var(--theme-border);
-  transition: background-color 0.05s ease;
+  transition: background-color 0.1s ease;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -122,7 +137,7 @@
   background: var(--theme-background-secondary);
   cursor: pointer;
   border-top: 1px solid var(--theme-border);
-  transition: background-color 0.05s ease;
+  transition: background-color 0.1s ease;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -141,6 +156,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  background: var(--theme-background-secondary);
 }
 
 .noWorkspace {
@@ -162,7 +178,7 @@
   border-radius: 2px;
   font-size: 0.875rem;
   color: #ffffff;
-  transition: background-color 0.05s ease;
+  transition: background-color 0.1s ease;
 }
 
 .openFolderBtn:hover {
@@ -181,6 +197,8 @@
   min-height: 100px;
   flex: 1;
   cursor: default;
+  background: var(--theme-background-secondary);
+  border-radius: 0;
 }
 
 .bottomSections {

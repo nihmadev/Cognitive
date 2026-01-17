@@ -6,7 +6,7 @@ import { tauriApi } from '../../../lib/tauri-api';
 import { useProjectStore } from '../../../store/projectStore';
 import styles from './styles/ProfileDetails.module.css';
 
-const LAST_SETTINGS_SECTION_KEY = 'colbex-last-settings-section';
+const LAST_SETTINGS_SECTION_KEY = 'cognitive-last-settings-section';
 
 const contentItems: ContentItem[] = [
     { id: 'settings', label: 'Settings', icon: <Settings size={14} />, navigateTo: 'appearance-theme' },

@@ -451,7 +451,7 @@
 .dropdownMenu {
     position: absolute;
     top: 100%;
-    left: 0px;
+    left: -20px;
     margin-top: 8px;
     background: var(--theme-background);
     border: 1px solid var(--theme-border);
@@ -845,6 +845,23 @@
     top: 100% !important;
     margin-top: 8px;
     transform-origin: top right;
+}
+
+/* Chat variant - dropdowns open up */
+.chatContainer .dropdownMenu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 8px;
+    margin-top: 0;
+    transform-origin: bottom left;
+}
+
+.chatContainer .modeDropdownMenu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-bottom: 8px;
+    margin-top: 0;
+    transform-origin: bottom right;
 }
 
 

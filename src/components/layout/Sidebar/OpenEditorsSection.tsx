@@ -8,7 +8,7 @@ import styles from './OpenEditorsSection.module.css';
 
 // Open Editors Section Component
 export const OpenEditorsSection = () => {
-    const { openFiles, activeFile, openFile, closeFile, unsavedChanges } = useProjectStore();
+    const { openFiles, activeFile, openFile, closeFile, unsavedChanges, deletedFiles } = useProjectStore();
     const [isOpen, setIsOpen] = useState(true);
 
     if (openFiles.length === 0) return null;
@@ -32,22 +32,29 @@ export const OpenEditorsSection = () => {
                         const fileName = filePath.split(/[\\/]/).pop() || filePath;
                         const isActive = activeFile === filePath;
                         const hasUnsaved = unsavedChanges[filePath];
+                        const isDeleted = deletedFiles[filePath];
 
                         return (
                             <div
                                 key={filePath}
                                 className={clsx(
                                     styles.openEditorRow,
-                                    isActive && styles.openEditorRowActive
+                                    isActive && styles.openEditorRowActive,
+                                    isDeleted && styles.openEditorRowDeleted
                                 )}
                                 onClick={() => openFile(filePath)}
+                                title={isDeleted ? 'File deleted from disk' : filePath}
                             >
                                 <div className={styles.openEditorIcon}>
                                     {getFileIcon(fileName, filePath)}
                                 </div>
-                                <span className={styles.openEditorName} title={filePath}>
+                                <span className={clsx(
+                                    styles.openEditorName,
+                                    isDeleted && styles.openEditorNameDeleted
+                                )}>
                                     {hasUnsaved && <span className={styles.unsavedDot}>●</span>}
                                     {fileName}
+                                    {isDeleted && <span className={styles.deletedBadge}>D</span>}
                                 </span>
                                 <button
                                     className={styles.closeBtn}

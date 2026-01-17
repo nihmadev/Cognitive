@@ -1,11 +1,141 @@
 import React, { useRef } from 'react';
 import { useProjectStore } from '../../store/projectStore';
-import { useUIStore } from '../../store/uiStore';
 import { X, GitCompare, Settings, User, History } from 'lucide-react';
 import { getFileIcon } from '../../utils/fileIcons';
 import { TabActions } from './TabActions';
+import { useFileGitStatus } from './Sidebar/useFileGitStatus';
 import clsx from 'clsx';
 import styles from './Tabs.module.css';
+
+// Separate component for file tabs to ensure hooks are called consistently
+const FileTab = ({ 
+    path, 
+    isActive, 
+    hasUnsavedChanges, 
+    isDeleted, 
+    onTabClick, 
+    onCloseFile 
+}: {
+    path: string;
+    isActive: boolean;
+    hasUnsavedChanges: boolean;
+    isDeleted: boolean;
+    onTabClick: (path: string) => void;
+    onCloseFile: (path: string) => void;
+}) => {
+    const gitStatus = useFileGitStatus(path);
+    const name = path.split(/[\\/]/).pop() || path;
+    
+    // Debug log
+    if (isDeleted) {
+        console.log('[FileTab] Rendering deleted file:', path, 'isDeleted:', isDeleted);
+    }
+
+    const getGitStatusInfo = () => {
+        if (!gitStatus.status) return null;
+        
+        switch (gitStatus.status) {
+            case 'conflicted':
+                return {
+                    text: 'C',
+                    className: styles.gitConflicted,
+                    title: 'Merge conflict'
+                };
+            case 'deleted':
+                return {
+                    text: 'D',
+                    className: styles.gitDeleted,
+                    title: gitStatus.isStaged ? 'Staged deletion' : 'Deleted'
+                };
+            case 'modified':
+                return {
+                    text: 'M',
+                    className: styles.gitModified,
+                    title: gitStatus.isStaged ? 'Staged changes' : 'Modified'
+                };
+            case 'untracked':
+                return {
+                    text: 'U',
+                    className: styles.gitUntracked,
+                    title: 'Untracked file'
+                };
+            case 'staged':
+                return {
+                    text: 'A',
+                    className: styles.gitStaged,
+                    title: 'Staged new file'
+                };
+            default:
+                return null;
+        }
+    };
+
+    const gitStatusInfo = getGitStatusInfo();
+    
+    // Show "D" badge for deleted files (file system deletion, not git)
+    const showDeletedBadge = isDeleted && !gitStatusInfo;
+
+    return (
+        <div
+            key={path}
+            className={clsx(
+                styles.tab,
+                isActive && styles.tabActive,
+                !isActive && styles.tabInactive,
+                isDeleted && styles.tabDeleted
+            )}
+            onClick={() => onTabClick(path)}
+            title={isDeleted ? 'File deleted from disk' : path}
+        >
+            <div className={styles.tabContent}>
+                <span className={styles.tabIcon}>
+                    {getFileIcon(name, path)}
+                </span>
+                <span className={clsx(styles.tabLabel, isDeleted && styles.tabLabelDeleted, gitStatusInfo && gitStatusInfo.className)}>
+                    {name}
+                </span>
+                {showDeletedBadge && (
+                    <span 
+                        className={clsx(styles.gitStatusText, styles.gitDeleted)}
+                        title="File deleted from disk"
+                    >
+                        D
+                    </span>
+                )}
+                {gitStatusInfo && (
+                    <span 
+                        className={clsx(styles.gitStatusText, gitStatusInfo.className)}
+                        title={gitStatusInfo.title}
+                    >
+                        {gitStatusInfo.text}
+                    </span>
+                )}
+                                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onCloseFile(path);
+                    }}
+                    className={clsx(
+                        styles.closeButton,
+                        isActive && styles.closeButtonActive,
+                        hasUnsavedChanges && styles.closeButtonUnsaved
+                    )}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseUp={(e) => e.stopPropagation()}
+                >
+                    {hasUnsavedChanges ? (
+                        <>
+                            <div className={styles.unsavedDot} />
+                            <X size={14} strokeWidth={2} className={clsx(styles.closeIcon, styles.unsavedCloseIcon)} />
+                        </>
+                    ) : (
+                        <X size={14} strokeWidth={2} className={styles.closeIcon} />
+                    )}
+                </button>
+            </div>
+        </div>
+    );
+};
 
 export const TabBar = () => {
     const { 
@@ -15,17 +145,11 @@ export const TabBar = () => {
         openProfilesTabs, activeProfilesTab, setActiveProfilesTab, closeProfilesTab,
         openTimelineDiffTabs, activeTimelineDiffTab, setActiveTimelineDiffTab, closeTimelineDiffTab
     } = useProjectStore();
-    const { splitView, setSplitViewSecondFile, splitViewSecondFile } = useUIStore();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const handleTabClick = (path: string) => {
-        if (splitView) {
-            // In split view, set the file as the second editor
-            setSplitViewSecondFile(path);
-        } else {
-            // Normal mode, open in main editor
-            openFile(path);
-        }
+        // Normal mode, open in main editor
+        openFile(path);
     };
 
     const handleWheel = (e: React.WheelEvent) => {
@@ -53,55 +177,25 @@ export const TabBar = () => {
             >
                 {/* Regular file tabs */}
                 {openFiles.map((path) => {
-                    const name = path.split(/[\\/]/).pop() || path;
                     const isActive = activeFile === path && !activeDiffTab && !activeSettingsTab;
-                    const isSecondEditor = splitView && splitViewSecondFile === path;
                     const hasUnsavedChanges = unsavedChanges[path];
                     const isDeleted = !!deletedFiles[path];
-
+                    
+                    // Debug log for deleted files
+                    if (isDeleted) {
+                        console.log('[TabBar] Rendering tab for deleted file:', path, 'deletedFiles:', deletedFiles);
+                    }
+                    
                     return (
-                        <div
+                        <FileTab
                             key={path}
-                            className={clsx(
-                                styles.tab,
-                                isActive && styles.tabActive,
-                                !isActive && styles.tabInactive,
-                                isSecondEditor && styles.tabSecondEditor,
-                                isDeleted && styles.tabDeleted
-                            )}
-                            onClick={() => handleTabClick(path)}
-                        >
-                            <div className={styles.tabContent}>
-                                <span className={styles.tabIcon}>
-                                    {getFileIcon(name, path)}
-                                </span>
-                                <span className={clsx(styles.tabLabel, isDeleted && styles.tabLabelDeleted)}>
-                                    {name}
-                                </span>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        closeFile(path);
-                                    }}
-                                    className={clsx(
-                                        styles.closeButton,
-                                        isActive && styles.closeButtonActive,
-                                        hasUnsavedChanges && styles.closeButtonUnsaved
-                                    )}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onMouseUp={(e) => e.stopPropagation()}
-                                >
-                                    {hasUnsavedChanges ? (
-                                        <>
-                                            <div className={styles.unsavedDot} />
-                                            <X size={14} strokeWidth={2} className={clsx(styles.closeIcon, styles.unsavedCloseIcon)} />
-                                        </>
-                                    ) : (
-                                        <X size={14} strokeWidth={2} className={styles.closeIcon} />
-                                    )}
-                                </button>
-                            </div>
-                        </div>
+                            path={path}
+                            isActive={isActive}
+                            hasUnsavedChanges={hasUnsavedChanges}
+                            isDeleted={isDeleted}
+                            onTabClick={handleTabClick}
+                            onCloseFile={closeFile}
+                        />
                     );
                 })}
                 

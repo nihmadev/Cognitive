@@ -7,7 +7,7 @@
   align-items: center;
   padding: 8px 0;
   gap: 4px;
-  height: 100vh;
+  height: 100%;
   flex-shrink: 0;
   transition: background-color 0.2s ease;
 }

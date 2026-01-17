@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { GitCompare, Columns, MoreVertical, Lock } from 'lucide-react';
+import { GitCompare, MoreVertical, Lock } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
-import { useUIStore } from '../../store/uiStore';
 import styles from './TabActions.module.css';
 
 export const TabActions = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { closeAllFiles, closeAllSavedFiles, activeFile, tabsLocked, toggleTabsLock } = useProjectStore();
-    const { toggleSplitView } = useUIStore();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -50,9 +48,6 @@ export const TabActions = () => {
         }
     };
 
-    const handleSplit = () => {
-        toggleSplitView();
-    };
 
     const handleCloseAll = () => {
         closeAllFiles();
@@ -78,14 +73,6 @@ export const TabActions = () => {
                 disabled={!activeFile}
             >
                 <GitCompare size={16} />
-            </button>
-            
-            <button
-                className={styles.actionButton}
-                onClick={handleSplit}
-                title="Split Editor"
-            >
-                <Columns size={16} />
             </button>
             
             <div className={styles.dropdownContainer} ref={dropdownRef}>

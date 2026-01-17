@@ -75,8 +75,8 @@ export const WelcomeScreen = () => {
       <div className={styles.container} ref={containerRef}>
         <div className={styles.content}>
           <div className={styles.brand}>
-            <img src={iconSrc} alt="Colbex" className={styles.logo} draggable={false} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
-            <span className={styles.title}>COLBEX</span>
+            <img src={iconSrc} alt="Cognitive" className={styles.logo} draggable={false} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
+            <span className={styles.title}>COGNITIVE</span>
           </div>
           <div className={styles.options}>
             <button className={styles.option} onClick={handleOpenProject}>

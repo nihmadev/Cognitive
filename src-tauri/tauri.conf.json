@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Colbex IDE",
+  "productName": "Cognitive IDE",
   "version": "0.1.0",
-  "identifier": "com.ide.colbex",
+  "identifier": "com.ide.cognitive",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://127.0.0.1:1420",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Colbex",
+        "title": "Cognitive",
         "decorations": false,
         "resizable": true,
         "fullscreen": false
@@ -32,21 +32,39 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi", "deb", "dmg", "appimage"],
+    "targets": [
+      "nsis",
+      "msi",
+      "deb",
+      "dmg",
+      "appimage"
+    ],
     "icon": [
+      "icons/16x16.png",
+      "icons/32x32.png",
+      "icons/48x48.png",
+      "icons/128x128.png",
+      "icons/256x256.png",
       "icons/512x512.png",
       "icons/icon.png",
       "icons/icon.ico"
     ],
     "windows": {
       "wix": {
-        "language": ["en-US", "ru-RU"]
+        "language": [
+          "en-US",
+          "ru-RU"
+        ]
       }
     },
     "linux": {
       "deb": {
-        "depends": ["libgtk-3-0", "libwebkit2gtk-4.0-37", "libayatana-appindicator3-1"],
-        "desktopTemplate": "colbex.desktop"
+        "depends": [
+          "libgtk-3-0",
+          "libwebkit2gtk-4.0-37",
+          "libayatana-appindicator3-1"
+        ],
+        "desktopTemplate": "cognetive.desktop"
       },
       "appimage": {
         "bundleMediaFramework": false

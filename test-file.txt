@@ -1,2 +1,0 @@
-This is a test file for the file reading feature in the AI chat.
-It contains some sample content to verify that the file reading functionality works correctly.

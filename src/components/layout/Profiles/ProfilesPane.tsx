@@ -5,7 +5,7 @@ import { ProfileList } from './ProfileList';
 import { ProfileDetails } from './ProfileDetails';
 import styles from './styles/base.module.css';
 
-const PROFILES_STORAGE_KEY = 'colbex-profiles';
+const PROFILES_STORAGE_KEY = 'cognitive-profiles';
 
 export const ProfilesPane = () => {
     const { currentWorkspace } = useProjectStore();

@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   background: var(--theme-background);
-  min-height: 100vh;
+
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;

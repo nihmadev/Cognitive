@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Search, RefreshCw } from 'lucide-react';
 import { useSearchStore } from '../../../store/searchStore';
 import { useProjectStore } from '../../../store/projectStore';
+import { getFileIcon } from '../../../utils/fileIcons';
 import styles from './SearchModal.module.css';
 
 interface SearchModalProps {
@@ -13,7 +14,7 @@ interface SearchModalProps {
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { query, setQuery, performSearch, isSearching, results } = useSearchStore();
-  const { currentWorkspace } = useProjectStore();
+  const { currentWorkspace, openFile } = useProjectStore();
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +30,17 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     if (currentWorkspace && query.trim()) {
       performSearch(currentWorkspace);
     }
+  };
+
+  const handleFileOpen = (filePath: string) => {
+    openFile(filePath);
+    onClose(); // Close the modal after opening the file
+  };
+
+  const handleFileOpenAtLine = (filePath: string, line: number) => {
+    openFile(filePath);
+    // TODO: Navigate to specific line - this would need to be implemented in the editor
+    onClose(); // Close the modal after opening the file
   };
 
   if (!isOpen) return null;
@@ -83,10 +95,24 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             <div className={styles.resultsList}>
               {results.map((result, index) => (
                 <div key={index} className={styles.resultItem}>
-                  <div className={styles.resultPath}>{result.file.path}</div>
+                  <div 
+                    className={styles.resultPath} 
+                    style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => handleFileOpen(result.file.path)}
+                    title="Click to open file"
+                  >
+                    {getFileIcon(result.file.name, result.file.path)}
+                    <span style={{ marginLeft: '8px' }}>{result.file.path}</span>
+                  </div>
                   <div className={styles.resultContent}>
                     {result.matches.map((match, matchIndex) => (
-                      <div key={matchIndex} className={styles.matchLine}>
+                      <div 
+                        key={matchIndex} 
+                        className={styles.matchLine}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleFileOpenAtLine(result.file.path, match.line)}
+                        title="Click to open file at this line"
+                      >
                         <span className={styles.lineNumber}>{match.line}:</span>
                         <span className={styles.lineText}>
                           {match.lineText.substring(0, match.charStart)}

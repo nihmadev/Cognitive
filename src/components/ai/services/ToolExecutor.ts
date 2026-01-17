@@ -34,7 +34,7 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
   }
 
   let cleanPath = filePath.trim();
-  
+
   // Check for blocked patterns
   for (const pattern of BLOCKED_PATH_PATTERNS) {
     if (pattern.test(cleanPath)) {
@@ -44,7 +44,7 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
 
   // Normalize the path - remove redundant slashes
   cleanPath = cleanPath.replace(/\/+/g, '/');
-  
+
   // If path starts with / but is not an allowed absolute path, treat as relative
   if (cleanPath.startsWith('/')) {
     const isAllowedAbsolute = ALLOWED_ABSOLUTE_PREFIXES.some(prefix => cleanPath.startsWith(prefix));
@@ -55,14 +55,14 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
 
   // Build full path
   const fullPath = cleanPath.startsWith('/') ? cleanPath : `${workspace}/${cleanPath}`;
-  
+
   // Normalize and verify the path stays within allowed boundaries
   const normalizedPath = normalizePath(fullPath);
-  
+
   // Verify the normalized path is within workspace or allowed directories
   const isWithinWorkspace = normalizedPath.startsWith(workspace);
   const isAllowedAbsolute = ALLOWED_ABSOLUTE_PREFIXES.some(prefix => normalizedPath.startsWith(prefix));
-  
+
   if (!isWithinWorkspace && !isAllowedAbsolute) {
     return { valid: false, path: '', error: 'Access denied: path is outside allowed directories' };
   }
@@ -76,7 +76,7 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
 function normalizePath(path: string): string {
   const parts = path.split('/');
   const normalized: string[] = [];
-  
+
   for (const part of parts) {
     if (part === '' || part === '.') {
       continue;
@@ -87,7 +87,7 @@ function normalizePath(path: string): string {
       normalized.push(part);
     }
   }
-  
+
   return '/' + normalized.join('/');
 }
 
@@ -139,23 +139,24 @@ export class ToolExecutor {
    */
   private createToolHandlers(): Map<string, ToolHandler> {
     const handlers = new Map<string, ToolHandler>();
-    
+
     // Search tools
     handlers.set('grep', (args) => this.grep(args as GrepOptions));
     handlers.set('search', (args) => this.grep(args as GrepOptions));
-    
+    handlers.set('grep_search', (args) => this.grep(args as GrepOptions));
+
     // Find tools
     handlers.set('find', (args) => this.findByName(args as FindOptions));
     handlers.set('find_by_name', (args) => this.findByName(args as FindOptions));
-    
+
     // Directory tools
     handlers.set('list_dir', (args) => this.listDir(args as ListDirOptions));
     handlers.set('ls', (args) => this.listDir(args as ListDirOptions));
-    
+
     // File tools
-    handlers.set('read_file', (args) => this.readFile(args.path));
-    handlers.set('file_info', (args) => this.getFileInfo(args.path));
-    
+    handlers.set('read_file', (args) => this.readFile(args.path || args.file_path || args.FilePath));
+    handlers.set('file_info', (args) => this.getFileInfo(args.path || args.file_path || args.FilePath));
+
     return handlers;
   }
 
@@ -179,16 +180,16 @@ export class ToolExecutor {
   async execute(toolName: string, args: Record<string, any>): Promise<ToolResult> {
     try {
       const handler = this.toolHandlers.get(toolName.toLowerCase());
-      
+
       if (!handler) {
         return { success: false, error: `Unknown tool: ${toolName}` };
       }
-      
+
       return await handler(args);
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : String(error) 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
@@ -196,19 +197,33 @@ export class ToolExecutor {
   /**
    * Powerful grep search with context
    */
+  /**
+   * Powerful grep search with context
+   */
   async grep(options: GrepOptions): Promise<ToolResult> {
+    // Extract values without defaults first to allow checking aliases
     const {
-      query,
-      path = this.workspace,
-      caseSensitive = false,
-      wholeWord = false,
-      regex = false,
-      includePattern = '',
-      excludePattern = '',
-      maxResults = 100
+      query: _query,
+      path: _path,
+      caseSensitive: _caseSensitive,
+      wholeWord: _wholeWord,
+      regex: _regex,
+      includePattern: _includePattern,
+      excludePattern: _excludePattern,
+      maxResults: _maxResults
     } = options;
 
-    if (!query || query.trim() === '') {
+    // Resolve arguments with aliases
+    const query = _query || (options as any).Query || '';
+    const path = _path || (options as any).Path || (options as any).SearchPath || this.workspace;
+    const caseSensitive = _caseSensitive ?? (options as any).CaseSensitive ?? false;
+    const wholeWord = _wholeWord ?? (options as any).WholeWord ?? false;
+    const regex = _regex ?? (options as any).Regex ?? (options as any).FixedStrings === false ?? false;
+    const includePattern = _includePattern || (options as any).Includes || (options as any).include || '';
+    const excludePattern = _excludePattern || (options as any).Excludes || (options as any).exclude || '';
+    const maxResults = _maxResults || (options as any).MaxResults || 100;
+
+    if (!query || typeof query !== 'string' || query.trim() === '') {
       return { success: false, error: 'Query is required' };
     }
 
@@ -217,7 +232,7 @@ export class ToolExecutor {
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
     }
-    
+
     const rootPath = sanitized.path;
 
     const searchOptions: SearchOptions = {
@@ -235,13 +250,13 @@ export class ToolExecutor {
     // Limit results
     let totalMatches = 0;
     const limitedResults: SearchResult[] = [];
-    
+
     for (const result of results) {
       if (totalMatches >= maxResults) break;
-      
+
       const remainingSlots = maxResults - totalMatches;
       const limitedMatches = result.matches.slice(0, remainingSlots);
-      
+
       if (limitedMatches.length > 0) {
         limitedResults.push({
           ...result,
@@ -271,12 +286,18 @@ export class ToolExecutor {
    */
   async findByName(options: FindOptions): Promise<ToolResult> {
     const {
-      pattern,
-      path = this.workspace,
-      type = 'all',
-      maxDepth = 10,
-      maxResults = 50
+      pattern: _pattern,
+      path: _path,
+      type: _type,
+      maxDepth: _maxDepth,
+      maxResults: _maxResults
     } = options;
+
+    const pattern = _pattern || (options as any).Pattern;
+    const path = _path || (options as any).Path || (options as any).SearchDirectory || this.workspace;
+    const type = (_type || (options as any).Type || 'all').toLowerCase();
+    const maxDepth = _maxDepth || (options as any).MaxDepth || 10;
+    const maxResults = _maxResults || (options as any).MaxResults || 50;
 
     if (!pattern || pattern.trim() === '') {
       return { success: false, error: 'Pattern is required' };
@@ -287,30 +308,30 @@ export class ToolExecutor {
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
     }
-    
+
     const rootPath = sanitized.path;
-    
+
     // Get all files
     const allFiles = await tauriApi.getAllFiles(rootPath);
-    
+
     // Convert pattern to regex
     const regexPattern = this.patternToRegex(pattern);
     const regex = new RegExp(regexPattern, 'i');
-    
+
     // Filter files
     const matches: Array<{ name: string; path: string; isDir: boolean; depth: number }> = [];
-    
+
     const processEntry = (entry: any, depth: number) => {
       if (depth > maxDepth || matches.length >= maxResults) return;
-      
+
       const name = entry.name || '';
       const entryPath = entry.path || '';
       const isDir = entry.is_dir || false;
-      
+
       // Check type filter
       if (type === 'file' && isDir) return;
       if (type === 'dir' && !isDir) return;
-      
+
       // Check pattern match
       if (regex.test(name)) {
         matches.push({
@@ -320,7 +341,7 @@ export class ToolExecutor {
           depth
         });
       }
-      
+
       // Process children
       if (entry.children && Array.isArray(entry.children)) {
         for (const child of entry.children) {
@@ -329,7 +350,7 @@ export class ToolExecutor {
         }
       }
     };
-    
+
     for (const entry of allFiles) {
       if (matches.length >= maxResults) break;
       processEntry(entry, 0);
@@ -354,28 +375,30 @@ export class ToolExecutor {
    */
   async listDir(options: ListDirOptions): Promise<ToolResult> {
     const {
-      path,
+      path: _path,
       recursive = false,
       maxDepth = 3,
       showHidden = false
     } = options;
+
+    const path = _path || (options as any).DirectoryPath || (options as any).Path || this.workspace;
 
     // Sanitize and validate path
     const sanitized = sanitizePath(path, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
     }
-    
+
     const fullPath = sanitized.path;
-    
+
     const entries = await tauriApi.readDir(fullPath);
-    
+
     // Filter and process entries
     const processedEntries = this.processDirectoryEntries(
-      entries, 
-      recursive, 
-      maxDepth, 
-      showHidden, 
+      entries,
+      recursive,
+      maxDepth,
+      showHidden,
       0
     );
 
@@ -402,16 +425,16 @@ export class ToolExecutor {
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
     }
-    
+
     const fullPath = sanitized.path;
-    
+
     try {
       const content = await tauriApi.readFile(fullPath);
       const lines = content.split('\n');
-      
+
       // Return the clean relative path for display
       const displayPath = fullPath.replace(this.workspace + '/', '');
-      
+
       return {
         success: true,
         data: {
@@ -439,13 +462,13 @@ export class ToolExecutor {
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
     }
-    
+
     const fullPath = sanitized.path;
-    
+
     try {
       const size = await tauriApi.getFileSize(fullPath);
       const name = filePath.split('/').pop() || filePath;
-      
+
       return {
         success: true,
         data: {
@@ -469,7 +492,7 @@ export class ToolExecutor {
   private formatGrepResults(results: SearchResult[], query?: string, searchPath?: string): string {
     const totalMatches = results.reduce((sum, r) => sum + r.matches.length, 0);
     const displayPath = searchPath ? searchPath.replace(this.workspace, '~') : '~';
-    
+
     if (results.length === 0) {
       return JSON.stringify({
         type: 'search-results',
@@ -507,7 +530,7 @@ export class ToolExecutor {
 
   private formatFindResults(matches: Array<{ name: string; path: string; isDir: boolean }>, pattern?: string, searchPath?: string): string {
     const displayPath = searchPath ? searchPath.replace(this.workspace, '~') : '~';
-    
+
     if (matches.length === 0) {
       return JSON.stringify({
         type: 'find-results',
@@ -539,7 +562,7 @@ export class ToolExecutor {
 
   private formatListDirResults(entries: any[], path: string): string {
     const displayPath = path.replace(this.workspace, '~');
-    
+
     if (entries.length === 0) {
       return JSON.stringify({
         type: 'list-dir-results',
@@ -578,9 +601,9 @@ export class ToolExecutor {
   }
 
   private processDirectoryEntries(
-    entries: any[], 
-    recursive: boolean, 
-    maxDepth: number, 
+    entries: any[],
+    recursive: boolean,
+    maxDepth: number,
     showHidden: boolean,
     currentDepth: number
   ): any[] {
@@ -592,7 +615,7 @@ export class ToolExecutor {
           path: entry.path,
           is_dir: entry.is_dir
         };
-        
+
         if (recursive && entry.is_dir && currentDepth < maxDepth && entry.children) {
           processed.children = this.processDirectoryEntries(
             entry.children,
@@ -602,7 +625,7 @@ export class ToolExecutor {
             currentDepth + 1
           );
         }
-        
+
         return processed;
       })
       .sort((a, b) => {
@@ -635,12 +658,12 @@ export class ToolExecutor {
     const units = ['B', 'KB', 'MB', 'GB'];
     let size = bytes;
     let unitIndex = 0;
-    
+
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024;
       unitIndex++;
     }
-    
+
     return `${size.toFixed(unitIndex > 0 ? 1 : 0)} ${units[unitIndex]}`;
   }
 }

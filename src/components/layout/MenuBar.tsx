@@ -23,7 +23,7 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
     const [palettePosition, setPalettePosition] = useState<{ top: number; left: number } | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
-    const { setWorkspace, openFile, activeFile, navigateHistory, openNewFileModal } = useProjectStore();
+    const { setWorkspace, openFile, activeFile, navigateHistory, openNewFileModal, history, historyIndex } = useProjectStore();
     const { selectAll, save, saveAs } = useEditorStore();
     const autoSaveStore = useAutoSaveStore();
     const window = getCurrentWindow();
@@ -108,9 +108,16 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
         saveAs,
         openNewFileModal,
         autoSaveStore,
+        navigateHistory,
+        history,
+        historyIndex,
     });
 
     const currentFileName = activeFile ? (activeFile.split(/[/\\]/).pop() ?? 'Untitled') : 'Untitled';
+    
+    // Determine if navigation buttons should be disabled
+    const canGoBack = historyIndex > 0;
+    const canGoForward = historyIndex < history.length - 1;
 
     return (
         <>
@@ -126,10 +133,20 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
                 <div className={styles.center} data-tauri-drag-region>
                     <div className={styles.navGroup}>
                         <div className={styles.navButtons}>
-                            <button onClick={() => navigateHistory('back')} className={styles.navBtn}>
+                            <button 
+                                onClick={() => navigateHistory('back')} 
+                                className={`${styles.navBtn} ${!canGoBack ? styles.disabled : ''}`}
+                                disabled={!canGoBack}
+                                title={canGoBack ? "Go Back" : "Cannot go back"}
+                            >
                                 <ArrowLeft size={18} />
                             </button>
-                            <button onClick={() => navigateHistory('forward')} className={styles.navBtn}>
+                            <button 
+                                onClick={() => navigateHistory('forward')} 
+                                className={`${styles.navBtn} ${!canGoForward ? styles.disabled : ''}`}
+                                disabled={!canGoForward}
+                                title={canGoForward ? "Go Forward" : "Cannot go forward"}
+                            >
                                 <ArrowRight size={18} />
                             </button>
                         </div>
@@ -141,7 +158,7 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
                         >
                             <Search size={14} className={styles.searchIcon} />
                             <span className={styles.searchText}>
-                                Colbex - <span className="hidden md:inline">{currentFileName}</span>
+                                Cognitive - <span className="hidden md:inline">{currentFileName}</span>
                             </span>
                         </div>
                     </div>

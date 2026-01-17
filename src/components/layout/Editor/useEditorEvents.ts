@@ -232,6 +232,14 @@ export const useEditorEvents = ({
             if (physicalKey === 's') {
                 e.preventDefault();
                 if (activeFile && unsavedChanges[activeFile]) {
+                    // Check if file is deleted
+                    const { deletedFiles } = useProjectStore.getState();
+                    if (deletedFiles[activeFile]) {
+                        console.warn('[Save] Cannot save deleted file:', activeFile);
+                        // TODO: Show notification to user that file is deleted
+                        return;
+                    }
+                    
                     // Save timeline snapshot with ORIGINAL content before saving
                     if (currentWorkspace) {
                         const relativePath = activeFile.startsWith(currentWorkspace) 
@@ -424,7 +432,7 @@ export const useEditorEvents = ({
                 return {
                     range: new monaco.Range(line, start + 1, line, end + 1),
                     options: {
-                        inlineClassName: 'colbex-search-match',
+                        inlineClassName: 'cognitive-search-match',
                         stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
                     },
                 };

@@ -36,7 +36,7 @@ const MAX_PATH_LENGTH = 500;
 const TOOL_DEFINITIONS: ToolCallPattern[] = [
   {
     name: 'grep',
-    aliases: ['Grep', 'GREP', 'search', 'Search'],
+    aliases: ['Grep', 'GREP', 'search', 'Search', 'grep_search', 'grepSearch'],
     argPatterns: [
       { name: 'query', type: 'string', required: true, maxLength: 1000 },
       { name: 'path', type: 'string', default: '.', maxLength: MAX_PATH_LENGTH },
@@ -121,7 +121,7 @@ export function parseToolCalls(text: string): ParsedToolCall[] {
     const toolName = normalizeToolName(match[1]);
     const argsStr = match[2].trim();
     const args = parseArgs(toolName, argsStr);
-    
+
     if (args) {
       calls.push({
         tool: toolName,
@@ -195,7 +195,7 @@ export function parseToolCalls(text: string): ParsedToolCall[] {
     const toolName = normalizeToolName(match[1]);
     const argsStr = match[2].trim();
     const args = parseSimpleArgs(toolName, argsStr);
-    
+
     if (args) {
       calls.push({
         tool: toolName,
@@ -230,7 +230,7 @@ export function parseToolCalls(text: string): ParsedToolCall[] {
   }
 
   // Remove duplicates based on position
-  return calls.filter((call, index, self) => 
+  return calls.filter((call, index, self) =>
     index === self.findIndex(c => c.startIndex === call.startIndex)
   );
 }
@@ -243,7 +243,7 @@ function safeJsonParse(content: string): any {
   if (content.length > MAX_STRING_LENGTH) {
     return null;
   }
-  
+
   try {
     return JSON.parse(content);
   } catch {
@@ -277,7 +277,24 @@ function validateAndSanitizeArgs(toolName: string, args: Record<string, any>): R
   const sanitized: Record<string, any> = {};
 
   for (const argDef of def.argPatterns) {
+    // Try exact match first
     let value = args[argDef.name];
+
+    // Try case-insensitive match if not found
+    if (value === undefined) {
+      const lowerName = argDef.name.toLowerCase();
+      const key = Object.keys(args).find(k => k.toLowerCase() === lowerName);
+      if (key) {
+        value = args[key];
+      }
+    }
+
+    // Check specific aliases for common tools
+    if (value === undefined) {
+      if (argDef.name === 'path') {
+        value = args['file_path'] || args['filePath'] || args['DirectoryPath'] || args['SearchDirectory'] || args['SearchPath'];
+      }
+    }
 
     // Use default if not provided
     if (value === undefined) {
@@ -295,7 +312,7 @@ function validateAndSanitizeArgs(toolName: string, args: Record<string, any>): R
     if (validated === null && argDef.required) {
       return null; // Invalid required argument
     }
-    
+
     if (validated !== null) {
       sanitized[argDef.name] = validated;
     } else if (argDef.default !== undefined) {
@@ -324,7 +341,7 @@ function validateValue(value: any, argDef: ArgPattern): any {
     case 'number': {
       const num = typeof value === 'number' ? value : parseInt(String(value), 10);
       if (isNaN(num)) return null;
-      
+
       let result = num;
       if (argDef.min !== undefined && result < argDef.min) result = argDef.min;
       if (argDef.max !== undefined && result > argDef.max) result = argDef.max;
@@ -358,13 +375,13 @@ function validateValue(value: any, argDef: ArgPattern): any {
  */
 function normalizeToolName(name: string): string {
   const lowerName = name.toLowerCase();
-  
+
   for (const def of TOOL_DEFINITIONS) {
     if (def.name === lowerName || def.aliases.map(a => a.toLowerCase()).includes(lowerName)) {
       return def.name;
     }
   }
-  
+
   return lowerName;
 }
 
@@ -384,7 +401,7 @@ function parseArgs(toolName: string, argsStr: string): Record<string, any> | nul
   // Try key=value pairs
   const args: Record<string, any> = {};
   const def = TOOL_DEFINITIONS.find(d => d.name === toolName);
-  
+
   if (!def) return null;
 
   // Simple string argument (first required arg)
@@ -399,11 +416,11 @@ function parseArgs(toolName: string, argsStr: string): Record<string, any> | nul
   // Parse key=value or key:value pairs
   const pairRegex = /(\w+)\s*[=:]\s*(?:"([^"]*)"|'([^']*)'|(\S+))/g;
   let pairMatch;
-  
+
   while ((pairMatch = pairRegex.exec(argsStr)) !== null) {
     const key = pairMatch[1];
     const value = pairMatch[2] || pairMatch[3] || pairMatch[4];
-    
+
     const argDef = def.argPatterns.find(p => p.name === key);
     if (argDef) {
       args[key] = convertValue(value, argDef.type);
@@ -431,7 +448,7 @@ function parseSimpleArgs(toolName: string, argsStr: string): Record<string, any>
 
   const args: Record<string, any> = {};
   const parts = argsStr.split(',').map(p => p.trim());
-  
+
   // Map positional arguments to named arguments
   for (let i = 0; i < parts.length && i < def.argPatterns.length; i++) {
     const argDef = def.argPatterns[i];
@@ -482,17 +499,17 @@ export function hasToolCalls(text: string): boolean {
 export function replaceToolCalls(text: string, calls: ParsedToolCall[], results: Map<number, string>): string {
   // Sort by position descending to replace from end
   const sortedCalls = [...calls].sort((a, b) => b.startIndex - a.startIndex);
-  
+
   let result = text;
-  
+
   for (let i = 0; i < sortedCalls.length; i++) {
     const call = sortedCalls[i];
     const callResult = results.get(calls.indexOf(call));
-    
+
     if (callResult !== undefined) {
       result = result.slice(0, call.startIndex) + callResult + result.slice(call.endIndex);
     }
   }
-  
+
   return result;
 }

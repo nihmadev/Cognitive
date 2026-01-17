@@ -159,6 +159,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.resultPath:hover {
+  color: var(--theme-foreground);
 }
 
 .resultContent {
@@ -171,6 +176,12 @@
   display: flex;
   margin: 4px 0;
   line-height: 1.5;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.matchLine:hover {
+  background-color: var(--theme-hover-overlay);
 }
 
 .lineNumber {

@@ -6,7 +6,7 @@ let themesRegistered = false;
 
 // Monaco theme name mapping
 export const getMonacoThemeName = (themeId: ThemeId): string => {
-    return `colbex-${themeId}`;
+    return `cognitive-${themeId}`;
 };
 
 // Convert our theme colors to Monaco theme format

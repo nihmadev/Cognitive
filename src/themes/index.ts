@@ -339,7 +339,7 @@ const monokai: Theme = {
         sidebarBackground: '#1e1f1c',
         activityBarBackground: '#1e1f1c',
         statusBarBackground: '#1e1f1c',
-        tabActiveBackground: '#272822',
+        tabActiveBackground: '#3e3d32',
         tabInactiveBackground: '#1e1f1c',
         inputBackground: '#3e3d32',
         buttonBackground: '#49483e',

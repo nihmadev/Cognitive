@@ -82,6 +82,7 @@
 .tabActive {
   background-color: var(--theme-tab-active-background);
   color: var(--theme-foreground);
+  border-top: 2px solid var(--theme-accent);
 }
 
 /* Second Editor Tab (in split view) */
@@ -105,25 +106,6 @@
 .tabInactive:hover {
   background-color: var(--theme-background-tertiary);
   color: var(--theme-foreground);
-}
-
-/* Tab Separator - vertical line between tabs */
-.tabInactive:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 1px;
-  background-color: var(--theme-border);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.tabInactive:hover::after,
-.tabActive::after,
-.tabActive+.tabInactive::after {
-  display: none;
 }
 
 /* Tab Icon */
@@ -152,6 +134,24 @@
   line-height: 35px;
   font-weight: normal;
   min-width: 0;
+}
+
+/* Tab Pane Indicator */
+.tabPaneIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  font-size: 9px;
+  font-weight: 600;
+  background-color: var(--theme-accent);
+  color: white;
+  border-radius: 3px;
+  margin-left: 4px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 /* Deleted file tab */
@@ -265,4 +265,38 @@
 
 .tabActive .diffLabel {
   color: var(--theme-foreground-muted);
+}
+
+/* Git Status Text - inline text without box border */
+.gitStatusText {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  line-height: 1.2;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Git Status Colors for filename and status text */
+.gitConflicted {
+  color: #f85149 !important;
+}
+
+.gitDeleted {
+  color: #f85149 !important;
+}
+
+.gitModified {
+  color: #e3b341 !important;
+}
+
+.gitUntracked {
+  color: #73c991 !important;
+}
+
+.gitStaged {
+  color: #73c991 !important;
 }

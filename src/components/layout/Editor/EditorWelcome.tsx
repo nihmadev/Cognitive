@@ -12,14 +12,14 @@ export const EditorWelcome = () => {
                 <div className={styles.brand}>
                     <img
                         src={iconSrc}
-                        alt="Colbex"
+                        alt="Cognitive"
                         className={styles.brandIcon}
                         draggable={false}
                         onContextMenu={(e) => e.preventDefault()}
                         onDragStart={(e) => e.preventDefault()}
                     />
                 </div>
-                <h1 className={styles.title}>Welcome to Colbex</h1>
+                <h1 className={styles.title}>Welcome to Cognitive</h1>
 
                 <div className={styles.grid}>
                     <div className={styles.card}>

@@ -73,6 +73,18 @@
   color: var(--theme-foreground);
 }
 
+.dropdownItem.disabled {
+  color: var(--theme-foreground-disabled);
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dropdownItem.disabled:hover {
+  background: transparent;
+  color: var(--theme-foreground-disabled);
+}
+
 .dropdownLabel {
   color: var(--theme-foreground-muted);
   transition: color 150ms ease;

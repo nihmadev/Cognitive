@@ -82,7 +82,7 @@ impl SettingsWatcher {
 
                             // Determine source based on path
                             let source = if event.paths.iter().any(|p| {
-                                p.to_string_lossy().contains(".colbex")
+                                p.to_string_lossy().contains(".cognitive")
                             }) {
                                 "workspace"
                             } else {

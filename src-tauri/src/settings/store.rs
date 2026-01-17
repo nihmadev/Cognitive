@@ -22,7 +22,7 @@ impl SettingsStore {
     pub fn new() -> Self {
         let config_dir = dirs::config_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join("colbex");
+            .join("cognitive");
         
         Self {
             user_settings: RwLock::new(AppSettings::default()),
@@ -98,7 +98,7 @@ impl SettingsStore {
     /// Set workspace path and load workspace settings
     pub fn set_workspace(&self, workspace_path: &str) -> Result<(), String> {
         let workspace_config = PathBuf::from(workspace_path)
-            .join(".colbex")
+            .join(".cognitive")
             .join("settings.json");
 
         *self.workspace_config_path.write().unwrap() = Some(workspace_config.clone());
@@ -134,7 +134,7 @@ impl SettingsStore {
         let settings = settings.as_ref()
             .ok_or("No workspace settings to save")?;
 
-        // Ensure .colbex directory exists
+        // Ensure .cognitive directory exists
         if let Some(parent) = workspace_path.parent() {
             fs::create_dir_all(parent)
                 .map_err(|e| format!("Failed to create workspace config directory: {}", e))?;

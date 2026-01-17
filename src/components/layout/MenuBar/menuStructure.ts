@@ -77,6 +77,9 @@ export const createMenuStructure = ({
     saveAs,
     openNewFileModal,
     autoSaveStore,
+    navigateHistory,
+    history,
+    historyIndex,
 }: {
     setWorkspace: (path: string) => void;
     openFile: (path: string) => void;
@@ -87,6 +90,9 @@ export const createMenuStructure = ({
     saveAs: () => Promise<void>;
     openNewFileModal: () => void;
     autoSaveStore: any;
+    navigateHistory: (direction: 'back' | 'forward') => void;
+    history: string[];
+    historyIndex: number;
 }): MenuCategory[] => [
     {
         label: 'File',
@@ -171,8 +177,18 @@ export const createMenuStructure = ({
     {
         label: 'Go',
         items: [
-            { label: 'Back', shortcut: 'Alt+Left' },
-            { label: 'Forward', shortcut: 'Alt+Right' },
+            { 
+                label: 'Back', 
+                shortcut: 'Alt+Left', 
+                action: () => navigateHistory('back'),
+                disabled: historyIndex <= 0
+            },
+            { 
+                label: 'Forward', 
+                shortcut: 'Alt+Right', 
+                action: () => navigateHistory('forward'),
+                disabled: historyIndex >= history.length - 1
+            },
             { label: 'Go to File...', shortcut: 'Ctrl+P' },
             { label: 'Go to Symbol...', shortcut: 'Ctrl+Shift+O' },
             { label: 'Go to Symbol in File', shortcut: 'Ctrl+T' },

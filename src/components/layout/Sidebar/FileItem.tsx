@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type ReactElement, useRef } from 'react';
+import { useState, useEffect, useCallback, type ReactElement, useRef, memo } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -7,6 +7,8 @@ import { tauriApi } from '../../../lib/tauri-api';
 import { useProjectStore } from '../../../store/projectStore';
 import { useFolderHierarchyDiagnostics } from './useFolderHierarchyDiagnostics';
 import { useFileDiagnosticStatus } from './useFileDiagnosticStatus';
+import { useFileGitStatus } from './useFileGitStatus';
+import { GitStatusIndicator } from './GitStatusIndicator';
 import { NewItemInput } from './NewItemInput';
 import styles from './FileItem.module.css';
 
@@ -24,7 +26,7 @@ interface FileItemProps {
     fileSystemVersion?: number;
 }
 
-export const FileItem = ({ 
+export const FileItem = memo(({ 
     entry, 
     depth = 0, 
     expandedFolders, 
@@ -45,11 +47,15 @@ export const FileItem = ({
     // Получаем статус диагностики для файлов
     const fileDiagnostics = useFileDiagnosticStatus(entry.path, entry.is_dir);
     
+    // Получаем Git статус для файла/папки
+    const gitStatus = useFileGitStatus(entry.path, entry.is_dir);
+    
     // Используем соответствующий статус в зависимости от типа
     const { hasError, hasWarning } = entry.is_dir ? folderDiagnostics : fileDiagnostics;
 
     const [isRenaming, setIsRenaming] = useState(false);
     const [newName, setNewName] = useState(entry.name);
+    const [gitStatusClassName, setGitStatusClassName] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
     
     const isOpen = expandedFolders.has(entry.path);
@@ -59,7 +65,7 @@ export const FileItem = ({
     const insertIndex = creatingNew?.insertIndex;
 
     const loadChildren = useCallback(async () => {
-        if (entry.is_dir && children.length === 0) {
+        if (entry.is_dir && children.length === 0 && isOpen) {
             try {
                 const files = await tauriApi.readDir(entry.path);
                 setChildren(files);
@@ -67,7 +73,7 @@ export const FileItem = ({
                 console.error("Failed to read dir", e);
             }
         }
-    }, [entry.is_dir, entry.path, children.length]);
+    }, [entry.is_dir, entry.path, children.length, isOpen]);
 
     useEffect(() => {
         if (isOpen && entry.is_dir) {
@@ -83,6 +89,7 @@ export const FileItem = ({
         if (entry.is_dir) {
             onToggleExpand?.(entry.path, !isOpen);
         } else {
+            // Normal mode, open in main editor
             openFile(entry.path);
         }
     };
@@ -193,6 +200,7 @@ export const FileItem = ({
                 onClick={handleToggle}
                 data-file-path={entry.path}
                 data-is-dir={entry.is_dir}
+                title={`${entry.path}${gitStatus.status ? ` • ${gitStatus.status === 'modified' ? 'Modified' : gitStatus.status === 'untracked' ? 'Untracked' : gitStatus.status === 'deleted' ? 'Deleted' : gitStatus.status === 'staged' ? 'Staged' : gitStatus.status === 'conflicted' ? 'Conflicted' : ''}` : ''}`}
             >
                 {isActive && <div className={styles.activeIndicator} />}
 
@@ -226,22 +234,34 @@ export const FileItem = ({
                         />
                     </form>
                 ) : (
-                    <span className={clsx(
-                        styles.name,
-                        hasError && styles.nameError,
-                        !hasError && hasWarning && styles.nameWarning
-                    )}>
-                        {entry.name}
-                    </span>
+                    <>
+                        <span className={clsx(
+                            styles.name,
+                            hasError && styles.nameError,
+                            !hasError && hasWarning && styles.nameWarning,
+                            gitStatusClassName
+                        )}>
+                            {entry.name}
+                        </span>
+                        {/* Git Status Indicator */}
+                        <GitStatusIndicator 
+                            status={gitStatus} 
+                            onClassName={setGitStatusClassName}
+                        />
+                    </>
                 )}
             </div>
 
             <AnimatePresence>
                 {isOpen && entry.is_dir && (
                     <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        exit={{ height: 0 }}
+                        transition={{ 
+                            duration: 0.15, 
+                            ease: [0.4, 0.0, 0.2, 1] 
+                        }}
                         className={styles.childrenWrap}
                     >
                         {/* Render children with insert position support */}
@@ -302,4 +322,18 @@ export const FileItem = ({
             </AnimatePresence>
         </div>
     );
-};
+}, (prevProps, nextProps) => {
+    // Custom comparison function for React.memo
+    return (
+        prevProps.entry.path === nextProps.entry.path &&
+        prevProps.entry.name === nextProps.entry.name &&
+        prevProps.entry.is_dir === nextProps.entry.is_dir &&
+        prevProps.depth === nextProps.depth &&
+        prevProps.expandedFolders.has(nextProps.entry.path) === nextProps.expandedFolders.has(nextProps.entry.path) &&
+        prevProps.selectedPath === nextProps.selectedPath &&
+        prevProps.fileSystemVersion === nextProps.fileSystemVersion &&
+        prevProps.creatingNew?.parentPath === nextProps.creatingNew?.parentPath &&
+        prevProps.creatingNew?.type === nextProps.creatingNew?.type &&
+        prevProps.creatingNew?.insertIndex === nextProps.creatingNew?.insertIndex
+    );
+});

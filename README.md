@@ -1,8 +1,8 @@
-# Colbex
+# Cognitive
 
 <div align="center">
 
-<img src="public/icon.ico" alt="Colbex Logo" width="128" height="128">
+<img src="public/icon.ico" alt="Cognitive Logo" width="128" height="128">
 
 **Современный кроссплатформенный редактор кода с интегрированным AI-ассистентом**
 
@@ -19,7 +19,7 @@
 
 ## О проекте
 
-Colbex это полнофункциональная IDE, построенная на базе Tauri 2.0, предоставляющая опыт разработки, сравнимый с VS Code, но с нативной производительностью и встроенной поддержкой множества AI-провайдеров. Проект сочетает мощь Rust-бэкенда с современным React-интерфейсом.
+Cognitive это полнофункциональная IDE, построенная на базе Tauri 2.0, предоставляющая опыт разработки, сравнимый с VS Code, но с нативной производительностью и встроенной поддержкой множества AI-провайдеров. Проект сочетает мощь Rust-бэкенда с современным React-интерфейсом.
 
 ### Ключевые преимущества
 
@@ -76,7 +76,7 @@ Colbex это полнофункциональная IDE, построенная
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Colbex Application                       │
+│                        Cognitive Application                    │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐    │
@@ -116,7 +116,7 @@ Colbex это полнофункциональная IDE, построенная
 ### Структура проекта
 
 ```
-colbex/
+cognitive/
 ├── src/                          # React Frontend
 │   ├── components/
 │   │   ├── ai/                   # AI Assistant модуль
@@ -232,7 +232,7 @@ colbex/
         ┌─────────────────────┼─────────────────────┐
         ▼                     ▼                     ▼
 ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│ OpenAIService │    │AnthropicService│   │ GoogleService │
+│ OpenAIService │    │AnthropicServic   │ GoogleService │
 └───────────────┘    └───────────────┘    └───────────────┘
         │                     │                     │
         ▼                     ▼                     ▼
@@ -277,8 +277,8 @@ colbex/
 
 ```bash
 # Клонирование репозитория
-git clone https://github.com/nihmadev/colbex.git
-cd colbex
+git clone https://github.com/nihmadev/cognitive.git
+cd cognitive
 
 # Установка зависимостей
 bun install
@@ -294,9 +294,9 @@ bun run tauri build
 
 Скачайте последнюю версию для вашей платформы:
 
-- **Windows**: `colbex_x.x.x_x64.msi`
-- **Linux (DEB)**: `colbex_x.x.x_amd64.deb`
-- **Linux (AppImage)**: `colbex_x.x.x_amd64.AppImage`
+- **Windows**: `cognitive_x.x.x_x64.msi`
+- **Linux (DEB)**: `cognitive_x.x.x_amd64.deb`
+- **Linux (AppImage)**: `cognitive_x.x.x_amd64.AppImage`
 
 ---
 
@@ -349,7 +349,7 @@ VITE_PROXY_URL=http://localhost:3001
 
 ## Темы
 
-Colbex поддерживает множество тем оформления:
+Cognitive поддерживает множество тем оформления:
 
 - Dark Modern (по умолчанию)
 - Dracula
@@ -366,7 +366,7 @@ Colbex поддерживает множество тем оформления:
 
 ## Вклад в проект
 
-Мы приветствуем вклад в развитие Colbex! 
+Мы приветствуем вклад в развитие Cognitive! 
 
 1. Fork репозитория
 2. Создайте feature branch (`git checkout -b feature/amazing-feature`)
@@ -400,8 +400,8 @@ Colbex поддерживает множество тем оформления:
 
 <div align="center">
 
-**[Наверх](#colbex)**
+**[Наверх](#cognitive)**
 
-Made with love by the Colbex Team
+Made with love by the Cognitive Team
 
 </div>

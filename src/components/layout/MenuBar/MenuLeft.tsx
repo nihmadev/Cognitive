@@ -17,7 +17,7 @@ export const MenuLeft = ({
     return (
         <div className={styles.root}>
             <div className={styles.brand}>
-                <img src="/icon.ico" alt="Colbex" className={styles.brandIcon} draggable={false} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
+                <img src="/icon.ico" alt="Cognitive" className={styles.brandIcon} draggable={false} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} />
             </div>
             {menuStructure.map((category) => (
                 <div key={category.label} className={clsx(styles.menuItemWrap, "hidden lg:block")}>
@@ -44,10 +44,15 @@ export const MenuLeft = ({
                                 {category.items.map((item, index) => (
                                     <div
                                         key={index}
-                                        className={styles.dropdownItem}
+                                        className={clsx(
+                                            styles.dropdownItem,
+                                            item.disabled && styles.disabled
+                                        )}
                                         onClick={() => {
-                                            item.action?.();
-                                            setActiveMenu(null);
+                                            if (!item.disabled) {
+                                                item.action?.();
+                                                setActiveMenu(null);
+                                            }
                                         }}
                                     >
                                         <span className={styles.dropdownLabel}>{item.label}</span>

@@ -350,7 +350,7 @@ export const tauriApi = {
     npmRunScriptInTerminal: (workspace: string, scriptName: string) => invoke<string>('npm_run_script_in_terminal', { workspace, scriptName }),
     // File watcher commands
     startFileWatcher: (path: string) => invoke<void>('start_file_watcher', { path }),
-    stopFileWatcher: () => invoke<void>('stop_file_watcher'),
+    stopFileWatcher: (path: string) => invoke<void>('stop_file_watcher', { path }),
     addWatchPath: (path: string) => invoke<void>('add_watch_path', { path }),
     // Audio cache commands
     getCachedAudio: (path: string) => invoke<number[] | null>('get_cached_audio', { path }),

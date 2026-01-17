@@ -40,12 +40,6 @@ interface UIState {
     bottomPanelTab: BottomPanelTab;
     setBottomPanelTab: (tab: BottomPanelTab) => void;
     openPorts: () => void;
-    // Split View
-    splitView: boolean;
-    splitViewSecondFile: string | null;
-    toggleSplitView: () => void;
-    setSplitView: (split: boolean) => void;
-    setSplitViewSecondFile: (file: string | null) => void;
     // Zoom
     zoomLevel: number;
     zoomIn: () => void;
@@ -175,14 +169,6 @@ export const useUIStore = create<UIState>()(
             bottomPanelTab: 'ports',
             setBottomPanelTab: (tab) => set({ bottomPanelTab: tab }),
             openPorts: () => set({ showTerminal: true, bottomPanelTab: 'ports' }),
-            // Split View
-            splitView: false,
-            splitViewSecondFile: null,
-            toggleSplitView: () => {
-                set((state) => ({ splitView: !state.splitView }));
-            },
-            setSplitView: (split) => set({ splitView: split }),
-            setSplitViewSecondFile: (file) => set({ splitViewSecondFile: file }),
             // Zoom
             zoomLevel: 1.0,
             zoomIn: () => set((state) => ({ 

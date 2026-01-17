@@ -7,7 +7,6 @@ import { useAutoSaveStore } from '../../../store/autoSaveStore';
 import { tauriApi } from '../../../lib/tauri-api';
 import { configureMonacoTypeScript } from '../../../lib/monaco-config';
 import { registerMonacoThemes, getMonacoThemeName } from '../../../themes/monaco-themes';
-import { ArrowLeftRight } from 'lucide-react';
 import { ImageViewer } from '../ImageViewer';
 import { DiffEditor } from '../Git/DiffEditor';
 import { TimelineDiffEditor } from '../Timeline';
@@ -16,10 +15,10 @@ import { ProfilesPane } from '../Profiles';
 import { EditorWelcome } from './EditorWelcome';
 import { BinaryWarning } from './BinaryWarning';
 import { useEditorEvents } from './useEditorEvents';
-import { SplitEditor } from './SplitEditor';
 import { getFileIcon } from '../../../utils/fileIcons';
 import { AudioViewer } from '../AudioViewer';
 import { VideoViewer } from '../VideoViewer';
+import { BreadcrumbBar } from '../BreadcrumbBar';
 import {
     getEditorOptions,
     getFileExtension,
@@ -53,12 +52,11 @@ export const CodeEditor = () => {
         activeTimelineDiffTab,
         openTimelineDiffTabs,
     } = useProjectStore();
-    
-    // Debug: log on every render (using error to ensure visibility)
-    console.error('=== CodeEditor RENDER ===', { activeSettingsTab, openSettingsTabs, activeFile });
 
-    const { insertMode, theme, fontSettings, availableFonts, splitView, splitViewSecondFile, minimapEnabled, lineNumbersEnabled, tabSize } = useUIStore();
-    const { setSplitViewSecondFile } = useUIStore();
+    // Debug: log on every render (using error to ensure visibility)
+    // console.error('=== CodeEditor RENDER ===', { activeSettingsTab, openSettingsTabs, activeFile });
+
+    const { insertMode, theme, fontSettings, availableFonts, minimapEnabled, lineNumbersEnabled, tabSize } = useUIStore();
     const { setEditorInstance, setMonacoInstance } = useEditorStore();
     const { scheduleAutoSave, isEnabled: autoSaveEnabled } = useAutoSaveStore();
 
@@ -74,22 +72,6 @@ export const CodeEditor = () => {
 
     const getFileName = (path: string) => path.split(/[\\/]/).pop() || path;
 
-    const resolvedSecondFile = splitViewSecondFile && !deletedFiles[splitViewSecondFile]
-        ? splitViewSecondFile
-        : null;
-
-    useEffect(() => {
-        if (!splitView) return;
-        if (!activeFile) return;
-
-        const candidate = resolvedSecondFile;
-        const hasCandidateOpen = candidate ? openFiles.includes(candidate) : false;
-
-        if (candidate && candidate !== activeFile && hasCandidateOpen) return;
-
-        const fallback = openFiles.find((f) => f !== activeFile && !deletedFiles[f]) || null;
-        setSplitViewSecondFile(fallback);
-    }, [splitView, activeFile, openFiles, resolvedSecondFile, deletedFiles, setSplitViewSecondFile]);
 
     const { collectDiagnostics, updateOutlineDebounced } = useEditorEvents({
         activeFile,
@@ -112,7 +94,7 @@ export const CodeEditor = () => {
         if (editorRef.current && availableFonts && availableFonts.length > 0) {
             const font = availableFonts.find((f: { id: string; name: string; stack: string }) => f.id === fontSettings.fontFamily);
             const fontStack = font?.stack || availableFonts[0].stack;
-            
+
             editorRef.current.updateOptions({
                 fontFamily: fontStack,
                 fontSize: fontSettings.fontSize,
@@ -145,7 +127,7 @@ export const CodeEditor = () => {
     const activeTimelineDiff = activeTimelineDiffTab ? openTimelineDiffTabs.find(t => t.id === activeTimelineDiffTab) : null;
 
     // Debug: log settings state
-    console.log('Editor render - activeSettingsTab:', activeSettingsTab, 'openSettingsTabs:', openSettingsTabs, 'activeSettings:', activeSettings);
+    // console.log('Editor render - activeSettingsTab:', activeSettingsTab, 'openSettingsTabs:', openSettingsTabs, 'activeSettings:', activeSettings);
 
     // Load file content
     useEffect(() => {
@@ -174,24 +156,24 @@ export const CodeEditor = () => {
             const isVid = isVideoFile(activeFile);
 
             // Debug all states for mp4 files
-            if (activeFile && activeFile.includes('.mp4')) {
-                console.log('MP4 file debug - isImg:', isImg, 'isAud:', isAud, 'isVid:', isVid);
-            }
+            // if (activeFile && activeFile.includes('.mp4')) {
+            //     console.log('MP4 file debug - isImg:', isImg, 'isAud:', isAud, 'isVid:', isVid);
+            // }
 
             if (isImg) {
-                console.log('Returning early for image file:', activeFile);
+                // console.log('Returning early for image file:', activeFile);
                 setIsBinary(false);
                 return;
             }
 
             if (isVid) {
-                console.log('Returning early for video file:', activeFile);
+                // console.log('Returning early for video file:', activeFile);
                 setIsBinary(false);
                 return;
             }
 
             if (isAud) {
-                console.log('Returning early for audio file:', activeFile);
+                // console.log('Returning early for audio file:', activeFile);
                 setIsBinary(false);
                 return;
             }
@@ -202,7 +184,7 @@ export const CodeEditor = () => {
             }
 
             try {
-                console.log('About to read file as text - this should not happen for media files:', activeFile);
+                // console.log('About to read file as text - this should not happen for media files:', activeFile);
                 // Double-check before reading as text
                 if (isVideoFile(activeFile) || isAudioFile(activeFile) || isImageFile(activeFile)) {
                     console.error('Attempting to read media file as text:', activeFile);
@@ -340,7 +322,7 @@ export const CodeEditor = () => {
                 if (activeFile && value !== undefined) {
                     setCode(value);
                     setFileContent(activeFile, value);
-                    
+
                     // Schedule AutoSave if enabled and there are unsaved changes
                     if (autoSaveEnabled && unsavedChanges[activeFile]) {
                         scheduleAutoSave(activeFile);
@@ -350,7 +332,7 @@ export const CodeEditor = () => {
             onMount={(editor, monaco) => {
                 editorRef.current = editor;
                 monacoRef.current = monaco;
-                
+
                 // Store instances globally for Outline access
                 setEditorInstance(editor);
                 setMonacoInstance(monaco);
@@ -412,86 +394,9 @@ export const CodeEditor = () => {
 
     return (
         <div className={styles.root}>
-            <div className={splitView ? styles.splitContainer : styles.container}>
-                {splitView && activeFile ? (
-                    <>
-                        <div className={styles.splitEditorContainer}>
-                            <div className={styles.splitEditorHeader}>
-                                <div className={styles.splitHeaderLeft} title={activeFile}>
-                                    <span className={styles.splitHeaderBadge}>Left</span>
-                                    <span className={styles.splitHeaderFile}>
-                                        <span>{getFileIcon(getFileName(activeFile), activeFile)}</span>
-                                        <span className={styles.splitHeaderFileName}>{getFileName(activeFile)}</span>
-                                    </span>
-                                </div>
-                                <span className={styles.splitHeaderMeta}>
-                                    {unsavedChanges[activeFile] ? 'Modified' : ''}
-                                </span>
-                            </div>
-                            {editorContent}
-                        </div>
-                        <div className={styles.splitDivider} />
-                        <div className={styles.splitEditorContainer}>
-                            <div className={styles.splitEditorHeader}>
-                                <div className={styles.splitHeaderLeft} title={resolvedSecondFile || ''}>
-                                    <span className={styles.splitHeaderBadge}>Right</span>
-                                    {resolvedSecondFile ? (
-                                        <span className={styles.splitHeaderFile}>
-                                            <span>{getFileIcon(getFileName(resolvedSecondFile), resolvedSecondFile)}</span>
-                                            <span className={styles.splitHeaderFileName}>{getFileName(resolvedSecondFile)}</span>
-                                        </span>
-                                    ) : (
-                                        <span className={styles.splitHeaderFile}>
-                                            <span className={styles.splitHeaderFileName}>No file selected</span>
-                                        </span>
-                                    )}
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span className={styles.splitHeaderMeta}>
-                                        {resolvedSecondFile && unsavedChanges[resolvedSecondFile] ? 'Modified' : ''}
-                                    </span>
-                                    <button
-                                        onClick={() => {
-                                            if (!activeFile) return;
-                                            if (!resolvedSecondFile) return;
-                                            openFile(resolvedSecondFile);
-                                            setSplitViewSecondFile(activeFile);
-                                        }}
-                                        title="Swap left/right"
-                                        disabled={!resolvedSecondFile}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            width: 28,
-                                            height: 28,
-                                            border: '1px solid var(--theme-border)',
-                                            background: 'var(--theme-background-secondary)',
-                                            color: 'var(--theme-foreground)',
-                                            borderRadius: 4,
-                                            cursor: resolvedSecondFile ? 'pointer' : 'not-allowed',
-                                        }}
-                                    >
-                                        <ArrowLeftRight size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                            {resolvedSecondFile ? (
-                                <SplitEditor filePath={resolvedSecondFile} />
-                            ) : (
-                                <div className={styles.splitEmpty}>
-                                    <div className={styles.splitEmptyInner}>
-                                        Select a file for the right editor using the selector above or by clicking a tab.
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <>
-                    {editorContent}
-                    </>
-                )}
+            <div className={styles.container}>
+                <BreadcrumbBar filePath={activeFile} />
+                {editorContent}
             </div>
         </div>
     );

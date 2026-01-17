@@ -71,6 +71,18 @@
   color: var(--theme-foreground);
 }
 
+.navBtn.disabled {
+  color: var(--theme-foreground-disabled);
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.navBtn.disabled:hover {
+  background: transparent;
+  color: var(--theme-foreground-disabled);
+}
+
 .searchBar {
   display: flex;
   align-items: center;

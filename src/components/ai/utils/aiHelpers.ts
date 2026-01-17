@@ -1,6 +1,6 @@
 export const getProjectName = (currentWorkspace: string | null): string => {
-  if (!currentWorkspace) return 'Colbex';
-  const name = currentWorkspace.replace(/[/\\]$/, '').split(/[/\\]/).pop() || 'Colbex';
+  if (!currentWorkspace) return 'Cognitive';
+  const name = currentWorkspace.replace(/[/\\]$/, '').split(/[/\\]/).pop() || 'Cognitive';
 
   return name.split(/[-_]/)
     .map(part => {
@@ -8,7 +8,7 @@ export const getProjectName = (currentWorkspace: string | null): string => {
       if (!clean) return '';
       return clean.charAt(0).toUpperCase() + clean.slice(1);
     })
-    .join('') || 'Colbex';
+    .join('') || 'Cognitive';
 };
 
 export const formatTimeAgo = (timestamp: number): string => {

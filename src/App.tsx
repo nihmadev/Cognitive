@@ -28,12 +28,12 @@ function App() {
   const [isNewFileModalOpen, setIsNewFileModalOpen] = useState(false);
   const { showTerminal, openPorts, setTerminalOpen, showSidebar, zoomLevel, zoomIn, zoomOut, resetZoom, aiPanelWidth, setAIPanelWidth } = useUIStore();
   const uiStore = useUIStore();
-  const { activeFile, closeFile, openSettingsTab, openProfilesTab, setWorkspace, currentWorkspace, openFileDialog, newFile, newTextFile, newFileWithExtension, createCustomFile } = useProjectStore();
+  const { activeFile, closeFile, openSettingsTab, openProfilesTab, setWorkspace, currentWorkspace, openFileDialog, newFile, newTextFile, newFileWithExtension, createCustomFile, navigateHistory } = useProjectStore();
   const { toggleAssistant, isAssistantOpen, initializeAgentRouter, initializeModels, initializeApiKeys } = useAIStore();
   const { selectAll } = useEditorStore();
   const { saveOnFocusLoss, saveAllUnsaved } = useAutoSaveStore();
   const fsRefreshTimerRef = useRef<number | null>(null);
-  
+
   // Initialize resizable panel for AI assistant
   const aiPanel = useResizablePanel({
     defaultWidth: aiPanelWidth,
@@ -42,7 +42,7 @@ function App() {
     direction: 'left',
     onResize: setAIPanelWidth
   });
-  
+
   // Sync store width with hook when it changes
   useEffect(() => {
     if (Math.abs(aiPanel.width - aiPanelWidth) > 1) {
@@ -55,7 +55,42 @@ function App() {
     return document.activeElement?.closest('.monaco-editor') !== null;
   };
   useEffect(() => {
-    document.documentElement.style.fontSize = `${zoomLevel * 100}%`;
+    // Apply zoom to the entire app by scaling the root element
+    // This scales everything including layout, similar to VSCode
+    const root = document.documentElement;
+    root.style.setProperty('--zoom-level', zoomLevel.toString());
+    
+    // Apply zoom using transform on body for proper scaling
+    const app = document.querySelector(`.${styles.app}`) as HTMLElement;
+    if (app) {
+      app.style.transform = `scale(${zoomLevel})`;
+      app.style.transformOrigin = 'top left';
+      // Ensure no gaps by using exact viewport dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      app.style.width = `${viewportWidth / zoomLevel}px`;
+      app.style.height = `${viewportHeight / zoomLevel}px`;
+      app.style.minWidth = `${viewportWidth / zoomLevel}px`;
+      app.style.minHeight = `${viewportHeight / zoomLevel}px`;
+    }
+  }, [zoomLevel]);
+
+  // Handle window resize to update zoom dimensions
+  useEffect(() => {
+    const handleResize = () => {
+      const app = document.querySelector(`.${styles.app}`) as HTMLElement;
+      if (app) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        app.style.width = `${viewportWidth / zoomLevel}px`;
+        app.style.height = `${viewportHeight / zoomLevel}px`;
+        app.style.minWidth = `${viewportWidth / zoomLevel}px`;
+        app.style.minHeight = `${viewportHeight / zoomLevel}px`;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [zoomLevel]);
 
   // Handle initial state from CLI arguments and load last workspace
@@ -68,25 +103,25 @@ function App() {
         console.log('About to call initializeModels...');
         await initializeModels();
         console.log('initializeModels completed');
-        
+
         // Initialize API keys from backend
         console.log('About to call initializeApiKeys...');
         await initializeApiKeys();
         console.log('initializeApiKeys completed');
-        
+
         // Initialize AgentRouter if API key is already set
         initializeAgentRouter();
-        
+
         // First try to get initial state from CLI arguments
         const state = await tauriApi.getInitialState();
         if (state.workspace) {
           await setWorkspace(state.workspace);
           return;
         }
-        
+
         // If no workspace from CLI, try to load last workspace
         const workspaceInitialized = await useProjectStore.getState().initWorkspace();
-        
+
         if (!workspaceInitialized) {
           console.log('No previous workspace found');
         }
@@ -94,7 +129,7 @@ function App() {
         console.error('Failed to initialize app:', err);
       }
     };
-    
+
     initializeApp();
   }, [setWorkspace, initializeAgentRouter, initializeModels, initializeApiKeys]);
 
@@ -110,17 +145,60 @@ function App() {
 
   // Listen for file system events from the watcher
   useEffect(() => {
-    const unlistenFsEvents = listen('file-system-event', (event: any) => {
-      const { kind, path } = event.payload as { kind: string; path: string };
-      console.log(`File system event [${kind}]:`, path);
+    console.log('[FileWatcher] Setting up file-change event listener');
+    
+    // Helper to normalize paths for comparison
+    const normalizePath = (path: string) => {
+      return path.replace(/\\/g, '/').toLowerCase();
+    };
+    
+    const unlistenFsEvents = listen('file-change', (event: any) => {
+      const { kind, paths } = event.payload as { kind: string; paths: string[] };
+      console.log(`[FileWatcher] File system event received [${kind}]:`, paths);
 
-      const { markPathDeleted, markPathRestored } = useProjectStore.getState();
-      if (kind === 'remove') {
-        markPathDeleted(path);
-      } else if (kind === 'create') {
-        markPathRestored(path);
-      }
+      const { markPathDeleted, markPathRestored, markPathsDeletedByPrefix, openFiles } = useProjectStore.getState();
       
+      if (kind.includes('remove') || kind.includes('delete') || kind.includes('Remove')) {
+        console.log('[FileWatcher] Processing delete event for paths:', paths);
+        paths.forEach((eventPath: string) => {
+          const normalizedEventPath = normalizePath(eventPath);
+          
+          // Check if any open file matches this path
+          openFiles.forEach((openFile: string) => {
+            const normalizedOpenFile = normalizePath(openFile);
+            if (normalizedOpenFile === normalizedEventPath) {
+              console.log('[FileWatcher] Marking file as deleted:', openFile);
+              markPathDeleted(openFile);
+            }
+          });
+          
+          // Also mark the exact path
+          markPathDeleted(eventPath);
+          
+          // If it's a directory, mark all files under it as deleted
+          markPathsDeletedByPrefix(eventPath);
+        });
+      } else if (kind.includes('create') || kind.includes('Create')) {
+        console.log('[FileWatcher] Processing create event for paths:', paths);
+        paths.forEach((eventPath: string) => {
+          const normalizedEventPath = normalizePath(eventPath);
+          
+          // Check if any open file matches this path
+          openFiles.forEach((openFile: string) => {
+            const normalizedOpenFile = normalizePath(openFile);
+            if (normalizedOpenFile === normalizedEventPath) {
+              console.log('[FileWatcher] Marking file as restored:', openFile);
+              markPathRestored(openFile);
+            }
+          });
+          
+          markPathRestored(eventPath);
+        });
+      } else if (kind.includes('modify') || kind.includes('write') || kind.includes('Modify')) {
+        // For modified files, just refresh workspace to update any UI state
+        console.log('[FileWatcher] File modified:', paths);
+      }
+
       // For all file system events, trigger a workspace refresh
       // We use a small debounce to prevent too many rapid refreshes
       const { refreshWorkspace } = useProjectStore.getState();
@@ -128,6 +206,7 @@ function App() {
         window.clearTimeout(fsRefreshTimerRef.current);
       }
       fsRefreshTimerRef.current = window.setTimeout(() => {
+        console.log('[FileWatcher] Refreshing workspace after file system event');
         refreshWorkspace().catch(console.error);
       }, 150);
     });
@@ -206,9 +285,9 @@ function App() {
       }
       // Ctrl+= or Ctrl++ - Zoom In (support both code and key for different layouts)
       else if (event.ctrlKey && !event.shiftKey && !event.altKey && (
-        event.code === 'Equal' || 
-        event.code === 'NumpadAdd' || 
-        event.key === '+' || 
+        event.code === 'Equal' ||
+        event.code === 'NumpadAdd' ||
+        event.key === '+' ||
         event.key === '='
       )) {
         event.preventDefault();
@@ -217,8 +296,8 @@ function App() {
       }
       // Ctrl+- - Zoom Out (support both code and key for different layouts)
       else if (event.ctrlKey && !event.shiftKey && !event.altKey && (
-        event.code === 'Minus' || 
-        event.code === 'NumpadSubtract' || 
+        event.code === 'Minus' ||
+        event.code === 'NumpadSubtract' ||
         event.key === '-'
       )) {
         event.preventDefault();
@@ -227,8 +306,8 @@ function App() {
       }
       // Ctrl+0 - Reset Zoom
       else if (event.ctrlKey && !event.shiftKey && !event.altKey && (
-        event.code === 'Digit0' || 
-        event.code === 'Numpad0' || 
+        event.code === 'Digit0' ||
+        event.code === 'Numpad0' ||
         event.key === '0'
       )) {
         event.preventDefault();
@@ -287,6 +366,18 @@ function App() {
         event.preventDefault();
         tauriApi.openNewWindow('', 'default').catch(console.error);
       }
+      // Alt+Left - Navigate Back
+      else if (event.altKey && (event.code === 'ArrowLeft' || event.key === 'ArrowLeft')) {
+        event.preventDefault();
+        event.stopPropagation();
+        navigateHistory('back');
+      }
+      // Alt+Right - Navigate Forward  
+      else if (event.altKey && (event.code === 'ArrowRight' || event.key === 'ArrowRight')) {
+        event.preventDefault();
+        event.stopPropagation();
+        navigateHistory('forward');
+      }
     };
 
     // Handle window focus loss for AutoSave
@@ -299,12 +390,12 @@ function App() {
     // Use capture phase to ensure it runs before other handlers
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('blur', handleWindowBlur);
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('blur', handleWindowBlur);
     };
-  }, [activeFile, closeFile, zoomIn, zoomOut, resetZoom, showTerminal, setTerminalOpen, openPorts, openSettingsTab, toggleAssistant, selectAll, openFileDialog, newFile, handleNewFileModalOpen, setActiveActivity, uiStore, saveOnFocusLoss, saveAllUnsaved]);
+  }, [activeFile, closeFile, zoomIn, zoomOut, resetZoom, showTerminal, setTerminalOpen, openPorts, openSettingsTab, toggleAssistant, selectAll, openFileDialog, newFile, handleNewFileModalOpen, setActiveActivity, uiStore, saveOnFocusLoss, saveAllUnsaved, navigateHistory]);
 
   const handleOpenKeyboardShortcuts = () => {
     openSettingsTab('keybindings');
@@ -330,9 +421,9 @@ function App() {
         <WelcomeScreen />
         <StatusBar />
         {/* New File Modal */}
-        <NewFileModal 
-          isOpen={isNewFileModalOpen} 
-          onClose={() => setIsNewFileModalOpen(false)} 
+        <NewFileModal
+          isOpen={isNewFileModalOpen}
+          onClose={() => setIsNewFileModalOpen(false)}
           onSelectFileType={handleFileTypeSelect}
         />
       </div>
@@ -341,63 +432,63 @@ function App() {
 
   return (
     <div className={styles.app}>
-          {/* Menu Bar */}
-          <MenuBar
-            onOpenSettings={handleOpenSettings}
-            onOpenKeyboardShortcuts={handleOpenKeyboardShortcuts}
-            onOpenProfiles={handleOpenProfiles}
-          />
+      {/* Menu Bar */}
+      <MenuBar
+        onOpenSettings={handleOpenSettings}
+        onOpenKeyboardShortcuts={handleOpenKeyboardShortcuts}
+        onOpenProfiles={handleOpenProfiles}
+      />
 
-        {/* Main Workspace Area */}
-        <div className={styles.main}>
-          {/* Activity Bar (Leftmost narrow strip) */}
-          <ActivityBar
-            activeItem={activeActivity}
-            onActivityChange={handleActivityChange}
-          />
+      {/* Main Workspace Area */}
+      <div className={styles.main}>
+        {/* Activity Bar (Leftmost narrow strip) */}
+        <ActivityBar
+          activeItem={activeActivity}
+          onActivityChange={handleActivityChange}
+        />
 
-          {/* Sidebar - logic to show/hide based on activity could go here */}
-          {showSidebar && activeActivity === 'files' && <Sidebar />}
-          {showSidebar && activeActivity === 'search' && <SearchPane />}
-          {showSidebar && activeActivity === 'git' && <GitPane />}
+        {/* Sidebar - logic to show/hide based on activity could go here */}
+        {showSidebar && activeActivity === 'files' && <Sidebar />}
+        {showSidebar && activeActivity === 'search' && <SearchPane />}
+        {showSidebar && activeActivity === 'git' && <GitPane />}
 
-          {/* Main Content Area */}
-          <div className={styles.content}>
-            <TabBar />
-            <BreadcrumbBar />
-            <CodeEditor />
-            {showTerminal && <TerminalPanel />}
-          </div>
-
-          {/* Debug logging for assistant state */}
-          {(() => { console.log('App render - isAssistantOpen:', isAssistantOpen, 'currentWorkspace:', !!currentWorkspace); return null; })()}
-          
-          {isAssistantOpen && (
-            <div 
-              ref={aiPanel.panelRef}
-              className={styles.aiPanelWrapper}
-              style={{ width: aiPanel.width }}
-            >
-              <div 
-                className={clsx(styles.aiResizeHandle, aiPanel.isResizing && styles.isResizing)}
-                onMouseDown={aiPanel.handleMouseDown}
-              />
-              <div className={styles.aiPanel}>
-                <AIAssistant />
-              </div>
-            </div>
-          )}
+        {/* Main Content Area */}
+        <div className={styles.content}>
+          <TabBar />
+          {/* BreadcrumbBar moved inside CodeEditor */}
+          <CodeEditor />
+          {showTerminal && <TerminalPanel />}
         </div>
 
-        {/* Status Bar */}
-        <StatusBar />
-        
-        {/* New File Modal */}
-        <NewFileModal 
-          isOpen={isNewFileModalOpen} 
-          onClose={() => setIsNewFileModalOpen(false)} 
-          onSelectFileType={handleFileTypeSelect}
-        />
+        {/* Debug logging for assistant state */}
+        {(() => { console.log('App render - isAssistantOpen:', isAssistantOpen, 'currentWorkspace:', !!currentWorkspace); return null; })()}
+
+        {isAssistantOpen && (
+          <div
+            ref={aiPanel.panelRef}
+            className={styles.aiPanelWrapper}
+            style={{ width: aiPanel.width }}
+          >
+            <div
+              className={clsx(styles.aiResizeHandle, aiPanel.isResizing && styles.isResizing)}
+              onMouseDown={aiPanel.handleMouseDown}
+            />
+            <div className={styles.aiPanel}>
+              <AIAssistant />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Status Bar */}
+      <StatusBar />
+
+      {/* New File Modal */}
+      <NewFileModal
+        isOpen={isNewFileModalOpen}
+        onClose={() => setIsNewFileModalOpen(false)}
+        onSelectFileType={handleFileTypeSelect}
+      />
     </div>
   );
 }

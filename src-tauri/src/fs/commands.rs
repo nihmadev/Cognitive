@@ -560,7 +560,7 @@ pub fn start_file_watcher(
     path: String,
     state: tauri::State<'_, FileWatcherState>,
 ) -> Result<(), String> {
-    use notify::{Watcher, RecursiveMode};
+    use notify::{Watcher, RecursiveMode, EventKind};
 use tauri::Emitter;
 use serde::Serialize;
 
@@ -570,21 +570,52 @@ struct FileChangeEvent {
     paths: Vec<String>,
 }
     
+    println!("[FileWatcher] Starting file watcher for path: {}", path);
+    
+    // Check if watcher already exists for this path
+    {
+        let watchers = state.watchers.lock().unwrap();
+        if watchers.contains_key(&path) {
+            println!("[FileWatcher] Watcher already exists for path: {}", path);
+            return Ok(());
+        }
+    }
+    
     let window_clone = window.clone();
     let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-        if let Ok(event) = res {
-            let file_event = FileChangeEvent {
-                kind: format!("{:?}", event.kind),
-                paths: event.paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
-            };
-            let _ = window_clone.emit("file-change", &file_event);
+        match res {
+            Ok(event) => {
+                // Filter out noise events
+                let should_emit = match &event.kind {
+                    EventKind::Create(_) | EventKind::Remove(_) | EventKind::Modify(_) => true,
+                    _ => false,
+                };
+                
+                if should_emit && !event.paths.is_empty() {
+                    println!("[FileWatcher] Event detected: {:?} for paths: {:?}", event.kind, event.paths);
+                    let file_event = FileChangeEvent {
+                        kind: format!("{:?}", event.kind),
+                        paths: event.paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
+                    };
+                    if let Err(e) = window_clone.emit("file-change", &file_event) {
+                        eprintln!("[FileWatcher] Failed to emit file-change event: {}", e);
+                    } else {
+                        println!("[FileWatcher] Emitted file-change event successfully");
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("[FileWatcher] Watcher error: {}", e);
+            }
         }
     }).map_err(|e| e.to_string())?;
     
     watcher.watch(std::path::Path::new(&path), RecursiveMode::Recursive)
         .map_err(|e| e.to_string())?;
     
+    println!("[FileWatcher] Watcher created and watching path: {}", path);
     state.watchers.lock().unwrap().insert(path, watcher);
+    println!("[FileWatcher] Watcher stored in state");
     Ok(())
 }
 

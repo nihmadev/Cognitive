@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, useCallback, type ReactElement } from 'react';
+import { useState, useRef, useEffect, useCallback, type ReactElement, useMemo } from 'react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUIStore } from '../../store/uiStore';
+import { useGitStore } from '../../store/gitStore';
 import { ChevronRight, ChevronDown, FilePlus2, FolderPlus, RotateCw, ChevronsDownUp, MoreHorizontal } from 'lucide-react';
 import clsx from 'clsx';
 import { OutlineSection } from './Outline';
@@ -17,6 +18,7 @@ import styles from './Sidebar/SidebarLayout.module.css';
 export const Sidebar = () => {
     const { fileStructure, currentWorkspace, setWorkspace, refreshWorkspace, closeFile, fileSystemVersion } = useProjectStore();
     const { sidebarWidth, setSidebarWidth } = useUIStore();
+    const { refresh: refreshGitStatus } = useGitStore();
     
     // Initialize resizable panel for sidebar
     const resizablePanel = useResizablePanel({
@@ -78,8 +80,12 @@ export const Sidebar = () => {
 
     const handleRefresh = useCallback(async () => {
         await refreshWorkspace();
+        // Обновляем Git статусы
+        if (currentWorkspace) {
+            await refreshGitStatus(currentWorkspace);
+        }
         // Keep expanded folders but they will reload their children
-    }, [refreshWorkspace]);
+    }, [refreshWorkspace, refreshGitStatus, currentWorkspace]);
 
     const handleNewFile = useCallback(() => {
         if (currentWorkspace) {
@@ -130,6 +136,13 @@ export const Sidebar = () => {
             setSidebarWidth(resizablePanel.width);
         }
     }, [resizablePanel.width, sidebarWidth, setSidebarWidth]);
+
+    // Initialize Git status when workspace changes
+    useEffect(() => {
+        if (currentWorkspace) {
+            refreshGitStatus(currentWorkspace);
+        }
+    }, [currentWorkspace, refreshGitStatus]);
 
     // Handle Delete key
     useEffect(() => {
@@ -264,6 +277,70 @@ export const Sidebar = () => {
 
     const projectName = currentWorkspace ? currentWorkspace.split(/[\\/]/).pop() : 'No Folder';
 
+    // Memoize the file tree elements to avoid unnecessary re-renders
+    const fileTreeElements = useMemo(() => {
+        const elements: ReactElement[] = [];
+        
+        fileStructure.forEach((entry: any, index: number) => {
+            // Insert NewItemInput at the correct position if creating at root level
+            if (creatingNew?.parentPath === currentWorkspace && creatingNew.insertIndex === index) {
+                elements.push(
+                    <NewItemInput
+                        key="new-item-input"
+                        parentPath={currentWorkspace!}
+                        type={creatingNew.type}
+                        depth={0}
+                        insertIndex={creatingNew.insertIndex}
+                        onComplete={async (name) => {
+                            handleCreationComplete();
+                            if (name) {
+                                await refreshWorkspace();
+                            }
+                        }}
+                    />
+                );
+            }
+            
+            // Add the regular file item
+            elements.push(
+                <FileItem 
+                    key={`${entry.path}-${fileSystemVersion}`} 
+                    entry={entry}
+                    expandedFolders={expandedFolders}
+                    onToggleExpand={handleToggleExpand}
+                    onCreateNew={(parentPath, type, insertIndex) => setCreatingNew({ parentPath, type, insertIndex })}
+                    creatingNew={creatingNew}
+                    onCreationComplete={handleCreationComplete}
+                    selectedPath={selectedPath}
+                    onSelect={handleSelect}
+                    fileSystemVersion={fileSystemVersion}
+                />
+            );
+        });
+        
+        // If insert index is at the end or no insert index specified for root level
+        if (creatingNew?.parentPath === currentWorkspace && 
+            (creatingNew.insertIndex === undefined || creatingNew.insertIndex >= fileStructure.length)) {
+            elements.push(
+                <NewItemInput
+                    key="new-item-input"
+                    parentPath={currentWorkspace!}
+                    type={creatingNew.type}
+                    depth={0}
+                    insertIndex={creatingNew.insertIndex}
+                    onComplete={async (name) => {
+                        handleCreationComplete();
+                        if (name) {
+                            await refreshWorkspace();
+                        }
+                    }}
+                />
+            );
+        }
+        
+        return elements;
+    }, [fileStructure, fileSystemVersion, creatingNew, currentWorkspace, expandedFolders, handleToggleExpand, handleCreationComplete, selectedPath, handleSelect, refreshWorkspace]);
+
     return (
         <div 
             ref={resizablePanel.panelRef}
@@ -349,69 +426,7 @@ export const Sidebar = () => {
                                 onDoubleClick={handleTreeDoubleClick}
                                 tabIndex={0}
                             >
-                                {/* Render root level with insert position support */}
-                                {(() => {
-                                    const elements: ReactElement[] = [];
-                                    
-                                    fileStructure.forEach((entry: any, index: number) => {
-                                        // Insert NewItemInput at the correct position if creating at root level
-                                        if (creatingNew?.parentPath === currentWorkspace && creatingNew.insertIndex === index) {
-                                            elements.push(
-                                                <NewItemInput
-                                                    key="new-item-input"
-                                                    parentPath={currentWorkspace!}
-                                                    type={creatingNew.type}
-                                                    depth={0}
-                                                    insertIndex={creatingNew.insertIndex}
-                                                    onComplete={async (name) => {
-                                                        handleCreationComplete();
-                                                        if (name) {
-                                                            await refreshWorkspace();
-                                                        }
-                                                    }}
-                                                />
-                                            );
-                                        }
-                                        
-                                        // Add the regular file item
-                                        elements.push(
-                                            <FileItem 
-                                                key={`${entry.path}-${fileSystemVersion}`} 
-                                                entry={entry}
-                                                expandedFolders={expandedFolders}
-                                                onToggleExpand={handleToggleExpand}
-                                                onCreateNew={(parentPath, type, insertIndex) => setCreatingNew({ parentPath, type, insertIndex })}
-                                                creatingNew={creatingNew}
-                                                onCreationComplete={handleCreationComplete}
-                                                selectedPath={selectedPath}
-                                                onSelect={handleSelect}
-                                                fileSystemVersion={fileSystemVersion}
-                                            />
-                                        );
-                                    });
-                                    
-                                    // If insert index is at the end or no insert index specified for root level
-                                    if (creatingNew?.parentPath === currentWorkspace && 
-                                        (creatingNew.insertIndex === undefined || creatingNew.insertIndex >= fileStructure.length)) {
-                                        elements.push(
-                                            <NewItemInput
-                                                key="new-item-input"
-                                                parentPath={currentWorkspace!}
-                                                type={creatingNew.type}
-                                                depth={0}
-                                                insertIndex={creatingNew.insertIndex}
-                                                onComplete={async (name) => {
-                                                    handleCreationComplete();
-                                                    if (name) {
-                                                        await refreshWorkspace();
-                                                    }
-                                                }}
-                                            />
-                                        );
-                                    }
-                                    
-                                    return elements;
-                                })()}
+                                {fileTreeElements}
                                 {fileStructure.length === 0 && !creatingNew && (
                                     <div className={styles.treeEmpty}>
                                         Double-click to create a file

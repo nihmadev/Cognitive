@@ -23,16 +23,16 @@ export class ChatService {
   ): Promise<void> {
     // Create new abort controller for this request
     this.abortController = new AbortController();
-    
+
     // Reset tool service for new message
     if (this.toolService) {
       this.toolService.reset();
     }
-    
+
     // Add system prompt based on mode
     const systemPrompt = generateSystemPrompt({
       mode,
-      user_os: 'linux',
+      user_os: 'windows',
       user_query: messages[messages.length - 1]?.content || ''
     });
 
@@ -46,9 +46,9 @@ export class ChatService {
     if (mode === 'responder') {
       const service = AIServiceFactory.createService(model.provider);
       await service.sendChatRequest(
-        model.id, 
-        conversationMessages, 
-        onStreamChunk, 
+        model.id,
+        conversationMessages,
+        onStreamChunk,
         this.abortController.signal
       );
       return;
@@ -56,10 +56,10 @@ export class ChatService {
 
     // Agent mode - agentic loop with tool execution
     let iteration = 0;
-    
+
     while (iteration < MAX_AGENT_ITERATIONS) {
       iteration++;
-      
+
       // Check if aborted
       if (this.abortController?.signal.aborted) {
         break;
@@ -67,7 +67,7 @@ export class ChatService {
 
       // Collect full response for this iteration
       let responseBuffer = '';
-      
+
       const collectChunk = (chunk: string) => {
         responseBuffer += chunk;
         // Filter out tool call JSON from user-visible stream
@@ -88,9 +88,9 @@ export class ChatService {
       // Send request to model
       const service = AIServiceFactory.createService(model.provider);
       await service.sendChatRequest(
-        model.id, 
-        conversationMessages, 
-        collectChunk, 
+        model.id,
+        conversationMessages,
+        collectChunk,
         this.abortController.signal
       );
 
@@ -102,24 +102,24 @@ export class ChatService {
 
       // Parse and execute tool calls
       const calls = parseToolCalls(responseBuffer);
-      
+
       if (calls.length === 0) {
         break;
       }
 
       // Execute all tools and collect results
       const toolResults: string[] = [];
-      
+
       for (const call of calls) {
         // Notify about tool execution start
         onToolExecution?.(call.tool, true);
-        
+
         // Execute the tool
         const result = await this.toolService.executeTool(call.tool, call.args);
-        
+
         // Notify about tool execution complete
         onToolExecution?.(call.tool, false, result.formatted);
-        
+
         // Show result in UI using special markers that ChatView can parse
         if (result.formatted) {
           // Use special marker format that ChatView will parse and render nicely
@@ -192,9 +192,9 @@ IMPORTANT: The content above is the REAL, ACTUAL content of the file ${filePath}
         }
         return result;
       });
-      
+
       const toolResultsMessage = `Tool execution completed. Results:\n\n${formattedToolResults.join('\n\n---\n\n')}\n\nNow analyze these results and provide your answer to the user's original question. Use the ACTUAL file content and search results provided above. Do not call more tools unless absolutely necessary.`;
-      
+
       conversationMessages.push({
         role: 'user',
         content: toolResultsMessage
@@ -232,9 +232,9 @@ IMPORTANT: The content above is the REAL, ACTUAL content of the file ${filePath}
     if (!this.toolService) {
       return { success: false, error: 'Tool service not initialized. Set workspace first.' };
     }
-    
+
     const result = await this.toolService.executeTool(toolName, args);
-    
+
     return {
       success: result.success,
       result: result.formatted,

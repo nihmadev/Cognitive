@@ -1,6 +1,7 @@
 .fileItemWrap {
   user-select: none;
   position: relative;
+  contain: layout style paint;
 }
 
 .fileRow {
@@ -12,7 +13,7 @@
   padding-left: calc(var(--depth) * 8px + 4px);
   padding-right: 4px;
   cursor: pointer;
-  transition: background-color 0.05s ease, color 0.05s ease;
+  transition: background-color 0.1s ease, color 0.1s ease;
   font-size: 13px;
   position: relative;
   color: var(--theme-foreground-muted);
@@ -65,7 +66,7 @@
   margin-right: 2px;
   opacity: 0.7;
   flex-shrink: 0;
-  transition: opacity 0.05s ease;
+  transition: opacity 0.1s ease;
   min-width: 16px;
 }
 
@@ -131,6 +132,7 @@
 .childrenWrap {
   overflow: hidden;
   position: relative;
+  will-change: height;
 }
 
 .renameForm {
