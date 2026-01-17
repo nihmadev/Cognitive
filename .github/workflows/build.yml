@@ -17,11 +17,13 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         
-      - name: Cache Rust
+      - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
           cache-all-crates: true
+          shared-key: windows-release
+          save-if: ${{ github.ref == 'refs/heads/main' }}
           
       - name: Install dependencies
         run: npm ci
@@ -51,16 +53,18 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         
-      - name: Cache Rust
+      - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
           cache-all-crates: true
+          shared-key: linux-release
+          save-if: ${{ github.ref == 'refs/heads/main' }}
         
       - name: Cache apt packages
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          packages: libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libfuse2
           version: 1.0
         
       - name: Install Linux dependencies
@@ -70,13 +74,18 @@ jobs:
             libwebkit2gtk-4.1-dev \
             libappindicator3-dev \
             librsvg2-dev \
-            patchelf
+            patchelf \
+            libfuse2 \
+            file
           
       - name: Install dependencies
         run: npm ci
         
-      - name: Build Tauri
-        run: npm run tauri build
+      - name: Build Tauri (DEB and RPM only)
+        env:
+          TAURI_BUNDLER_TOOLS_LINUXDEPLOY: "skip"
+        run: |
+          npm run tauri build -- --bundles deb,rpm
         
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -84,7 +93,6 @@ jobs:
           name: linux-builds
           path: |
             src-tauri/target/release/bundle/deb/*.deb
-            src-tauri/target/release/bundle/appimage/*.AppImage
             src-tauri/target/release/bundle/rpm/*.rpm
 
   build-macos:
@@ -103,11 +111,13 @@ jobs:
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
         
-      - name: Cache Rust
+      - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
           cache-all-crates: true
+          shared-key: macos-release
+          save-if: ${{ github.ref == 'refs/heads/main' }}
           
       - name: Install dependencies
         run: npm ci
