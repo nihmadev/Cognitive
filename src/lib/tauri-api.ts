@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 
 export type SearchOptions = {
@@ -275,7 +275,7 @@ export const tauriApi = {
     readDir: (path: string) => invoke<any[]>('read_dir', { path }),
     readFile: (path: string) => invoke<string>('read_file', { path }),
     readFileBinary: (path: string) => invoke<number[]>('read_file_binary', { path }),
-    readFileBinaryChunked: (path: string, offset?: number, size?: number) => 
+    readFileBinaryChunked: (path: string, offset?: number, size?: number) =>
         invoke<number[]>('read_file_binary_chunked', { path, offset, size }),
     getFileSize: (path: string) => invoke<number>('get_file_size', { path }),
     writeFile: (path: string, content: string) => invoke<void>('write_file', { path, content }),
@@ -284,7 +284,7 @@ export const tauriApi = {
     renamePath: (oldPath: string, newPath: string) => invoke<void>('rename_path', { oldPath, newPath }),
     renameFileWithResult: (oldPath: string, newPath: string) => invoke<RenameResult>('rename_file_with_result', { oldPath, newPath }),
     deletePath: (path: string) => invoke<void>('delete_path', { path }),
-    getAssetUrl: (path: string) => invoke<string>('get_asset_url', { path }),
+    getAssetUrl: (path: string) => convertFileSrc(path),
     openFileDialog: () => invoke<string | null>('open_file_dialog'),
     openFolderDialog: () => invoke<string | null>('open_folder_dialog'),
     saveFileDialog: () => invoke<string | null>('save_file_dialog'),
@@ -325,7 +325,7 @@ export const tauriApi = {
     // Shell commands
     openUrl: (url: string) => openUrl(url),
     // Window commands
-    openNewWindow: (folderPath: string, profileName: string) => 
+    openNewWindow: (folderPath: string, profileName: string) =>
         invoke<void>('open_new_window', { folderPath, profileName }),
     // Timeline commands
     timelineSaveSnapshot: (workspace: string, filePath: string, content: string) =>
@@ -366,61 +366,61 @@ export const tauriApi = {
     audioSeek: (position: number) => invoke<void>('audio_seek', { position }),
     audioSetVolume: (volume: number) => invoke<void>('audio_set_volume', { volume }),
     // Ollama commands
-    ollamaChat: (model: string, messages: any[], options?: any) => 
+    ollamaChat: (model: string, messages: any[], options?: any) =>
         invoke<any>('ollama_chat', { model, messages, options }),
-    ollamaChatStream: (model: string, messages: any[], options?: any) => 
+    ollamaChatStream: (model: string, messages: any[], options?: any) =>
         invoke<string>('ollama_chat_stream', { model, messages, options }),
-    ollamaChatComplete: (model: string, messages: any[], options?: any) => 
+    ollamaChatComplete: (model: string, messages: any[], options?: any) =>
         invoke<string>('ollama_chat_complete', { model, messages, options }),
     ollamaListModels: () => invoke<any[]>('ollama_list_models'),
     ollamaPullModel: (model: string) => invoke<void>('ollama_pull_model', { model }),
-    ollamaGenerate: (prompt: string, model: string) => 
+    ollamaGenerate: (prompt: string, model: string) =>
         invoke<string>('ollama_generate', { prompt, model }),
     ollamaListLocalModels: () => invoke<any[]>('ollama_list_local_models'),
     // AgentRouter commands
-    agentrouterConfigure: (apiKey: string, baseUrl?: string) => 
+    agentrouterConfigure: (apiKey: string, baseUrl?: string) =>
         invoke<void>('agentrouter_configure', { apiKey, baseUrl }),
-    agentrouterChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number, topP?: number) => 
+    agentrouterChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number, topP?: number) =>
         invoke<AgentRouterChatResponse>('agentrouter_chat', { model, messages, maxTokens, temperature, topP }),
-    agentrouterChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number, topP?: number, tools?: AgentRouterTool[], toolChoice?: AgentRouterToolChoice) => 
+    agentrouterChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number, topP?: number, tools?: AgentRouterTool[], toolChoice?: AgentRouterToolChoice) =>
         invoke<string>('agentrouter_chat_stream', { model, messages, maxTokens, temperature, topP, tools, toolChoice }),
-    agentrouterChatComplete: (model: string, messages: any[], maxTokens?: number) => 
+    agentrouterChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('agentrouter_chat_complete', { model, messages, maxTokens }),
-    agentrouterCreateFile: (filePath: string, content?: string) => 
+    agentrouterCreateFile: (filePath: string, content?: string) =>
         invoke<string>('agentrouter_create_file', { filePath, content }),
     agentrouterListModels: () => invoke<AgentRouterModelsResponse>('agentrouter_list_models'),
     // OpenAI commands
-    openaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    openaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('openai_chat', { model, messages, maxTokens, temperature }),
-    openaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    openaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('openai_chat_stream', { model, messages, maxTokens, temperature }),
-    openaiChatStreamWithTools: (model: string, messages: AgentRouterMessage[], tools?: any[], toolChoice?: any, maxTokens?: number, temperature?: number) => 
+    openaiChatStreamWithTools: (model: string, messages: AgentRouterMessage[], tools?: any[], toolChoice?: any, maxTokens?: number, temperature?: number) =>
         invoke<string>('openai_chat_stream_with_tools', { model, messages, tools, toolChoice, maxTokens, temperature }),
-    openaiChatComplete: (model: string, messages: any[], maxTokens?: number) => 
+    openaiChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('openai_chat_complete', { model, messages, maxTokens }),
     // Anthropic commands
-    anthropicChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    anthropicChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('anthropic_chat', { model, messages, maxTokens, temperature }),
-    anthropicChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    anthropicChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('anthropic_chat_stream', { model, messages, maxTokens, temperature }),
-    anthropicChatComplete: (model: string, messages: any[], maxTokens?: number) => 
+    anthropicChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('anthropic_chat_complete', { model, messages, maxTokens }),
     // Google commands
-    googleChat: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) => 
+    googleChat: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('google_chat', { model, messages, maxTokens, temperature }),
-    googleChatStream: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) => 
+    googleChatStream: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('google_chat_stream', { model, messages, maxTokens, temperature }),
-    googleChatComplete: (model: string, messages: GoogleMessage[], maxTokens?: number) => 
+    googleChatComplete: (model: string, messages: GoogleMessage[], maxTokens?: number) =>
         invoke<string>('google_chat_complete', { model, messages, maxTokens }),
     // xAI commands
-    xaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    xaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('xai_chat', { model, messages, maxTokens, temperature }),
-    xaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) => 
+    xaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('xai_chat_stream', { model, messages, maxTokens, temperature }),
-    xaiChatComplete: (model: string, messages: any[], maxTokens?: number) => 
+    xaiChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('xai_chat_complete', { model, messages, maxTokens }),
     // API key management
-    setApiKey: (provider: string, key: string) => 
+    setApiKey: (provider: string, key: string) =>
         invoke<void>('set_api_key', { provider, key }),
     getApiKeys: () => invoke<Record<string, boolean>>('get_api_keys'),
     // Terminal commands

@@ -21,7 +21,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*; img-src 'self' asset: http://asset.localhost http://localhost:* http://127.0.0.1:* data:; style-src 'self' 'unsafe-inline' http://localhost:* http://127.0.0.1:*; script-src 'self' 'unsafe-inline' http://localhost:* http://127.0.0.1:*; connect-src 'self' ws://localhost:* ws://127.0.0.1:* http://localhost:* http://127.0.0.1:*",
+      "csp": "default-src 'self' asset: https://asset.localhost http://asset.localhost data: blob: https://cdn.jsdelivr.net; img-src 'self' asset: https://asset.localhost http://asset.localhost data: blob:; style-src 'self' 'unsafe-inline' asset: https://asset.localhost http://asset.localhost https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' asset: https://asset.localhost http://asset.localhost https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' asset: https://asset.localhost http://asset.localhost https://cdn.jsdelivr.net; connect-src 'self' ws://localhost:* ws://127.0.0.1:* http://localhost:* http://127.0.0.1:* https://*.googleapis.com https://*.anthropic.com https://*.openai.com;",
       "assetProtocol": {
         "enable": true,
         "scope": [

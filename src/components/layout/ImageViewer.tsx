@@ -16,7 +16,6 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
     useEffect(() => {
         let isMounted = true;
         const isSvg = path.toLowerCase().endsWith('.svg');
-        const isIco = path.toLowerCase().endsWith('.ico');
 
         const loadMedia = async () => {
             setLoading(true);
@@ -29,24 +28,14 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
                         setIcoDataUrl(null);
                         setLoading(false);
                     }
-                } else if (isIco) {
-                    // Read .ico files as binary and convert to data URL
-                    const binaryData = await tauriApi.readFileBinary(path);
-                    if (isMounted) {
-                        const byteArray = new Uint8Array(binaryData);
-                        const blob = new Blob([byteArray], { type: 'image/x-icon' });
-                        const dataUrl = URL.createObjectURL(blob);
-                        setIcoDataUrl(dataUrl);
-                        setAssetUrl('');
-                        setSvgContent(null);
-                        setLoading(false);
-                    }
                 } else {
+                    // SVG is handled separately for potential manipulation, 
+                    // other types (including .ico) use convertFileSrc
                     const url = await tauriApi.getAssetUrl(path);
                     if (isMounted) {
                         setAssetUrl(url);
-                        setSvgContent(null);
                         setIcoDataUrl(null);
+                        setSvgContent(null);
                         setLoading(false);
                     }
                 }
@@ -57,8 +46,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
         };
 
         loadMedia();
-        return () => { 
-            isMounted = false; 
+        return () => {
+            isMounted = false;
             // Clean up object URL to prevent memory leaks
             if (icoDataUrl) {
                 URL.revokeObjectURL(icoDataUrl);
@@ -81,7 +70,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
     return (
         <div className={styles.root}>
             {/* Main Viewport */}
-            <div 
+            <div
                 className={styles.viewport}
                 onWheel={handleWheel}
             >
