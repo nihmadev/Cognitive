@@ -72,6 +72,7 @@ export const createMenuStructure = ({
     openFile,
     window,
     handlePaletteOpen,
+    handleGoToFileOpen,
     selectAll,
     save,
     saveAs,
@@ -85,6 +86,7 @@ export const createMenuStructure = ({
     openFile: (path: string) => void;
     window: Window;
     handlePaletteOpen: () => void;
+    handleGoToFileOpen: () => void;
     selectAll: () => void;
     save: () => Promise<void>;
     saveAs: () => Promise<void>;
@@ -189,7 +191,7 @@ export const createMenuStructure = ({
                 action: () => navigateHistory('forward'),
                 disabled: historyIndex >= history.length - 1
             },
-            { label: 'Go to File...', shortcut: 'Ctrl+P' },
+            { label: 'Go to File...', shortcut: 'Ctrl+P', action: handleGoToFileOpen },
             { label: 'Go to Symbol...', shortcut: 'Ctrl+Shift+O' },
             { label: 'Go to Symbol in File', shortcut: 'Ctrl+T' },
             { label: 'Go to Symbol in Workspace', shortcut: 'Ctrl+Shift+T' },

@@ -3,8 +3,8 @@
   flex-direction: column;
   height: 300px;
   min-height: 200px;
-  background: #1e1e1e;
-  border-top: 1px solid #333333;
+  background: var(--theme-background-primary);
+  border-top: 1px solid var(--theme-border);
   flex-shrink: 0;
 }
 
@@ -14,8 +14,8 @@
   align-items: center;
   justify-content: space-between;
   height: 35px;
-  background: #252526;
-  border-bottom: 1px solid #333333;
+  background: var(--theme-background-secondary);
+  border-bottom: 1px solid var(--theme-border);
   flex-shrink: 0;
 }
 
@@ -34,7 +34,7 @@
   height: 100%;
   background: transparent;
   border: none;
-  color: #cccccc;
+  color: var(--theme-foreground-muted);
   font-size: 13px;
   font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   cursor: pointer;
@@ -44,13 +44,13 @@
 }
 
 .tab:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--theme-hover-overlay);
 }
 
 .tabActive {
-  background-color: #1e1e1e;
-  color: #ffffff;
-  border-bottom-color: #007acc;
+  background-color: var(--theme-background-primary);
+  color: var(--theme-foreground);
+  border-bottom-color: var(--theme-accent);
 }
 
 .badge {
@@ -91,8 +91,8 @@
   bottom: 100%;
   left: 0;
   margin-bottom: 4px;
-  background: #2d2d30;
-  border: 1px solid #3e3e42;
+  background: var(--theme-background-tertiary);
+  border: 1px solid var(--theme-border);
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   z-index: 1000;
@@ -123,7 +123,7 @@
 }
 
 .actionDropdownItem:hover {
-  background-color: #094771;
+  background-color: var(--theme-accent-muted);
 }
 
 .actionDropdownItem svg {
@@ -211,8 +211,8 @@
 
 .terminalTabs {
   display: flex;
-  background: #2d2d30;
-  border-bottom: 1px solid #3e3e42;
+  background: var(--theme-background-tertiary);
+  border-bottom: 1px solid var(--theme-border);
   flex-shrink: 0;
   height: 35px;
   overflow-x: auto;
@@ -240,9 +240,9 @@
 }
 
 .terminalTabActive {
-  color: #ffffff;
-  background: #1e1e1e;
-  border-bottom-color: #007acc;
+  color: var(--theme-foreground);
+  background: var(--theme-background-primary);
+  border-bottom-color: var(--theme-accent);
 }
 
 .terminalTabClose {
@@ -308,17 +308,18 @@
 
 .createTerminalButton {
   padding: 6px 12px;
-  background: #007acc;
+  background: var(--theme-accent);
   color: #ffffff;
   border: none;
   border-radius: 2px;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.1s ease;
 }
 
 .createTerminalButton:hover {
-  background: #1177bb;
+  background: var(--theme-accent-hover);
 }
 
 .placeholderContent {

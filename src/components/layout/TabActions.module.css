@@ -43,8 +43,8 @@
     top: 100%;
     right: 0;
     margin-top: 4px;
-    background: #2d2d30;
-    border: 1px solid #464647;
+    background: var(--theme-background-tertiary);
+    border: 1px solid var(--theme-border);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     min-width: 160px;

@@ -19,7 +19,7 @@
   backdrop-filter: blur(1px);
 }
 
-.palette {
+.modal {
   position: relative;
   max-height: 600px;
   display: flex;
@@ -61,10 +61,6 @@
   padding: 0.5rem 0;
 }
 
-.section {
-  margin-bottom: 0.5rem;
-}
-
 .item {
   padding: 0.375rem 1rem;
   display: flex;
@@ -85,33 +81,6 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.hoverArrow {
-  opacity: 0;
-  width: 0;
-  transition: opacity 200ms ease, width 200ms ease;
-  overflow: hidden;
-}
-
-.item:hover .hoverArrow {
-  opacity: 1;
-  width: auto;
-}
-
-.shortcut {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.key {
-  background: var(--theme-background-tertiary);
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.25rem;
-  font-size: 10px;
-  color: var(--theme-foreground-muted);
-  border: 1px solid var(--theme-border);
 }
 
 .recentTitle {
@@ -148,14 +117,4 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-.iconSm {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.iconMd {
-  width: 1rem;
-  height: 1rem;
 }

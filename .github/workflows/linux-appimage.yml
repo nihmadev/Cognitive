@@ -29,7 +29,20 @@ jobs:
           workspaces: src-tauri
           cache-all-crates: true
           shared-key: linux-appimage
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          save-if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
+            
+      - name: Cache Rust build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            src-tauri/target
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: ${{ runner.os }}-cargo-appimage-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-appimage-
+            ${{ runner.os }}-cargo-
             
       - name: Cache apt packages
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -56,9 +69,28 @@ jobs:
             
       - name: Build AppImage
         run: |
-          chmod +x ~/.cargo/bin/linuxdeploy
-          chmod +x ~/.cargo/bin/linuxdeploy-plugin-appimage
-          chmod +x ~/.cargo/bin/AppRun
+          # Create temp directory for tools
+          mkdir -p /tmp/appimage-tools
+          cd /tmp/appimage-tools
+          
+          # Download tools manually if needed
+          if [ ! -f "linuxdeploy-x86_64.AppImage" ]; then
+            wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+            wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+            wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          fi
+          
+          # Make them executable
+          chmod +x *.AppImage
+          
+          # Export paths for Tauri
+          export LINUXDEPLOY="/tmp/appimage-tools/linuxdeploy-x86_64.AppImage"
+          export LINUXDEPLOY_PLUGIN_APPIMAGE="/tmp/appimage-tools/linuxdeploy-plugin-appimage-x86_64.AppImage"
+          export APPIMAGETOOL="/tmp/appimage-tools/appimagetool-x86_64.AppImage"
+          
+          # Go back to project root
+          cd "$GITHUB_WORKSPACE"
+          
           npm run tauri build -- --bundles appimage
           
       - name: Upload AppImage

@@ -5,8 +5,8 @@
   align-items: center;
   height: 32px;
   /* Standard Windows title bar height */
-  background-color: #1e1e1e;
-  border-bottom: 1px solid #333;
+  background-color: var(--theme-background-secondary);
+  border-bottom: 1px solid var(--theme-border);
   padding-left: 10px;
   -webkit-app-region: drag;
   user-select: none;
@@ -63,6 +63,7 @@
   overflow: hidden;
   isolation: isolate;
   min-height: 100vh;
+  padding-top: 40px;
 }
 
 .app::before {
@@ -147,8 +148,8 @@
 
 .statusBar {
   height: 1.5rem;
-  background: #1e1e1e;
-  color: #cccccc;
+  background: var(--theme-background-secondary);
+  color: var(--theme-foreground);
   font-size: 0.75rem;
   display: flex;
   align-items: center;
@@ -156,7 +157,7 @@
   flex-shrink: 0;
   justify-content: space-between;
   user-select: none;
-  border-top: 1px solid #333333;
+  border-top: 1px solid var(--theme-border);
   z-index: 50;
   line-height: 1.5;
 }

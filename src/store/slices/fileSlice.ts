@@ -171,9 +171,29 @@ export const createFileSlice: StateCreator<
             return;
         }
         
-        const { openFiles, history, historyIndex, deletedFiles } = get();
-        const newHistory = [...history.slice(0, historyIndex + 1), path];
-        if (newHistory.length > 50) newHistory.shift();
+        const { openFiles, history, historyIndex, deletedFiles, activeFile } = get();
+        
+        // If clicking on the currently active file, don't modify history
+        if (activeFile === path) {
+            return;
+        }
+        
+        let newHistory: string[];
+        let newHistoryIndex: number;
+        
+        // Check if the file exists anywhere in the existing history
+        const indexInHistory = history.indexOf(path);
+        
+        if (indexInHistory !== -1) {
+            // File exists in history (either backward or forward), jump to it without modifying history
+            newHistory = history;
+            newHistoryIndex = indexInHistory;
+        } else {
+            // File doesn't exist in history, add it and truncate forward history
+            newHistory = [...history.slice(0, historyIndex + 1), path];
+            if (newHistory.length > 50) newHistory.shift();
+            newHistoryIndex = newHistory.length - 1;
+        }
 
         const newOpenFiles = openFiles.includes(path) ? openFiles : [...openFiles, path];
 
@@ -187,7 +207,7 @@ export const createFileSlice: StateCreator<
             activeSettingsTab: null,
             activeProfilesTab: null,
             history: newHistory,
-            historyIndex: newHistory.length - 1,
+            historyIndex: newHistoryIndex,
             deletedFiles: newDeletedFiles
         });
     },

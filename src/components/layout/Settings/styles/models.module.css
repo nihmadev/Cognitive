@@ -81,7 +81,7 @@
 
 .modelProvider {
   font-size: 10px;
-  color: #71717a;
+  color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 500;
@@ -90,13 +90,13 @@
 .modelName {
   font-size: 13px;
   font-weight: 500;
-  color: #e4e4e7;
+  color: #ffffff;
   margin-bottom: 4px;
 }
 
 .modelDescription {
   font-size: 11px;
-  color: #71717a;
+  color: #ffffff;
   line-height: 1.4;
 }
 

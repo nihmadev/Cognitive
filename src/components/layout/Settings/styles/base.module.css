@@ -43,7 +43,7 @@
 
 .breadcrumb {
   font-size: 11px;
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -62,7 +62,7 @@
 }
 
 .breadcrumbSeparator {
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
 }
 
 .contentTitle {
@@ -81,12 +81,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--theme-foreground-muted);
+  color: #ffffff;
 }
 
 .contentDescription {
   font-size: 12px;
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   margin-top: 2px;
 }
 
@@ -106,7 +106,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--theme-foreground-muted);
+  color: #ffffff;
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--theme-border);
@@ -142,7 +142,7 @@
 
 .settingDescription {
   font-size: 12px;
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   line-height: 1.4;
 }
 
@@ -188,7 +188,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   margin-bottom: 16px;
 }
 
@@ -201,7 +201,7 @@
 
 .emptyStateText {
   font-size: 12px;
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   max-width: 280px;
 }
 
@@ -236,7 +236,7 @@
 
 .infoCardText {
   font-size: 12px;
-  color: var(--theme-foreground-muted);
+  color: #ffffff;
   line-height: 1.4;
 }
 

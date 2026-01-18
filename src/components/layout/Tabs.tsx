@@ -160,13 +160,8 @@ export const TabBar = () => {
     };
 
     if (openFiles.length === 0 && openDiffTabs.length === 0 && openSettingsTabs.length === 0 && openProfilesTabs.length === 0 && openTimelineDiffTabs.length === 0) {
-    return (
-        <div className={styles.tabsContainer}>
-            <div className={styles.tabBar} />
-            <TabActions />
-        </div>
-    );
-}
+        return null;
+    }
 
     return (
         <div className={styles.tabsContainer}>

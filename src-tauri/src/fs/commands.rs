@@ -475,6 +475,13 @@ pub fn create_file(path: String) -> Result<(), String> {
 // Create folder
 #[tauri::command]
 pub fn create_folder(path: String) -> Result<(), String> {
+    use std::path::Path;
+    
+    // If a file exists with the same name, remove it first
+    if Path::new(&path).is_file() {
+        std::fs::remove_file(&path).map_err(|e| e.to_string())?;
+    }
+    
     fs::create_dir_all(&path).map_err(|e| e.to_string())
 }
 

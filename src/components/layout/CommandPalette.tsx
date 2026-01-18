@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { getFileIcon } from '../../utils/fileIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -19,10 +20,9 @@ import { SymbolModal } from './Search/SymbolModal';
 interface CommandPaletteProps {
     isOpen: boolean;
     onClose: () => void;
-    position?: { top: number; left: number } | null;
 }
 
-const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, position }) => {
+const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
     const { history, openFile, currentWorkspace } = useProjectStore();
@@ -31,7 +31,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, positi
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [showSymbolModal, setShowSymbolModal] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
-
+    
     const uniqueHistory = Array.from(new Set(history)).reverse();
 
     const files = uniqueHistory.map(path => ({
@@ -115,6 +115,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, positi
         }
     }, [isOpen]);
 
+    
     // Handle keyboard navigation and actions
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -231,129 +232,52 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, positi
 
     return (
         <>
-            <AnimatePresence>
-                {isOpen && (
-                <div className={styles.overlayRoot}>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className={styles.backdrop}
-                    />
+            {createPortal(
+                <AnimatePresence>
+                    {isOpen && (
+                    <div className={styles.overlayRoot}>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={onClose}
+                            className={styles.backdrop}
+                        />
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                        transition={{ duration: 0.1 }}
-                        style={
-                            position
-                                ? { top: `${position.top}px`, left: `${position.left}px` }
-                                : undefined
-                        }
-                        className={clsx(
-                            styles.palette,
-                            position ? styles.palettePositioned : styles.paletteCentered
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className={styles.header}>
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={isGoToFileMode ? "Search files by name..." : "Search files by name (append : to go to line or @ to go to symbol)"}
-                                className={styles.input}
-                                autoFocus
-                            />
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                            transition={{ duration: 0.1 }}
+                            className={styles.palette}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className={styles.header}>
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder={isGoToFileMode ? "Search files by name..." : "Search files by name (append : to go to line or @ to go to symbol)"}
+                                    className={styles.input}
+                                    autoFocus
+                                />
+                            </div>
 
-                        <div className={styles.body}>
-                            {/* Go to File Mode */}
-                            {isGoToFileMode && (
-                                <div>
-                                    {allFilesFiltered.length > 0 ? (
-                                        allFilesFiltered.map((file, idx) => (
-                                            <div
-                                                key={idx}
-                                                onClick={() => {
-                                                    openFile(file.path);
-                                                    onClose();
-                                                }}
-                                                onMouseEnter={() => setSelectedIndex(idx)}
-                                                className={clsx(styles.item, idx === selectedIndex && styles.selected)}
-                                            >
-                                                <div className={styles.itemLeft}>
-                                                    {file.icon}
-                                                    <span className={styles.fileName}>{file.name}</span>
-                                                    <span className={styles.filePath}>{file.path}</span>
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className={styles.noResults}>
-                                            No files found
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Default Mode - Shortcuts and Recent Files */}
-                            {!isGoToFileMode && (
-                                <>
-                                    {/* Shortcuts Section */}
-                                    {shortcuts.length > 0 && (
-                                        <div className={styles.section}>
-                                            {shortcuts.map((item, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={clsx(styles.item, idx === selectedIndex && styles.selected)}
-                                                    onClick={() => {
-                                                        if (item.label === 'Go to File') {
-                                                            setIsGoToFileMode(true);
-                                                            setSearchQuery('');
-                                                        } else if ('action' in item && typeof item.action === 'function') {
-                                                            item.action();
-                                                        }
-                                                    }}
-                                                    onMouseEnter={() => setSelectedIndex(idx)}
-                                                >
-                                                    <div className={styles.itemLeft}>
-                                                        {/* Icons often invisible in screenshots if generic, but helpful visually */}
-                                                        <span className={styles.hoverArrow}>
-                                                            <ArrowRight className={styles.iconSm} />
-                                                        </span>
-                                                        <span>{item.label}</span>
-                                                    </div>
-                                                    {item.shortcut && (
-                                                        <div className={styles.shortcut}>
-                                                            {item.shortcut.split(' ').map((key, k) => (
-                                                                <span key={k} className={styles.key}>
-                                                                    {key}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {/* Recent Files Section */}
-                                    {files.length > 0 && (
-                                        <div>
-                                            <div className={styles.recentTitle}>recently opened</div>
-                                            {files.map((file, idx) => (
+                            <div className={styles.body}>
+                                {/* Go to File Mode */}
+                                {isGoToFileMode && (
+                                    <div>
+                                        {allFilesFiltered.length > 0 ? (
+                                            allFilesFiltered.map((file, idx) => (
                                                 <div
                                                     key={idx}
                                                     onClick={() => {
                                                         openFile(file.path);
                                                         onClose();
                                                     }}
-                                                    onMouseEnter={() => setSelectedIndex(shortcuts.length + idx)}
-                                                    className={clsx(styles.item, (shortcuts.length + idx) === selectedIndex && styles.selected)}
+                                                    onMouseEnter={() => setSelectedIndex(idx)}
+                                                    className={clsx(styles.item, idx === selectedIndex && styles.selected)}
                                                 >
                                                     <div className={styles.itemLeft}>
                                                         {file.icon}
@@ -361,27 +285,99 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, positi
                                                         <span className={styles.filePath}>{file.path}</span>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                            ))
+                                        ) : (
+                                            <div className={styles.noResults}>
+                                                No files found
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                                    {files.length === 0 && shortcuts.length === 0 && (
-                                        <div className={styles.noResults}>
-                                            No results found
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </div>
+                                {/* Default Mode - Shortcuts and Recent Files */}
+                                {!isGoToFileMode && (
+                                    <>
+                                        {/* Shortcuts Section */}
+                                        {shortcuts.length > 0 && (
+                                            <div className={styles.section}>
+                                                {shortcuts.map((item, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className={clsx(styles.item, idx === selectedIndex && styles.selected)}
+                                                        onClick={() => {
+                                                            if (item.label === 'Go to File') {
+                                                                setIsGoToFileMode(true);
+                                                                setSearchQuery('');
+                                                            } else if ('action' in item && typeof item.action === 'function') {
+                                                                item.action();
+                                                            }
+                                                        }}
+                                                        onMouseEnter={() => setSelectedIndex(idx)}
+                                                    >
+                                                        <div className={styles.itemLeft}>
+                                                            {/* Icons often invisible in screenshots if generic, but helpful visually */}
+                                                            <span className={styles.hoverArrow}>
+                                                                <ArrowRight className={styles.iconSm} />
+                                                            </span>
+                                                            <span>{item.label}</span>
+                                                        </div>
+                                                        {item.shortcut && (
+                                                            <div className={styles.shortcut}>
+                                                                {item.shortcut.split(' ').map((key, k) => (
+                                                                    <span key={k} className={styles.key}>
+                                                                        {key}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
 
-                        <div className={styles.footer}>
-                            <span>Use arrow keys to navigate</span>
-                            <span>Enter to select</span>
-                        </div>
-                    </motion.div>
-                </div>
-                )}
-            </AnimatePresence>
+                                        {/* Recent Files Section */}
+                                        {files.length > 0 && (
+                                            <div>
+                                                <div className={styles.recentTitle}>recently opened</div>
+                                                {files.map((file, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            openFile(file.path);
+                                                            onClose();
+                                                        }}
+                                                        onMouseEnter={() => setSelectedIndex(shortcuts.length + idx)}
+                                                        className={clsx(styles.item, (shortcuts.length + idx) === selectedIndex && styles.selected)}
+                                                    >
+                                                        <div className={styles.itemLeft}>
+                                                            {file.icon}
+                                                            <span className={styles.fileName}>{file.name}</span>
+                                                            <span className={styles.filePath}>{file.path}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {files.length === 0 && shortcuts.length === 0 && (
+                                            <div className={styles.noResults}>
+                                                No results found
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            <div className={styles.footer}>
+                                <span>Use arrow keys to navigate</span>
+                                <span>Enter to select</span>
+                            </div>
+                        </motion.div>
+                    </div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
             {showSearchModal && (
                 <SearchModal 
                     isOpen={showSearchModal} 

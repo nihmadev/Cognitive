@@ -117,6 +117,9 @@ const applyTheme = (themeId: ThemeId) => {
     root.style.setProperty('--theme-editor-gutter', colors.editorGutter);
     root.style.setProperty('--theme-hover-overlay', colors.hoverOverlay);
     root.style.setProperty('--theme-hover-overlay-strong', colors.hoverOverlayStrong);
+    root.style.setProperty('--theme-git-added', colors.gitAdded);
+    root.style.setProperty('--theme-git-modified', colors.gitModified);
+    root.style.setProperty('--theme-git-deleted', colors.gitDeleted);
     
     // Set theme type class
     root.classList.remove('theme-light', 'theme-dark');

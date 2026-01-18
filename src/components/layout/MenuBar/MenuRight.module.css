@@ -9,8 +9,8 @@
 }
 
 .btn {
-  height: 2rem;
-  width: 2rem;
+  height: 2.25rem;
+  width: 2.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,7 +45,7 @@
 
 .divider {
   width: 1px;
-  height: 16px;
+  height: 18px;
   background-color: var(--theme-border);
   align-self: center;
   margin: 0 4px;
@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 6px 24px;
+  padding: 7px 24px;
   background: none;
   border: none;
   color: var(--theme-foreground);

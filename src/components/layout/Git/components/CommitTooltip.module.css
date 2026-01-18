@@ -2,8 +2,8 @@
 .commitTooltip {
     position: fixed;
     z-index: 1000;
-    background-color: #1f1f23;
-    border: 1px solid #3f3f46;
+    background-color: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
     border-radius: 8px;
     padding: 12px;
     min-width: 300px;

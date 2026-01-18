@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    background: #1e1e1e;
+    background: var(--theme-background-primary);
     overflow: hidden;
 }
 
@@ -37,21 +37,22 @@
 
 .retryButton {
     padding: 4px 12px;
-    background: #0e639c;
+    background: var(--theme-accent);
     color: #ffffff;
     border: none;
     border-radius: 2px;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 500;
 }
 
 .retryButton:hover {
-    background: #1177bb;
+    background: var(--theme-accent-hover);
 }
 
 /* File group */
 .fileGroup {
-    border-bottom: 1px solid #2d2d30;
+    border-bottom: 1px solid var(--theme-border);
 }
 
 .fileHeader {
@@ -70,7 +71,7 @@
 }
 
 .fileHeader:hover {
-    background: #2a2d2e;
+    background: var(--theme-hover-overlay);
 }
 
 .chevron {
@@ -135,11 +136,11 @@
 }
 
 .problemItem:hover {
-    background: #2a2d2e;
+    background: var(--theme-hover-overlay);
 }
 
 .problemItem:active {
-    background: #094771;
+    background: var(--theme-accent-muted);
 }
 
 .problemIcon {

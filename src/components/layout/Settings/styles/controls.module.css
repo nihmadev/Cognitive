@@ -27,11 +27,11 @@
 }
 
 .searchInput::placeholder {
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
 }
 
 .searchIcon {
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -40,7 +40,7 @@
   background-color: var(--theme-background-tertiary);
   border-radius: 3px;
   font-size: 10px;
-  color: var(--theme-foreground-muted);
+  color: #ffffff;
   font-family: monospace;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .input::placeholder {
-  color: var(--theme-foreground-subtle);
+  color: #ffffff;
 }
 
 /* Textarea */
@@ -183,7 +183,7 @@
   min-width: 40px;
   text-align: center;
   font-size: 12px;
-  color: var(--theme-foreground-muted);
+  color: #ffffff;
   font-family: monospace;
 }
 
@@ -195,6 +195,7 @@
   padding: 6px 14px;
   color: #ffffff;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s;
   display: flex;

@@ -97,12 +97,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #424242;
+  background: var(--theme-scrollbar-thumb);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4f4f4f;
+  background: var(--theme-scrollbar-thumb-hover);
 }
 
 ::-webkit-scrollbar-corner {
@@ -117,5 +117,5 @@
 /* Problem line highlight - shows when clicking on a problem */
 .problem-line-highlight {
   background-color: rgba(255, 200, 0, 0.15) !important;
-  border-left: 3px solid #f59e0b !important;
+  border-left: 3px solid var(--theme-warning, #f59e0b) !important;
 }

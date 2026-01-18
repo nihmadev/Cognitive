@@ -359,12 +359,17 @@
 		"nx": { "iconPath": "./icons/files/nx.svg" },
 		"yummacss": { "iconPath": "./icons/files/yummacss.svg" },
 		"orval": { "iconPath": "./icons/files/orval.svg" },
-		"shadcn": { "iconPath": "./icons/files/shadcn.svg" }
+		"shadcn": { "iconPath": "./icons/files/shadcn.svg" },
+		"d": { "iconPath": "./icons/files/d.svg" },
+		"assembly": { "iconPath": "./icons/files/assembly.svg" }
 	},
 
 	"fileExtensions": {
 		"orval": "orval",
 		"nim": "nim",
+		"d": "d",
+		"asm": "assembly",
+		"s": "assembly",
 		"f90": "fortran",
 		"f95": "fortran",
 		"f03": "fortran",

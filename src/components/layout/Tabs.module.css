@@ -282,21 +282,21 @@
 
 /* Git Status Colors for filename and status text */
 .gitConflicted {
-  color: #f85149 !important;
+  color: var(--theme-git-deleted, #f85149) !important;
 }
 
 .gitDeleted {
-  color: #f85149 !important;
+  color: var(--theme-git-deleted, #f85149) !important;
 }
 
 .gitModified {
-  color: #e3b341 !important;
+  color: var(--theme-git-modified, #e3b341) !important;
 }
 
 .gitUntracked {
-  color: #73c991 !important;
+  color: var(--theme-git-added, #73c991) !important;
 }
 
 .gitStaged {
-  color: #73c991 !important;
+  color: var(--theme-git-added, #73c991) !important;
 }

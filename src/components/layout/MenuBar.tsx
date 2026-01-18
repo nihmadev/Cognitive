@@ -4,6 +4,7 @@ import { useEditorStore } from '../../store/editorStore';
 import { useAutoSaveStore } from '../../store/autoSaveStore';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import CommandPalette from './CommandPalette';
+import GoToFileModal from './GoToFileModal';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { MenuLeft } from './MenuBar/MenuLeft';
 import { MenuRight } from './MenuBar/MenuRight';
@@ -20,7 +21,7 @@ interface MenuBarProps {
 export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfiles }: MenuBarProps) => {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-    const [palettePosition, setPalettePosition] = useState<{ top: number; left: number } | null>(null);
+    const [isGoToFileOpen, setIsGoToFileOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
     const { setWorkspace, openFile, activeFile, navigateHistory, openNewFileModal, history, historyIndex } = useProjectStore();
@@ -86,16 +87,16 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
             return;
         }
         
-        if (triggerRef.current) {
-            const rect = triggerRef.current.getBoundingClientRect();
-            setPalettePosition({
-                top: rect.bottom + 4,
-                left: rect.left - 50
-            });
-        } else {
-            setPalettePosition(null);
-        }
         setIsPaletteOpen(true);
+    };
+
+    const handleGoToFileOpen = () => {
+        if (isGoToFileOpen) {
+            setIsGoToFileOpen(false);
+            return;
+        }
+        
+        setIsGoToFileOpen(true);
     };
 
     const menuStructure = createMenuStructure({
@@ -103,6 +104,7 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
         openFile,
         window,
         handlePaletteOpen,
+        handleGoToFileOpen,
         selectAll,
         save,
         saveAs,
@@ -175,7 +177,8 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
                 </div>
             </div>
 
-            <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} position={palettePosition} />
+            <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} />
+            <GoToFileModal isOpen={isGoToFileOpen} onClose={() => setIsGoToFileOpen(false)} />
         </>
     );
 };

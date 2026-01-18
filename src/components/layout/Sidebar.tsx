@@ -360,28 +360,28 @@ export const Sidebar = () => {
                             title="New File"
                             onClick={handleNewFile}
                         >
-                            <FilePlus2 size={14} />
+                            <FilePlus2 size={16} />
                         </button>
                         <button 
                             className={styles.headerActionBtn} 
                             title="New Folder"
                             onClick={handleNewFolder}
                         >
-                            <FolderPlus size={14} />
+                            <FolderPlus size={16} />
                         </button>
                         <button
                             className={styles.headerActionBtn}
                             title="Refresh Explorer"
                             onClick={handleRefresh}
                         >
-                            <RotateCw size={14} />
+                            <RotateCw size={16} />
                         </button>
                         <button 
                             className={styles.headerActionBtn} 
                             title="Collapse Folders"
                             onClick={handleCollapseAll}
                         >
-                            <ChevronsDownUp size={14} />
+                            <ChevronsDownUp size={16} />
                         </button>
                         <div className={styles.menuWrapper}>
                             <button 
@@ -390,7 +390,7 @@ export const Sidebar = () => {
                                 title="Views and More Actions..."
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                             >
-                                <MoreHorizontal size={14} />
+                                <MoreHorizontal size={16} />
                             </button>
                             <ExplorerMenu
                                 isOpen={isMenuOpen}

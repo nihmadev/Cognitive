@@ -3,9 +3,9 @@
     flex-direction: column;
     height: 100%;
     width: 280px;
-    background-color: #18181b;
-    color: #e4e4e7;
-    border-right: 1px solid #27272a;
+    background-color: var(--theme-sidebar-background);
+    color: var(--theme-foreground);
+    border-right: 1px solid var(--theme-border);
     font-size: 13px;
 }
 
@@ -14,7 +14,7 @@
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    color: #a1a1aa;
+    color: #ffffff;
     letter-spacing: 0.5px;
     display: flex;
     align-items: center;
@@ -34,15 +34,15 @@
     justify-content: center;
     border-radius: 3px;
     cursor: pointer;
-    color: #a1a1aa;
+    color: #ffffff;
     background: transparent;
     border: none;
     padding: 0;
 }
 
 .headerBtn:hover {
-    background-color: #3f3f46;
-    color: #e4e4e7;
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
 }
 
 .commitSection {
@@ -56,10 +56,10 @@
     width: 100%;
     min-height: 60px;
     padding: 8px;
-    background-color: #27272a;
+    background-color: var(--theme-input-background);
     border: 1px solid transparent;
     border-radius: 4px;
-    color: #f4f4f5;
+    color: var(--theme-foreground);
     font-family: inherit;
     font-size: 13px;
     resize: vertical;
@@ -67,11 +67,11 @@
 }
 
 .commitInput:focus {
-    border-color: #007fd4;
+    border-color: var(--theme-accent);
 }
 
 .commitInput::placeholder {
-    color: #71717a;
+    color: #ffffff;
 }
 
 .commitBtn {
@@ -80,34 +80,121 @@
     justify-content: center;
     gap: 6px;
     padding: 6px 12px;
-    background-color: #0e639c;
+    background-color: var(--theme-button-background);
     border: none;
-    border-radius: 4px;
-    color: #fff;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    color: #ffffff !important;
     font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    flex: 1;
+}
+
+.commitBtn:hover {
+    background-color: var(--theme-button-hover-background);
+}
+
+.commitBtn:disabled {
+    background-color: var(--theme-background-tertiary);
+    color: var(--theme-foreground-subtle);
+    cursor: not-allowed;
+}
+
+.commitBtnGroup {
+    display: flex;
+    position: relative;
+}
+
+.commitBtnDropdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    background-color: var(--theme-button-background);
+    border: none;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
     cursor: pointer;
     transition: background-color 0.15s;
 }
 
-.commitBtn:hover {
-    background-color: #1177bb;
+.commitBtnDropdown:hover {
+    background-color: var(--theme-button-hover-background);
 }
 
-.commitBtn:disabled {
-    background-color: #3f3f46;
-    color: #71717a;
+.commitBtnDropdown:disabled {
+    background-color: var(--theme-background-tertiary);
+    color: var(--theme-foreground-subtle);
     cursor: not-allowed;
+    border-left-color: transparent;
+}
+
+.commitMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 50;
+    animation: slideDown 0.15s ease;
+}
+
+.commitMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.commitMenuItem:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.commitMenuDivider {
+    height: 1px;
+    background-color: var(--theme-border);
+    margin: 4px 0;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .footer {
     padding: 8px 12px;
-    border-top: 1px solid #27272a;
+    border-top: 1px solid var(--theme-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 12px;
-    color: #a1a1aa;
-    background-color: #1f1f22;
+    color: #ffffff;
+    background-color: var(--theme-background-secondary);
 }
 
 .branchInfo {
@@ -121,14 +208,14 @@
     align-items: center;
     gap: 4px;
     padding: 2px 6px;
-    background-color: #27272a;
+    background-color: var(--theme-background-tertiary);
     border-radius: 4px;
-    color: #73c991;
+    color: var(--theme-git-added);
     font-size: 11px;
 }
 
 .remoteIcon {
-    color: #007fd4;
+    color: var(--theme-accent);
 }
 
 .noRepo {
@@ -139,7 +226,7 @@
     height: 100%;
     padding: 24px;
     text-align: center;
-    color: #71717a;
+    color: #ffffff;
 }
 
 .noRepoText {
@@ -152,7 +239,7 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #71717a;
+    color: #ffffff;
 }
 
 .pushResult {
@@ -219,8 +306,8 @@
  }
 
  .modalContainer {
-     background-color: #1f1f22;
-     border: 1px solid #27272a;
+     background-color: var(--theme-background-secondary);
+     border: 1px solid var(--theme-border);
      border-radius: 8px;
      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
      width: 420px;
@@ -231,13 +318,13 @@
  .modalTitle {
      font-size: 13px;
      font-weight: 600;
-     color: #e4e4e7;
+     color: var(--theme-foreground);
      margin-bottom: 6px;
  }
 
  .modalText {
      font-size: 12px;
-     color: #a1a1aa;
+     color: var(--theme-foreground-muted);
      margin-bottom: 10px;
      line-height: 1.35;
  }
@@ -253,16 +340,17 @@
      align-items: center;
      justify-content: center;
      padding: 6px 10px;
-     background-color: #0e639c;
+     background-color: var(--theme-button-background);
      border: none;
      border-radius: 6px;
-     color: #fff;
+     color: #ffffff;
      font-size: 12px;
+     font-weight: 500;
      cursor: pointer;
  }
 
  .modalBtn:hover {
-     background-color: #1177bb;
+     background-color: var(--theme-button-hover-background);
  }
 
  .modalBtnSecondary {
@@ -271,15 +359,15 @@
      justify-content: center;
      padding: 6px 10px;
      background-color: transparent;
-     border: 1px solid #3f3f46;
+     border: 1px solid var(--theme-border);
      border-radius: 6px;
-     color: #e4e4e7;
+     color: var(--theme-foreground);
      font-size: 12px;
      cursor: pointer;
  }
 
  .modalBtnSecondary:hover {
-     background-color: #27272a;
+     background-color: var(--theme-hover-overlay);
  }
 
 @keyframes slideIn {

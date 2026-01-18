@@ -32,8 +32,6 @@ function App() {
   const { selectAll } = useEditorStore();
   const { saveOnFocusLoss, saveAllUnsaved } = useAutoSaveStore();
   const fsRefreshTimerRef = useRef<number | null>(null);
-
-  // Initialize resizable panel for AI assistant
   const aiPanel = useResizablePanel({
     defaultWidth: aiPanelWidth,
     minWidth: 300,
@@ -41,8 +39,6 @@ function App() {
     direction: 'left',
     onResize: setAIPanelWidth
   });
-
-  // Sync store width with hook when it changes
   useEffect(() => {
     if (Math.abs(aiPanel.width - aiPanelWidth) > 1) {
       setAIPanelWidth(aiPanel.width);
@@ -65,12 +61,14 @@ function App() {
       app.style.transform = `scale(${zoomLevel})`;
       app.style.transformOrigin = 'top left';
       // Ensure no gaps by using exact viewport dimensions
+      // Account for the fixed MenuBar height (40px)
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
+      const menuBarHeight = 40;
       app.style.width = `${viewportWidth / zoomLevel}px`;
-      app.style.height = `${viewportHeight / zoomLevel}px`;
+      app.style.height = `${(viewportHeight - menuBarHeight) / zoomLevel + menuBarHeight}px`;
       app.style.minWidth = `${viewportWidth / zoomLevel}px`;
-      app.style.minHeight = `${viewportHeight / zoomLevel}px`;
+      app.style.minHeight = `${(viewportHeight - menuBarHeight) / zoomLevel + menuBarHeight}px`;
     }
   }, [zoomLevel]);
 
@@ -81,10 +79,11 @@ function App() {
       if (app) {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        const menuBarHeight = 40;
         app.style.width = `${viewportWidth / zoomLevel}px`;
-        app.style.height = `${viewportHeight / zoomLevel}px`;
+        app.style.height = `${(viewportHeight - menuBarHeight) / zoomLevel + menuBarHeight}px`;
         app.style.minWidth = `${viewportWidth / zoomLevel}px`;
-        app.style.minHeight = `${viewportHeight / zoomLevel}px`;
+        app.style.minHeight = `${(viewportHeight - menuBarHeight) / zoomLevel + menuBarHeight}px`;
       }
     };
 

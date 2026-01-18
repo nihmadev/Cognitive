@@ -3,7 +3,7 @@ import { GitCompare, MoreVertical, Lock } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import styles from './TabActions.module.css';
 
-export const TabActions = () => {
+export const TabActions = ({ hideButtons = false }: { hideButtons?: boolean }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { closeAllFiles, closeAllSavedFiles, activeFile, tabsLocked, toggleTabsLock } = useProjectStore();
@@ -63,6 +63,10 @@ export const TabActions = () => {
         toggleTabsLock();
         setShowDropdown(false);
     };
+
+    if (hideButtons) {
+        return null;
+    }
 
     return (
         <div className={styles.tabActions}>

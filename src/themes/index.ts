@@ -49,6 +49,9 @@ export interface ThemeColors {
     editorGutter: string;
     hoverOverlay: string;
     hoverOverlayStrong: string;
+    gitAdded: string;
+    gitModified: string;
+    gitDeleted: string;
 }
 
 export interface Theme {
@@ -70,8 +73,8 @@ const darkModern: Theme = {
         background: '#1e1e1e',
         backgroundSecondary: '#252526',
         backgroundTertiary: '#2d2d2d',
-        foreground: '#cccccc',
-        foregroundMuted: '#9d9d9d',
+        foreground: '#d4d4d4',
+        foregroundMuted: '#a8a8a8',
         foregroundSubtle: '#6e6e6e',
         accent: '#007acc',
         accentHover: '#1c8cd9',
@@ -106,6 +109,9 @@ const darkModern: Theme = {
         editorGutter: '#1e1e1e',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#73c991',
+        gitModified: '#e3b341',
+        gitDeleted: '#f85149',
     },
 };
 
@@ -120,7 +126,7 @@ const dracula: Theme = {
         backgroundSecondary: '#21222c',
         backgroundTertiary: '#343746',
         foreground: '#f8f8f2',
-        foregroundMuted: '#bfbfbf',
+        foregroundMuted: '#d0d0d0',
         foregroundSubtle: '#6272a4',
         accent: '#bd93f9',
         accentHover: '#caa9fa',
@@ -155,6 +161,9 @@ const dracula: Theme = {
         editorGutter: '#282a36',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#50fa7b',
+        gitModified: '#ffb86c',
+        gitDeleted: '#ff5555',
     },
 };
 
@@ -168,8 +177,8 @@ const githubDark: Theme = {
         background: '#0d1117',
         backgroundSecondary: '#161b22',
         backgroundTertiary: '#21262d',
-        foreground: '#c9d1d9',
-        foregroundMuted: '#8b949e',
+        foreground: '#e6edf3',
+        foregroundMuted: '#9198a1',
         foregroundSubtle: '#484f58',
         accent: '#58a6ff',
         accentHover: '#79c0ff',
@@ -204,6 +213,9 @@ const githubDark: Theme = {
         editorGutter: '#0d1117',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#7ee787',
+        gitModified: '#d29922',
+        gitDeleted: '#ff7b72',
     },
 };
 
@@ -219,7 +231,7 @@ const nord: Theme = {
         backgroundSecondary: '#3b4252',
         backgroundTertiary: '#434c5e',
         foreground: '#eceff4',
-        foregroundMuted: '#d8dee9',
+        foregroundMuted: '#e5e9f0',
         foregroundSubtle: '#4c566a',
         accent: '#88c0d0',
         accentHover: '#8fbcbb',
@@ -254,6 +266,9 @@ const nord: Theme = {
         editorGutter: '#2e3440',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#a3be8c',
+        gitModified: '#ebcb8b',
+        gitDeleted: '#bf616a',
     },
 };
 
@@ -267,8 +282,8 @@ const oneDark: Theme = {
         background: '#282c34',
         backgroundSecondary: '#21252b',
         backgroundTertiary: '#2c313a',
-        foreground: '#abb2bf',
-        foregroundMuted: '#828997',
+        foreground: '#c8ccd4',
+        foregroundMuted: '#9ca3af',
         foregroundSubtle: '#5c6370',
         accent: '#61afef',
         accentHover: '#74b9f0',
@@ -303,6 +318,9 @@ const oneDark: Theme = {
         editorGutter: '#282c34',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#98c379',
+        gitModified: '#e5c07b',
+        gitDeleted: '#e06c75',
     },
 };
 
@@ -317,7 +335,7 @@ const monokai: Theme = {
         backgroundSecondary: '#1e1f1c',
         backgroundTertiary: '#3e3d32',
         foreground: '#f8f8f2',
-        foregroundMuted: '#cfcfc2',
+        foregroundMuted: '#e0e0d8',
         foregroundSubtle: '#75715e',
         accent: '#a6e22e',
         accentHover: '#b6f23e',
@@ -352,6 +370,9 @@ const monokai: Theme = {
         editorGutter: '#272822',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#a6e22e',
+        gitModified: '#e6db74',
+        gitDeleted: '#f92672',
     },
 };
 
@@ -366,8 +387,8 @@ const solarizedDark: Theme = {
         background: '#002b36',
         backgroundSecondary: '#073642',
         backgroundTertiary: '#094959',
-        foreground: '#839496',
-        foregroundMuted: '#657b83',
+        foreground: '#93a1a1',
+        foregroundMuted: '#839496',
         foregroundSubtle: '#586e75',
         accent: '#268bd2',
         accentHover: '#2aa198',
@@ -402,6 +423,9 @@ const solarizedDark: Theme = {
         editorGutter: '#002b36',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#859900',
+        gitModified: '#b58900',
+        gitDeleted: '#dc322f',
     },
 };
 
@@ -415,8 +439,8 @@ const tokyoNight: Theme = {
         background: '#1a1b26',
         backgroundSecondary: '#16161e',
         backgroundTertiary: '#24283b',
-        foreground: '#a9b1d6',
-        foregroundMuted: '#787c99',
+        foreground: '#c0caf5',
+        foregroundMuted: '#9aa5ce',
         foregroundSubtle: '#565f89',
         accent: '#7aa2f7',
         accentHover: '#89b4fa',
@@ -451,6 +475,9 @@ const tokyoNight: Theme = {
         editorGutter: '#1a1b26',
         hoverOverlay: 'rgba(255, 255, 255, 0.05)',
         hoverOverlayStrong: 'rgba(255, 255, 255, 0.1)',
+        gitAdded: '#9ece6a',
+        gitModified: '#e0af68',
+        gitDeleted: '#f7768e',
     },
 };
 

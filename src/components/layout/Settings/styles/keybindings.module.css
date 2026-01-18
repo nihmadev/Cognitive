@@ -10,7 +10,7 @@
   border-radius: 4px;
   font-size: 12px;
   font-family: monospace;
-  color: #a1a1aa;
+  color: #ffffff;
   cursor: pointer;
 }
 
@@ -42,14 +42,14 @@
 
 .keybindingAction {
   font-size: 13px;
-  color: #e4e4e7;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .keybindingIcon {
-  color: #71717a;
+  color: #ffffff;
 }
 
 .keybindingKeys {
