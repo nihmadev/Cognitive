@@ -47,10 +47,18 @@ jobs:
             librsvg2-dev \
             patchelf \
             libfuse2 \
-            file
-          
+            file \
+            libgtk-3-dev \
+            libgdk-pixbuf2.0-dev \
+            libpango1.0-dev \
+            libglib2.0-dev \
+            libcairo2-dev
+            
       - name: Build AppImage
         run: |
+          chmod +x ~/.cargo/bin/linuxdeploy
+          chmod +x ~/.cargo/bin/linuxdeploy-plugin-appimage
+          chmod +x ~/.cargo/bin/AppRun
           npm run tauri build -- --bundles appimage
           
       - name: Upload AppImage

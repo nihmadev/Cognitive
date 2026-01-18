@@ -37,7 +37,8 @@
       "msi",
       "deb",
       "dmg",
-      "rpm"
+      "rpm",
+      "appimage"
     ],
     "icon": [
       "icons/16x16.png",
@@ -60,9 +61,7 @@
     "linux": {
       "deb": {
         "depends": [
-          "libgtk-3-0",
-          "libwebkit2gtk-4.0-37",
-          "libayatana-appindicator3-1"
+          "libgtk-3-0"
         ],
         "desktopTemplate": "cognetive.desktop"
       },
@@ -71,9 +70,7 @@
       },
       "rpm": {
         "depends": [
-          "gtk3",
-          "webkit2gtk4.0",
-          "libappindicator-gtk3"
+          "gtk3"
         ],
         "desktopTemplate": "cognetive.desktop"
       }
