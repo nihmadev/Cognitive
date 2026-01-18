@@ -19,27 +19,29 @@ export const GraphSection = ({
                     {graphOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     <span>Graph</span>
                 </div>
-                <div className={styles.graphActions}>
-                    <button className={styles.graphActionBtn} title="Auto">
-                        <Sparkles size={12} />
-                        <span>Auto</span>
-                    </button>
-                    <button className={styles.graphIconBtn} title="Fetch">
-                        <CircleDot size={12} />
-                    </button>
-                    <button className={styles.graphIconBtn} title="Merge">
-                        <GitMerge size={12} />
-                    </button>
-                    <button className={styles.graphIconBtn} title="Cherry Pick">
-                        <Cherry size={12} />
-                    </button>
-                    <button className={styles.graphIconBtn} title="Refresh">
-                        <RefreshCw size={12} />
-                    </button>
-                    <button className={styles.graphIconBtn} title="More">
-                        <MoreHorizontal size={12} />
-                    </button>
-                </div>
+                {graphOpen && (
+                    <div className={styles.graphActions}>
+                        <button className={styles.graphActionBtn} title="Auto">
+                            <Sparkles size={12} />
+                            <span>Auto</span>
+                        </button>
+                        <button className={styles.graphIconBtn} title="Fetch">
+                            <CircleDot size={12} />
+                        </button>
+                        <button className={styles.graphIconBtn} title="Merge">
+                            <GitMerge size={12} />
+                        </button>
+                        <button className={styles.graphIconBtn} title="Cherry Pick">
+                            <Cherry size={12} />
+                        </button>
+                        <button className={styles.graphIconBtn} title="Refresh">
+                            <RefreshCw size={12} />
+                        </button>
+                        <button className={styles.graphIconBtn} title="More">
+                            <MoreHorizontal size={12} />
+                        </button>
+                    </div>
+                )}
             </div>
             
             {graphOpen && (

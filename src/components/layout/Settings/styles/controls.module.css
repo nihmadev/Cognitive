@@ -46,23 +46,22 @@
 
 /* Input */
 .input {
-  background-color: var(--theme-input-background);
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 6px 10px;
-  color: var(--theme-foreground);
+  background-color: #3c3c3c;
+  border: 1px solid #3c3c3c;
+  padding: 4px 8px;
+  color: #cccccc;
   font-size: 13px;
   min-width: 200px;
   outline: none;
-  transition: border-color 0.15s ease;
+  height: 26px;
 }
 
 .input:focus {
-  border-color: var(--theme-accent);
+  border-color: #007acc;
 }
 
 .input::placeholder {
-  color: #ffffff;
+  color: #888;
 }
 
 /* Textarea */
@@ -88,63 +87,79 @@
 
 /* Select */
 .select {
-  background-color: var(--theme-input-background);
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 6px 28px 6px 10px;
-  color: var(--theme-foreground);
+  background-color: #3c3c3c;
+  border: 1px solid #3c3c3c;
+  padding: 3px 28px 3px 8px;
+  color: #cccccc;
   font-size: 13px;
   min-width: 180px;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cccccc' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;
   outline: none;
-  transition: border-color 0.15s ease;
+  height: 26px;
 }
 
 .select:focus {
-  border-color: var(--theme-accent);
+  border-color: #007acc;
 }
 
 .select option {
-  background-color: var(--theme-input-background);
-  color: var(--theme-foreground);
+  background-color: #3c3c3c;
+  color: #cccccc;
 }
 
-/* Toggle Switch */
-.toggle {
-  position: relative;
-  width: 36px;
-  height: 18px;
-  background-color: var(--theme-background-tertiary);
-  border-radius: 9px;
+/* Custom Checkbox */
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  user-select: none;
+  margin-top: 4px;
 }
 
-.toggle:hover {
-  background-color: var(--theme-foreground-subtle);
+.checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #3c3c3c;
+  border: 1px solid #3c3c3c;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  margin-top: 2px;
+  flex-shrink: 0;
+  outline: none;
 }
 
-.toggle.active {
-  background-color: var(--theme-accent-muted);
+.checkbox:checked {
+  background-color: #007acc;
+  border-color: #007acc;
 }
 
-.toggleKnob {
+.checkbox:checked::after {
+  content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: transform 0.15s;
+  top: 1px;
+  left: 4px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
-.toggle.active .toggleKnob {
-  transform: translateX(18px);
+.checkbox:focus {
+  border-color: #007acc;
+}
+
+.checkboxDescription {
+  font-size: 13px;
+  color: #cccccc;
+  line-height: 1.4;
 }
 
 /* Slider */
@@ -189,48 +204,71 @@
 
 /* Button */
 .button {
-  background-color: var(--theme-button-background);
+  background-color: #007acc;
   border: none;
-  border-radius: 4px;
-  padding: 6px 14px;
+  padding: 4px 12px;
   color: #ffffff;
   font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  height: 26px;
 }
 
 .button:hover {
-  background-color: var(--theme-button-hover-background);
+  background-color: #0062a3;
 }
 
-.buttonSecondary {
-  background-color: var(--theme-background-tertiary);
-}
-
-.buttonSecondary:hover {
-  background-color: var(--theme-foreground-subtle);
-}
-
-.buttonDanger {
-  background-color: var(--theme-error);
-}
-
-.buttonDanger:hover {
-  background-color: #ef4444;
-}
-
-.buttonIcon {
-  display: flex;
+.addButton {
+  background-color: #3c3c3c;
+  border: 1px solid #3c3c3c;
+  color: #cccccc;
+  padding: 2px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  height: 24px;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border-radius: 4px;
+}
+
+.addButton:hover {
+  background-color: #454545;
+}
+
+/* Settings Table */
+.settingsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.settingsTable th {
+  text-align: left;
+  padding: 4px 8px;
+  color: #888;
+  font-weight: normal;
+}
+
+.settingsTable td {
+  padding: 4px 8px;
+  color: #cccccc;
+}
+
+/* Patterns List */
+.patternsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.patternItem {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #cccccc;
 }
 
 /* API Key Input */

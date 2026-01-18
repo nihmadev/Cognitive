@@ -57,7 +57,7 @@ export const ChangesSection = ({
                                 <div className={styles.fileIcon}>
                                     {getFileIcon(getFileName(file.path), file.path)}
                                 </div>
-                                <span className={styles.fileName}>
+                                <span className={`${styles.fileName} ${file.status.includes('deleted') ? styles.deleted : ''}`}>
                                     {getFileName(file.path)}
                                     {getFilePath(file.path) && (
                                         <span className={styles.filePath}>{getFilePath(file.path)}</span>

@@ -40,9 +40,11 @@ const activityBarItems: ActivityBarItem[] = [
 export const ActivityBar = ({
   activeItem,
   onActivityChange,
+  gitChangesCount = 0,
 }: {
   activeItem: ActivityId;
   onActivityChange: (id: ActivityId) => void;
+  gitChangesCount?: number;
 }) => {
 
   return (
@@ -55,6 +57,9 @@ export const ActivityBar = ({
           onClick={() => onActivityChange(item.id)}
         >
           {item.icon}
+          {item.id === 'git' && gitChangesCount > 0 && (
+            <span className={styles.badge}>{gitChangesCount}</span>
+          )}
         </button>
       ))}
     </div>

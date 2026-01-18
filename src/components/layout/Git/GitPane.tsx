@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useGitStore } from '../../../store/gitStore';
 import { useProjectStore } from '../../../store/projectStore';
-import { RotateCw, GitBranch, Cloud, CircleDot } from 'lucide-react';
+import { RotateCw, GitBranch, Cloud } from 'lucide-react';
 import { GitCommit, tauriApi } from '../../../lib/tauri-api';
 import { CommitSection, GraphSection, ChangesSection, CommitTooltip } from './components';
 import { TooltipPosition } from './types';
@@ -165,15 +165,6 @@ export const GitPane = () => {
                 onCommit={handleCommit}
             />
 
-            <GraphSection
-                commits={commits}
-                graphOpen={graphOpen}
-                remoteName={info?.remote_name}
-                onToggle={() => setGraphOpen(!graphOpen)}
-                onCommitHover={handleCommitHover}
-                onCommitLeave={handleCommitLeave}
-            />
-
             <ChangesSection
                 files={files}
                 changesOpen={changesOpen}
@@ -182,6 +173,15 @@ export const GitPane = () => {
                 onStageFile={(path) => stageFile(currentWorkspace, path)}
                 onStageAll={() => stageAll(currentWorkspace)}
                 onDiscardChanges={(path) => discardChanges(currentWorkspace, path)}
+            />
+
+            <GraphSection
+                commits={commits}
+                graphOpen={graphOpen}
+                remoteName={info?.remote_name}
+                onToggle={() => setGraphOpen(!graphOpen)}
+                onCommitHover={handleCommitHover}
+                onCommitLeave={handleCommitLeave}
             />
 
             {pushResult && (
@@ -206,20 +206,7 @@ export const GitPane = () => {
                 </div>
             )}
 
-            {info && (
-                <div className={styles.footer}>
-                    <div className={styles.branchInfo}>
-                        <div className={styles.branchName}>
-                            <CircleDot size={10} />
-                            {info.branch}
-                        </div>
-                        {info.has_remote && (
-                            <Cloud size={14} className={styles.remoteIcon} />
-                        )}
-                    </div>
-                </div>
-            )}
-
+            
             {hoveredCommit && (
                 <CommitTooltip
                     commit={hoveredCommit}

@@ -17,6 +17,7 @@ import { useAIStore } from './store/aiStore';
 import { useUIStore } from './store/uiStore';
 import { useEditorStore } from './store/editorStore';
 import { useAutoSaveStore } from './store/autoSaveStore';
+import { useGitStore } from './store/gitStore';
 import { tauriApi } from './lib/tauri-api';
 import { useResizablePanel } from './hooks/useResizablePanel';
 import clsx from 'clsx';
@@ -31,6 +32,7 @@ function App() {
   const { toggleAssistant, isAssistantOpen, initializeAgentRouter, initializeModels, initializeApiKeys } = useAIStore();
   const { selectAll } = useEditorStore();
   const { saveOnFocusLoss, saveAllUnsaved } = useAutoSaveStore();
+  const { files: gitFiles } = useGitStore();
   const fsRefreshTimerRef = useRef<number | null>(null);
   const aiPanel = useResizablePanel({
     defaultWidth: aiPanelWidth,
@@ -443,6 +445,7 @@ function App() {
         <ActivityBar
           activeItem={activeActivity}
           onActivityChange={handleActivityChange}
+          gitChangesCount={gitFiles.length}
         />
 
         {/* Sidebar - logic to show/hide based on activity could go here */}

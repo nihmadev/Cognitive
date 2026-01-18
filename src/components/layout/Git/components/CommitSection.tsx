@@ -12,7 +12,9 @@ export const CommitSection = ({
     onCommit 
 }: CommitSectionProps) => {
     const [showMenu, setShowMenu] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const menuRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && e.ctrlKey) {
@@ -44,9 +46,21 @@ export const CommitSection = ({
         }
     };
 
+    const toggleMenu = () => {
+        if (!showMenu && buttonRef.current) {
+            const buttonRect = buttonRef.current.getBoundingClientRect();
+            setMenuPosition({
+                top: buttonRect.bottom + 20,
+                left: buttonRect.left + 70
+            });
+        }
+        setShowMenu(!showMenu);
+    };
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node) &&
+                buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
                 setShowMenu(false);
             }
         };
@@ -71,7 +85,7 @@ export const CommitSection = ({
                 onChange={(e) => onCommitMessageChange(e.target.value)}
                 onKeyDown={handleKeyDown}
             />
-            <div className={styles.commitBtnGroup} ref={menuRef}>
+            <div className={styles.commitBtnGroup}>
                 <button 
                     className={styles.commitBtn}
                     onClick={() => handleAction('commit-push')}
@@ -81,47 +95,58 @@ export const CommitSection = ({
                     Commit & Push
                 </button>
                 <button 
+                    ref={buttonRef}
                     className={styles.commitBtnDropdown}
-                    onClick={() => setShowMenu(!showMenu)}
-                    disabled={isDisabled}
+                    onClick={toggleMenu}
                     aria-label="More commit options"
                 >
                     <ChevronDown size={14} />
                 </button>
-                {showMenu && (
-                    <div className={styles.commitMenu}>
-                        <button 
-                            className={styles.commitMenuItem}
-                            onClick={() => handleAction('commit')}
-                        >
-                            <Check size={14} />
-                            Commit
-                        </button>
-                        <button 
-                            className={styles.commitMenuItem}
-                            onClick={() => handleAction('commit-amend')}
-                        >
-                            <Check size={14} />
-                            Commit (Amend)
-                        </button>
-                        <div className={styles.commitMenuDivider} />
-                        <button 
-                            className={styles.commitMenuItem}
-                            onClick={() => handleAction('commit-push')}
-                        >
-                            <Check size={14} />
-                            Commit & Push
-                        </button>
-                        <button 
-                            className={styles.commitMenuItem}
-                            onClick={() => handleAction('commit-sync')}
-                        >
-                            <Check size={14} />
-                            Commit & Sync
-                        </button>
-                    </div>
-                )}
             </div>
+            {showMenu && (
+                <div 
+                    ref={menuRef}
+                    className={styles.commitMenu}
+                    style={{
+                        top: `${menuPosition.top}px`,
+                        left: `${menuPosition.left}px`
+                    }}
+                >
+                    <button 
+                        className={styles.commitMenuItem}
+                        onClick={() => handleAction('commit')}
+                        disabled={isDisabled}
+                        style={{ color: '#ffffff' }}
+                    >
+                        Commit
+                    </button>
+                    <button 
+                        className={styles.commitMenuItem}
+                        onClick={() => handleAction('commit-amend')}
+                        disabled={isDisabled}
+                        style={{ color: '#ffffff' }}
+                    >
+                        Commit (Amend)
+                    </button>
+                    <div className={styles.commitMenuDivider} />
+                    <button 
+                        className={styles.commitMenuItem}
+                        onClick={() => handleAction('commit-push')}
+                        disabled={isDisabled}
+                        style={{ color: '#ffffff' }}
+                    >
+                        Commit & Push
+                    </button>
+                    <button 
+                        className={styles.commitMenuItem}
+                        onClick={() => handleAction('commit-sync')}
+                        disabled={isDisabled}
+                        style={{ color: '#ffffff' }}
+                    >
+                        Commit & Sync
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

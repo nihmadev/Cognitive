@@ -4,11 +4,10 @@
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: var(--theme-background);
-  color: var(--theme-foreground);
+  background-color: #1e1e1e;
+  color: #cccccc;
   overflow: hidden;
   font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Content Area */
@@ -17,139 +16,181 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: var(--theme-background);
 }
 
-.contentHeader {
-  padding: 16px 24px;
-  background-color: var(--theme-sidebar-background);
-  border-bottom: 1px solid var(--theme-border);
+.settingsHeader {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  background-color: #1e1e1e;
+  padding: 12px 24px 0 24px;
+  z-index: 10;
 }
 
-.contentHeaderInfo {
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.mainSearchInput {
+  width: 100%;
+  background-color: #3c3c3c;
+  border: 1px solid #3c3c3c;
+  padding: 4px 30px 4px 8px;
+  color: #cccccc;
+  font-size: 13px;
+  outline: none;
+  height: 26px;
+}
+
+.mainSearchInput:focus {
+  border-color: #007acc;
+  background-color: #3c3c3c;
+}
+
+.searchIcons {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  color: #cccccc;
+  opacity: 0.8;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.tab {
+  padding: 6px 0;
+  font-size: 13px;
+  color: #969696;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab:hover {
+  color: #dddddd;
+}
+
+.activeTab {
+  color: #e7e7e7;
+}
+
+.activeTab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #007acc;
+}
+
+.contentBody {
   flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background-color: #1e1e1e;
+}
+
+.contentBodyHeader {
+  padding: 8px 24px;
+  margin-top: 10px;
 }
 
 .breadcrumbs {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+  gap: 4px;
+  font-size: 12px;
+  color: #cccccc;
+  margin-bottom: 12px;
 }
 
 .breadcrumb {
-  font-size: 11px;
-  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .breadcrumbLink {
-  color: var(--theme-accent);
-}
-
-.breadcrumbClickable {
   cursor: pointer;
 }
 
-.breadcrumbClickable:hover {
+.breadcrumbLink:hover {
   text-decoration: underline;
 }
 
 .breadcrumbSeparator {
-  color: #ffffff;
+  opacity: 0.6;
 }
 
 .contentTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--theme-foreground);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.contentTitleIcon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-}
-
-.contentDescription {
-  font-size: 12px;
-  color: #ffffff;
-  margin-top: 2px;
-}
-
-.contentBody {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 24px;
-}
-
-/* Settings Sections */
-.settingsSection {
-  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 400;
+  color: #e7e7e7;
+  margin: 0 0 8px 0;
 }
 
 .sectionTitle {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--theme-border);
+  font-size: 19px;
+  font-weight: 300;
+  color: #e7e7e7;
+  margin: 24px 0 12px 0;
 }
 
-/* Setting Item */
-.settingItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 12px;
-  margin-bottom: 4px;
-  background-color: var(--theme-background-secondary);
-  border-radius: 4px;
-  transition: background-color 0.15s ease;
+/* Setting Item V2 (VS Code Style) */
+.settingItemV2 {
+  margin-bottom: 32px;
+  max-width: 800px;
+  padding: 12px 24px;
+  position: relative;
+  border-left: 1px solid transparent;
 }
 
-.settingItem:hover {
-  background-color: var(--theme-background-tertiary);
+.settingItemV2:hover {
+  background-color: #2a2d2e;
 }
 
-.settingInfo {
-  flex: 1;
-  margin-right: 16px;
+.settingItemV2:focus-within {
+  border-left-color: #007acc;
 }
 
-.settingLabel {
-  font-size: 13px;
-  font-weight: 500;
+.settingLabelV2 {
+  font-size: 14px;
   color: var(--theme-foreground);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
-.settingDescription {
-  font-size: 12px;
-  color: #ffffff;
+.settingLabelV2 b {
+  font-weight: 600;
+}
+
+.settingDescriptionV2 {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 12px;
   line-height: 1.4;
 }
 
-.settingControl {
-  flex-shrink: 0;
+.settingControlV2 {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modifiedElsewhere {
+  font-style: italic;
+  font-size: 12px;
+  color: #888;
+  margin-left: 8px;
 }
 
 /* Scrollbar styling */
@@ -245,7 +286,7 @@
   .contentBody {
     padding: 16px;
   }
-  
+
   .contentHeader {
     padding: 12px 16px;
     flex-direction: column;
