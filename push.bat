@@ -1,5 +1,3 @@
 git add .
-## current timestamp
-timestamp=$(date +%s)
-git commit -m "Update $timestamp"
+git commit -m "Added auto-release in workflow"
 git push origin main

@@ -1,6 +1,20 @@
 name: Build All Platforms
 
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a new release'
+        required: false
+        default: false
+        type: boolean
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   build-windows:
@@ -130,3 +144,51 @@ jobs:
         with:
           name: macos-builds
           path: src-tauri/target/release/bundle/dmg/*.dmg
+
+  create-release:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Generate release tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=v$(date +%Y.%m.%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Create and push tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a ${{ steps.tag.outputs.tag }} -m "Release ${{ steps.tag.outputs.tag }}"
+          git push origin ${{ steps.tag.outputs.tag }}
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          files: |
+            artifacts/windows-builds/**/*.msi
+            artifacts/windows-builds/**/*.exe
+            artifacts/linux-builds/**/*.deb
+            artifacts/linux-builds/**/*.rpm
+            artifacts/macos-builds/**/*.dmg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
