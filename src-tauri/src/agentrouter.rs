@@ -466,7 +466,7 @@ pub async fn agentrouter_chat_stream(
         for tool_call in tool_calls_vec {
             if let Some(ref func) = tool_call.function {
                 if let (Some(name), Some(args)) = (&func.name, &func.arguments) {
-                    // Only emit if we have both name and arguments
+                    
                     if !name.is_empty() && !args.is_empty() {
                         let tool_call_json = serde_json::json!({
                             "id": tool_call.id.as_ref().unwrap_or(&format!("call_{}", tool_call.index)),
@@ -477,7 +477,7 @@ pub async fn agentrouter_chat_stream(
                             }
                         });
                         
-                        // Emit tool call as a special event
+                        
                         if let Err(e) = window.emit("agentrouter-tool-call", tool_call_json.to_string()) {
                             println!("Failed to emit tool call event: {}", e);
                         }

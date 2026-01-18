@@ -23,7 +23,7 @@ export const PortsPanel = () => {
 
     useEffect(() => {
         fetchPorts();
-        // Auto-refresh every 5 seconds
+        
         const interval = setInterval(fetchPorts, 5000);
         return () => clearInterval(interval);
     }, [fetchPorts]);

@@ -1,55 +1,55 @@
-/* Settings Pane - Keybindings Section */
 
-/* Keyboard Shortcut Badge */
+
+
 .shortcutBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  background-color: #27272a;
+  background-color: var(--theme-background-tertiary);
   border-radius: 4px;
   font-size: 12px;
   font-family: monospace;
-  color: #ffffff;
+  color: var(--theme-foreground);
   cursor: pointer;
 }
 
 .shortcutBadge:hover {
-  background-color: #3f3f46;
+  background-color: var(--theme-background-secondary);
 }
 
 .shortcutKey {
   padding: 1px 4px;
-  background-color: #3f3f46;
+  background-color: var(--theme-background-secondary);
   border-radius: 2px;
   font-size: 11px;
 }
 
-/* Keybinding Item */
+
 .keybindingItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background-color: #252526;
+  background-color: var(--theme-background-secondary);
   border-radius: 4px;
   margin-bottom: 4px;
 }
 
 .keybindingItem:hover {
-  background-color: #2a2a2e;
+  background-color: var(--theme-background-tertiary);
 }
 
 .keybindingAction {
   font-size: 13px;
-  color: #ffffff;
+  color: var(--theme-foreground);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .keybindingIcon {
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
 }
 
 .keybindingKeys {

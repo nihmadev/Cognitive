@@ -59,7 +59,7 @@ export const AIAssistant = () => {
     setIsLoading(false);
   };
   
-  // Update workspace in chat service when it changes
+  
   useEffect(() => {
     if (chatServiceRef.current && currentWorkspace) {
       chatServiceRef.current.setWorkspace(currentWorkspace);
@@ -94,7 +94,7 @@ export const AIAssistant = () => {
       };
       addMessage(convId, userMsg);
       
-      // Create empty assistant message
+      
       const assistantMsgId = (Date.now() + 1).toString();
       addMessage(convId, {
         id: assistantMsgId,
@@ -103,19 +103,19 @@ export const AIAssistant = () => {
         timestamp: Date.now()
       });
       
-      // Get the current model
+      
       const currentModel = availableModels.find(m => m.id === activeModelId);
       
       if (currentModel) {
         try {
-          // Get conversation history
+          
           const conv = conversations.find(c => c.id === convId);
           let messages = conv?.messages.map(msg => ({
             role: msg.role,
             content: msg.content
           })) || [];
           
-          // Add current user message if not already included
+          
           if (messages.length === 0 || messages[messages.length - 1].content !== content) {
             messages.push({
               role: 'user',
@@ -125,11 +125,11 @@ export const AIAssistant = () => {
           
           let fullAssistantResponse = '';
           
-          // Use ChatService to handle the request
+          
           const chatService = new ChatService();
           chatServiceRef.current = chatService;
           
-          // Set workspace for tool execution
+          
           if (currentWorkspace) {
             chatService.setWorkspace(currentWorkspace);
           }
@@ -142,7 +142,7 @@ export const AIAssistant = () => {
               fullAssistantResponse += chunk;
               appendMessageContent(convId, chunk);
             },
-            // Tool execution callback
+            
             (tool: string, isStart: boolean, _result?: string) => {
               if (isStart) {
                 console.log(`🔧 Executing tool: ${tool}`);
@@ -154,7 +154,7 @@ export const AIAssistant = () => {
           
           chatServiceRef.current = null;
           
-          // Generate title for conversations with temporary title after getting the response
+          
           const currentConv = conversations.find(c => c.id === convId);
           const shouldGenerateTitle = isNewConversation || (currentConv && currentConv.title === 'New Chat...');
           
@@ -165,11 +165,11 @@ export const AIAssistant = () => {
                 content,
                 fullAssistantResponse
               );
-              // Use aiStore to update conversation title
+              
               aiStore.updateConversationTitle(convId, generatedTitle);
             } catch (titleError) {
               console.error('Error generating title:', titleError);
-              // Keep the temporary title if generation fails
+              
             }
           }
         } catch (error) {
@@ -187,9 +187,9 @@ export const AIAssistant = () => {
   
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Allow Ctrl+A to select all text natively
+    
     if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
-      return; // Let the browser handle select all
+      return; 
     }
     
     if (e.key === 'Enter' && !e.shiftKey) {

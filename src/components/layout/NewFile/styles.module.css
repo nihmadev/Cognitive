@@ -1,6 +1,6 @@
-/* NewFileModal - Theme-aware styles */
 
-/* Modal Overlay */
+
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -12,7 +12,7 @@
   backdrop-filter: blur(4px);
 }
 
-/* Modal Container */
+
 .modalContainer {
   background-color: var(--theme-background-secondary);
   border: 1px solid var(--theme-border);
@@ -37,12 +37,12 @@
   }
 }
 
-/* Modal Content */
+
 .modalContent {
   padding: 12px;
 }
 
-/* Search Input Container */
+
 .searchContainer {
   display: flex;
   align-items: center;
@@ -78,14 +78,14 @@
   color: var(--theme-foreground-subtle);
 }
 
-/* File Types List */
+
 .fileTypesList {
   max-height: 200px;
   overflow-y: auto;
   padding: 4px;
 }
 
-/* Scrollbar styling */
+
 .fileTypesList::-webkit-scrollbar {
   width: 6px;
 }
@@ -103,7 +103,7 @@
   background-color: var(--theme-scrollbar-thumb-hover);
 }
 
-/* File Type Item */
+
 .fileTypeItem {
   display: flex;
   align-items: center;
@@ -131,7 +131,7 @@
   color: var(--theme-foreground);
 }
 
-/* File Type Info */
+
 .fileTypeInfo {
   display: flex;
   align-items: center;
@@ -168,7 +168,7 @@
   text-overflow: ellipsis;
 }
 
-/* Shortcut Badge */
+
 .shortcutBadge {
   font-size: 11px;
   color: var(--theme-foreground-subtle);
@@ -180,7 +180,7 @@
   flex-shrink: 0;
 }
 
-/* Empty State */
+
 .emptyState {
   padding: 24px;
   text-align: center;
@@ -188,7 +188,7 @@
   font-size: 14px;
 }
 
-/* Responsive Design */
+
 @media (max-width: 640px) {
   .modalContainer {
     min-width: 320px;
@@ -213,13 +213,13 @@
   }
 }
 
-/* Focus management for accessibility */
+
 .fileTypeItem:focus {
   outline: 2px solid var(--theme-accent);
   outline-offset: 2px;
 }
 
-/* High contrast mode support */
+
 @media (prefers-contrast: high) {
   .modalContainer {
     border-width: 2px;
@@ -235,7 +235,7 @@
   }
 }
 
-/* Reduced motion support */
+
 @media (prefers-reduced-motion: reduce) {
   .modalContainer {
     animation: none;

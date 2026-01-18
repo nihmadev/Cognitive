@@ -18,7 +18,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   useEffect(() => {
     if (isOpen) {
-      // Focus the input when the modal opens
+      
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
@@ -34,13 +34,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   const handleFileOpen = (filePath: string) => {
     openFile(filePath);
-    onClose(); // Close the modal after opening the file
+    onClose(); 
   };
 
   const handleFileOpenAtLine = (filePath: string, _line: number) => {
     openFile(filePath);
-    // TODO: Navigate to specific line - this would need to be implemented in the editor
-    onClose(); // Close the modal after opening the file
+    
+    onClose(); 
   };
 
   if (!isOpen) return null;

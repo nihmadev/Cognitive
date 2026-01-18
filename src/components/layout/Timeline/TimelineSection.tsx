@@ -92,7 +92,7 @@ export const TimelineSection = () => {
     const handleCompare = async (entry: TimelineEntry) => {
         if (!currentWorkspace || !relativePath || !activeFile) return;
         try {
-            // Skip comparison for binary files (including audio files)
+            
             const extension = activeFile.split('.').pop()?.toLowerCase() || '';
             const binaryExtensions = ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg', 'opus', 'weba', 'mp4', 'avi', 'mov', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'ico', 'pdf', 'zip', 'rar', 'exe', 'dll'];
             

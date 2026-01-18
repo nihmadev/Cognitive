@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+
 set -euo pipefail
 
-# Build AppImage for the Linux target using Taura bundler
-# This script assumes you're running on a Linux host with Node and Taura tooling available.
+
+
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist/appimage"
@@ -17,7 +17,7 @@ if [ -f "$ROOT_DIR/package.json" ]; then
 fi
 
 echo "Building AppImage via Taura..."
-# Prefer using npx tauri to build for AppImage target
+
 npx tauri build -t x86_64-unknown-linux-musl || { echo "tauri build failed"; exit 1; }
 
 APPIMAGE_DIR="$ROOT_DIR/src-tauri/target/release/bundle/appimage"

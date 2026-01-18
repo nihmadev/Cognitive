@@ -1,4 +1,4 @@
-// Theme type definitions
+
 export type ThemeId = 
     | 'dark-modern'
     | 'dracula'
@@ -63,7 +63,7 @@ export interface Theme {
 }
 
 
-// Dark Modern theme (VS Code default dark)
+
 const darkModern: Theme = {
     id: 'dark-modern',
     name: 'Dark Modern',
@@ -115,7 +115,7 @@ const darkModern: Theme = {
     },
 };
 
-// Dracula theme
+
 const dracula: Theme = {
     id: 'dracula',
     name: 'Dracula',
@@ -167,7 +167,7 @@ const dracula: Theme = {
     },
 };
 
-// GitHub Dark theme
+
 const githubDark: Theme = {
     id: 'github-dark',
     name: 'GitHub Dark',
@@ -220,7 +220,7 @@ const githubDark: Theme = {
 };
 
 
-// Nord theme
+
 const nord: Theme = {
     id: 'nord',
     name: 'Nord',
@@ -272,7 +272,7 @@ const nord: Theme = {
     },
 };
 
-// One Dark theme
+
 const oneDark: Theme = {
     id: 'one-dark',
     name: 'One Dark',
@@ -324,7 +324,7 @@ const oneDark: Theme = {
     },
 };
 
-// Monokai theme
+
 const monokai: Theme = {
     id: 'monokai',
     name: 'Monokai',
@@ -377,7 +377,7 @@ const monokai: Theme = {
 };
 
 
-// Solarized Dark theme
+
 const solarizedDark: Theme = {
     id: 'solarized-dark',
     name: 'Solarized Dark',
@@ -429,7 +429,7 @@ const solarizedDark: Theme = {
     },
 };
 
-// Tokyo Night theme
+
 const tokyoNight: Theme = {
     id: 'tokyo-night',
     name: 'Tokyo Night',
@@ -481,7 +481,7 @@ const tokyoNight: Theme = {
     },
 };
 
-// Export all themes
+
 export const themes: Record<ThemeId, Theme> = {
     'dark-modern': darkModern,
     'dracula': dracula,

@@ -2,15 +2,58 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #1e1e1e;
-    font-family: Consolas, 'Courier New', monospace;
-    font-size: 14px;
-    line-height: 1.4;
-    color: #cccccc;
+    background: var(--theme-background);
     overflow: hidden;
     position: relative;
+    width: 100%;
+    height: 100%;
 }
 
+/* Стили для xterm.js */
+.terminalView :global(.xterm) {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+}
+
+.terminalView :global(.xterm-viewport) {
+    overflow-y: auto;
+    background-color: var(--theme-background);
+}
+
+.terminalView :global(.xterm-screen) {
+    background-color: var(--theme-background);
+    padding: 8px 0 8px 12px;
+}
+
+/* Убираем padding у canvas */
+.terminalView :global(.xterm-screen canvas) {
+    padding: 0 !important;
+}
+
+/* Убираем padding у всех слоев xterm */
+.terminalView :global(.xterm-rows) {
+    padding: 0 !important;
+}
+
+.terminalView :global(.xterm-viewport)::-webkit-scrollbar {
+    width: 10px;
+}
+
+.terminalView :global(.xterm-viewport)::-webkit-scrollbar-track {
+    background: var(--theme-background);
+}
+
+.terminalView :global(.xterm-viewport)::-webkit-scrollbar-thumb {
+    background: var(--theme-scrollbar-thumb);
+    border-radius: 5px;
+}
+
+.terminalView :global(.xterm-viewport)::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-scrollbar-thumb-hover);
+}
+
+/* Старые стили для совместимости */
 .output {
     flex: 1;
     overflow-y: auto;
@@ -25,16 +68,16 @@
 }
 
 .output::-webkit-scrollbar-track {
-    background: #1e1e1e;
+    background: var(--theme-background);
 }
 
 .output::-webkit-scrollbar-thumb {
-    background: #424242;
+    background: var(--theme-scrollbar-thumb);
     border-radius: 5px;
 }
 
 .output::-webkit-scrollbar-thumb:hover {
-    background: #555555;
+    background: var(--theme-scrollbar-thumb-hover);
 }
 
 .line {
@@ -43,12 +86,25 @@
 
 .cursor {
     opacity: 0;
-    color: #ffffff;
+    color: var(--theme-foreground-subtle);
     animation: none;
+    transition: color 0.1s ease;
 }
 
 .cursor.visible {
     opacity: 1;
+}
+
+.cursor.focused {
+    color: var(--theme-foreground);
+}
+
+.placeholder {
+    color: var(--theme-foreground-subtle);
+    font-style: italic;
+    margin-left: 8px;
+    pointer-events: none;
+    user-select: none;
 }
 
 .hiddenInput {
@@ -60,7 +116,7 @@
     pointer-events: none;
 }
 
-/* Selection styles */
+
 .output ::selection {
     background: rgba(255, 255, 255, 0.25);
 }

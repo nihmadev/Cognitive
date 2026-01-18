@@ -1,6 +1,6 @@
-/* Settings Pane - AI Models Section */
 
-/* Model Cards Grid */
+
+
 .modelCards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -9,8 +9,8 @@
 }
 
 .modelCard {
-  background-color: #252526;
-  border: 1px solid #27272a;
+  background-color: var(--theme-background-secondary);
+  border: 1px solid var(--theme-border);
   border-radius: 4px;
   padding: 14px;
   cursor: pointer;
@@ -19,13 +19,13 @@
 }
 
 .modelCard:hover {
-  border-color: #3f3f46;
-  background-color: #2a2a2e;
+  border-color: var(--theme-border-active);
+  background-color: var(--theme-background-tertiary);
 }
 
 .modelCardActive {
-  border-color: #007fd4;
-  background-color: rgba(14, 99, 156, 0.1);
+  border-color: var(--theme-accent);
+  background-color: var(--theme-accent-muted);
 }
 
 .modelCardActive::after {
@@ -35,7 +35,7 @@
   right: 10px;
   width: 18px;
   height: 18px;
-  background-color: #0e639c;
+  background-color: var(--theme-accent);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
 
 .modelProvider {
   font-size: 10px;
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 500;
@@ -90,17 +90,17 @@
 .modelName {
   font-size: 13px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--theme-foreground);
   margin-bottom: 4px;
 }
 
 .modelDescription {
   font-size: 11px;
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   line-height: 1.4;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .modelCards {
     grid-template-columns: 1fr;

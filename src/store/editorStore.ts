@@ -2,14 +2,14 @@ import { create } from 'zustand';
 import { tauriApi } from '../lib/tauri-api';
 import { useProjectStore } from './projectStore';
 
-// Helper function to get current CSS symbol
+
 const getCurrentCssSymbol = (model: any, position: any): string | null => {
     try {
         const line = position.lineNumber;
         const column = position.column;
         const lineContent = model.getLineContent(line);
         
-        // Look for CSS class selectors (e.g., .className)
+        
         const classMatch = lineContent.match(/\.([a-zA-Z][\w-]*)/);
         if (classMatch) {
             const classStart = lineContent.indexOf(classMatch[0]);
@@ -19,7 +19,7 @@ const getCurrentCssSymbol = (model: any, position: any): string | null => {
             }
         }
         
-        // Look for CSS ID selectors (e.g., #idName)
+        
         const idMatch = lineContent.match(/#([a-zA-Z][\w-]*)/);
         if (idMatch) {
             const idStart = lineContent.indexOf(idMatch[0]);
@@ -29,7 +29,7 @@ const getCurrentCssSymbol = (model: any, position: any): string | null => {
             }
         }
         
-        // Look for CSS element selectors
+        
         const elementMatch = lineContent.match(/([a-zA-Z][\w-]*)\s*{/);
         if (elementMatch) {
             const elementStart = lineContent.indexOf(elementMatch[1]);
@@ -46,15 +46,15 @@ const getCurrentCssSymbol = (model: any, position: any): string | null => {
     }
 };
 
-// Helper function to get current TypeScript/JavaScript symbol with better context awareness
+
 const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | null => {
     try {
-        // First try Monaco's outline provider for most accurate results
+        
         if (monaco.languages && monaco.languages.getDocumentSymbols) {
             try {
                 const symbols = monaco.languages.getDocumentSymbols(model);
                 if (symbols && symbols.length > 0) {
-                    // Find the innermost symbol that contains the current position
+                    
                     let bestMatch: any = null;
                     let smallestRange = Infinity;
                     
@@ -65,7 +65,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                             position.column >= symbol.range.startColumn &&
                             position.column <= symbol.range.endColumn) {
                             
-                            // Calculate the range size to find the most specific symbol
+                            
                             const rangeSize = (symbol.range.endLineNumber - symbol.range.startLineNumber) * 1000 + 
                                            (symbol.range.endColumn - symbol.range.startColumn);
                             
@@ -85,27 +85,27 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
             }
         }
         
-        // Enhanced fallback: analyze multiple lines around cursor for better context
+        
         const currentLine = position.lineNumber;
         const currentColumn = position.column;
         
-        // Look in a range of lines around the cursor (5 lines up and down)
+        
         const startLine = Math.max(1, currentLine - 5);
         const endLine = Math.min(model.getLineCount(), currentLine + 5);
         
-        // Collect all potential symbols in the range
+        
         const candidates: Array<{name: string, line: number, startCol: number, endCol: number, priority: number}> = [];
         
         for (let lineNum = startLine; lineNum <= endLine; lineNum++) {
             const lineContent = model.getLineContent(lineNum);
             const lineTrimmed = lineContent.trim();
             
-            // Skip empty lines and comments
+            
             if (!lineTrimmed || lineTrimmed.startsWith('//') || lineTrimmed.startsWith('/*')) {
                 continue;
             }
             
-            // React hooks (useEffect, useState, etc.)
+            
             const hookMatch = lineContent.match(/(use\w+|React\.\w+)\s*\(/);
             if (hookMatch) {
                 const startCol = lineContent.indexOf(hookMatch[1]) + 1;
@@ -119,7 +119,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Function declarations: function name() {}
+            
             const funcMatch = lineContent.match(/function\s+(\w+)\s*\(/);
             if (funcMatch) {
                 const startCol = lineContent.indexOf(funcMatch[1]) + 1;
@@ -133,7 +133,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Arrow functions: const name = () => {}
+            
             const arrowFuncMatch = lineContent.match(/(?:const|let|var)\s+(\w+)\s*=\s*(?:\([^)]*\)\s*=>|\w+\s*\([^)]*\))/);
             if (arrowFuncMatch) {
                 const startCol = lineContent.indexOf(arrowFuncMatch[1]) + 1;
@@ -147,7 +147,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Class declarations
+            
             const classMatch = lineContent.match(/class\s+(\w+)/);
             if (classMatch) {
                 const startCol = lineContent.indexOf(classMatch[1]) + 1;
@@ -161,7 +161,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Interface declarations
+            
             const interfaceMatch = lineContent.match(/interface\s+(\w+)/);
             if (interfaceMatch) {
                 const startCol = lineContent.indexOf(interfaceMatch[1]) + 1;
@@ -175,7 +175,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Type declarations
+            
             const typeMatch = lineContent.match(/type\s+(\w+)/);
             if (typeMatch) {
                 const startCol = lineContent.indexOf(typeMatch[1]) + 1;
@@ -189,7 +189,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // React components (uppercase first letter)
+            
             const componentMatch = lineContent.match(/(?:const|let|var)\s+([A-Z]\w*)\s*=/);
             if (componentMatch) {
                 const startCol = lineContent.indexOf(componentMatch[1]) + 1;
@@ -203,7 +203,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                 });
             }
             
-            // Decorators
+            
             const decoratorMatch = lineContent.match(/@([a-zA-Z][\w-]*)/);
             if (decoratorMatch) {
                 const startCol = lineContent.indexOf(decoratorMatch[0]) + 1;
@@ -218,14 +218,14 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
             }
         }
         
-        // Find the best candidate
+        
         if (candidates.length > 0) {
-            // Sort by priority (exact matches first) and then by proximity to cursor
+            
             candidates.sort((a, b) => {
                 if (a.priority !== b.priority) {
                     return b.priority - a.priority;
                 }
-                // If same priority, choose the closest to current line
+                
                 const distanceA = Math.abs(a.line - currentLine);
                 const distanceB = Math.abs(b.line - currentLine);
                 return distanceA - distanceB;
@@ -234,7 +234,7 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
             return candidates[0].name;
         }
         
-        // Final fallback: try to get word at cursor position
+        
         const wordAtPosition = model.getWordAtPosition(position);
         if (wordAtPosition && wordAtPosition.word) {
             return wordAtPosition.word;
@@ -275,7 +275,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 editorInstance.getAction('editor.action.selectAll').run();
             } catch (error) {
                 console.error('Failed to execute selectAll:', error);
-                // Fallback to direct selection
+                
                 editorInstance.setSelection(editorInstance.getModel().getFullModelRange());
             }
         }
@@ -289,14 +289,14 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
         const content = editorInstance.getValue();
         
-        // Try to get active file from project store first, then fallback to currentFilePath
+        
         const projectStore = useProjectStore.getState();
         const activeFilePath = projectStore.activeFile || currentFilePath;
         
         if (activeFilePath) {
             try {
                 await tauriApi.writeFile(activeFilePath, content);
-                // Update the file content in project store
+                
                 projectStore.setFileContent(activeFilePath, content);
                 projectStore.markFileAsSaved(activeFilePath);
                 console.log('File saved successfully:', activeFilePath);
@@ -304,7 +304,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 console.error('Failed to save file:', error);
             }
         } else {
-            // If no current file path, use Save As
+            
             await get().saveAs();
         }
     },
@@ -322,7 +322,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             if (filePath) {
                 await tauriApi.writeFile(filePath, content);
                 
-                // Update both stores
+                
                 const projectStore = useProjectStore.getState();
                 projectStore.openFile(filePath);
                 projectStore.setFileContent(filePath, content);
@@ -352,20 +352,20 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 return null;
             }
 
-            // Get the language ID to determine parsing strategy
+            
             const languageId = model.getLanguageId();
             
-            // For CSS files, look for CSS class selectors
+            
             if (languageId === 'css') {
                 return getCurrentCssSymbol(model, position);
             }
             
-            // For TypeScript/JavaScript files, use Monaco's outline provider
+            
             if (['typescript', 'javascript', 'typescriptreact', 'javascriptreact'].includes(languageId)) {
                 return getCurrentTsJsSymbol(monacoInstance, model, position);
             }
 
-            // For other languages, try to get word at cursor
+            
             const word = model.getWordAtPosition(position);
             return word ? word.word : null;
         } catch (error) {
@@ -390,26 +390,30 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 return [];
             }
 
-            // Get the language ID to determine parsing strategy
+            
             const languageId = model.getLanguageId();
             
-            // Only support TypeScript/JavaScript for now
+            
             if (!['typescript', 'javascript', 'typescriptreact', 'javascriptreact'].includes(languageId)) {
                 return [];
             }
 
             try {
-                // Get TypeScript worker for better symbol resolution
+                
                 const worker = await monacoInstance.languages.typescript.getTypeScriptWorker();
                 const client = await worker(model.uri);
                 
-                // Get document symbols using TypeScript language service
+                if (!client || typeof client.getNavigationBarItems !== 'function') {
+                    console.warn('TypeScript worker client does not have getNavigationBarItems method');
+                    return [];
+                }
+                
                 const symbols = await client.getNavigationBarItems(model.uri.toString());
                 if (!symbols || symbols.length === 0) {
                     return [];
                 }
 
-                // Find all symbols that contain the current position
+                
                 const containingSymbols: Array<{
                     name: string;
                     kind: any;
@@ -450,7 +454,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                                 }
                             });
 
-                            // Process child items
+                            
                             if (item.childItems && item.childItems.length > 0) {
                                 processSymbols(item.childItems);
                             }
@@ -461,7 +465,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
                 processSymbols(symbols);
 
-                // Sort by range size (smallest first) to get the hierarchy
+                
                 containingSymbols.sort((a, b) => {
                     const sizeA = (a.range.endLineNumber - a.range.startLineNumber) * 1000 + 
                                  (a.range.endColumn - a.range.startColumn);
@@ -471,9 +475,15 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 });
 
                 return containingSymbols;
-            } catch (tsError) {
+            } catch (tsError: any) {
                 console.warn('Failed to get symbols from TypeScript worker:', tsError);
-                // Fallback to Monaco's built-in symbol provider
+                
+                
+                if (tsError.message && tsError.message.includes('Could not find source file')) {
+                    console.warn('In-memory model detected, skipping TypeScript symbol resolution');
+                    return [];
+                }
+                
                 if (monacoInstance.languages && monacoInstance.languages.getDocumentSymbols) {
                     const symbols = monacoInstance.languages.getDocumentSymbols(model);
                     if (symbols && symbols.length > 0) {

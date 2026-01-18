@@ -4,7 +4,7 @@ use tauri::State;
 use super::store::SessionStore;
 use super::types::*;
 
-/// Session state wrapper for Tauri
+
 pub struct SessionState(pub Mutex<SessionStore>);
 
 impl SessionState {
@@ -19,9 +19,9 @@ impl Default for SessionState {
     }
 }
 
-// ==================== Initialization ====================
 
-/// Initialize session store and load global session
+
+
 #[tauri::command]
 pub fn session_init(state: State<'_, SessionState>) -> Result<GlobalSession, String> {
     let store = state.0.lock().map_err(|e| e.to_string())?;
@@ -38,7 +38,7 @@ pub fn session_get_global(state: State<'_, SessionState>) -> Result<GlobalSessio
     Ok(store.get_global_session())
 }
 
-/// Update window state
+
 #[tauri::command]
 pub fn session_update_window(
     state: State<'_, SessionState>,
@@ -55,7 +55,7 @@ pub fn session_update_zoom(state: State<'_, SessionState>, zoom: f64) -> Result<
     store.update_zoom_level(zoom)
 }
 
-/// Get recent workspaces
+
 #[tauri::command]
 pub fn session_get_recent_workspaces(
     state: State<'_, SessionState>,
@@ -74,7 +74,7 @@ pub fn session_remove_recent_workspace(
     store.remove_recent_workspace(&path)
 }
 
-/// Get last workspace path
+
 #[tauri::command]
 pub fn session_get_last_workspace(state: State<'_, SessionState>) -> Result<Option<String>, String> {
     let store = state.0.lock().map_err(|e| e.to_string())?;
@@ -93,7 +93,7 @@ pub fn session_open_workspace(
     store.set_active_workspace(&workspace_path)
 }
 
-/// Close current workspace
+
 #[tauri::command]
 pub fn session_close_workspace(state: State<'_, SessionState>) -> Result<(), String> {
     let store = state.0.lock().map_err(|e| e.to_string())?;
@@ -110,7 +110,7 @@ pub fn session_get_workspace(
     Ok(store.get_workspace_session(&workspace_path))
 }
 
-/// Save workspace session
+
 #[tauri::command]
 pub fn session_save_workspace(
     state: State<'_, SessionState>,
@@ -142,7 +142,7 @@ pub fn session_open_tab(
     )
 }
 
-/// Close a tab
+
 #[tauri::command]
 pub fn session_close_tab(
     state: State<'_, SessionState>,
@@ -164,9 +164,9 @@ pub fn session_set_active_file(
     store.set_active_file(&workspace_path, file_path)
 }
 
-// ==================== Editor State ====================
 
-/// Update editor view state
+
+
 #[tauri::command]
 pub fn session_update_editor_state(
     state: State<'_, SessionState>,
@@ -189,9 +189,9 @@ pub fn session_get_editor_state(
     Ok(store.get_editor_state(&workspace_path, &file_path))
 }
 
-// ==================== Panel State ====================
 
-/// Update panels state
+
+
 #[tauri::command]
 pub fn session_update_panels(
     state: State<'_, SessionState>,
@@ -213,9 +213,9 @@ pub fn session_update_split_view(
     store.update_split_view(&workspace_path, split_view)
 }
 
-// ==================== File Explorer State ====================
 
-/// Update expanded folders
+
+
 #[tauri::command]
 pub fn session_update_expanded_folders(
     state: State<'_, SessionState>,
@@ -235,7 +235,7 @@ pub fn session_save_all(state: State<'_, SessionState>) -> Result<(), String> {
     store.save_all()
 }
 
-/// Delete workspace session
+
 #[tauri::command]
 pub fn session_delete_workspace(
     state: State<'_, SessionState>,
@@ -255,7 +255,7 @@ pub fn session_get_paths(state: State<'_, SessionState>) -> Result<SessionPaths,
     })
 }
 
-/// Session paths info
+
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SessionPaths {

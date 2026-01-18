@@ -1,4 +1,4 @@
-/* Folders Table Styles */
+
 
 .foldersTable {
     background-color: var(--theme-background-tertiary);
@@ -125,7 +125,7 @@
     color: var(--theme-foreground-muted);
 }
 
-/* Add Folder Button */
+
 .addFolderBtn {
     display: inline-flex;
     align-items: center;

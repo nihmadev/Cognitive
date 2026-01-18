@@ -10,7 +10,7 @@ export const generateSystemPrompt = (context: SystemPromptContext): string => {
    const isAgent = mode === 'agent';
 
    if (!isAgent) {
-      // Simple prompt for responder mode
+      
       return `# You are an expert full-stack engineer.
     
     You are a concise coding assistant. Provide complete, ready-to-use solutions.
@@ -29,7 +29,7 @@ export const generateSystemPrompt = (context: SystemPromptContext): string => {
     ${user_query ? `## User Query\n${user_query}` : ''}`;
    }
 
-   // Fast Prompt for Agent Mode
+   
    return `⚠️ CRITICAL WARNING: ALWAYS provide ALL required parameters for tool calls. 
     - find_by_name: pattern (string) + path (string) are BOTH REQUIRED
     - grep: query (string) + path (string) are BOTH REQUIRED

@@ -25,24 +25,24 @@ export const CloneRepoModal: React.FC<CloneRepoModalProps> = ({ isOpen, onClose 
       setRepoUrl('');
       setError(null);
       
-      // Find search-bar and calculate position
-      // Try multiple selectors to find the search bar
+      
+      
       const searchBar = 
         (document.querySelector('[class*="searchBar"]') as HTMLElement) ||
         (document.querySelector('.searchBar') as HTMLElement);
       
       if (searchBar) {
         const rect = searchBar.getBoundingClientRect();
-        const modalWidth = 600; // Same as in CSS
+        const modalWidth = 600; 
         const searchBarWidth = rect.width;
         
-        // Calculate symmetric position: modal should extend equally on both sides
-        // If search-bar is 500px and modal is 600px, we need 50px on each side
+        
+        
         const offset = (modalWidth - searchBarWidth) / 2;
         let left = rect.left - offset;
         
-        // Ensure modal doesn't go off-screen
-        const minLeft = 8; // Minimum margin from screen edge
+        
+        const minLeft = 8; 
         const maxLeft = window.innerWidth - modalWidth - minLeft;
         left = Math.max(minLeft, Math.min(left, maxLeft));
         
@@ -52,7 +52,7 @@ export const CloneRepoModal: React.FC<CloneRepoModalProps> = ({ isOpen, onClose 
           width: modalWidth
         });
       } else {
-        // Fallback to center if search-bar not found
+        
         setPosition(null);
       }
     }
@@ -81,25 +81,25 @@ export const CloneRepoModal: React.FC<CloneRepoModalProps> = ({ isOpen, onClose 
   const normalizeRepoUrl = (url: string): string => {
     let normalized = url.trim();
     
-    // Remove trailing .git if present
+    
     if (normalized.endsWith('.git')) {
       normalized = normalized.slice(0, -4);
     }
     
-    // If it's not a full URL, assume it's a GitHub repo
+    
     if (!normalized.includes('://') && !normalized.startsWith('git@')) {
-      // If it's just owner/repo format, add github.com
+      
       if (normalized.includes('/') && !normalized.includes('@')) {
         normalized = `https://github.com/${normalized}`;
       }
     }
     
-    // Convert to https:// if it's a GitHub URL without protocol
+    
     if (normalized.startsWith('github.com/')) {
       normalized = `https://${normalized}`;
     }
     
-    // Add .git extension for git clone
+    
     if (!normalized.endsWith('.git')) {
       normalized = `${normalized}.git`;
     }
@@ -117,25 +117,25 @@ export const CloneRepoModal: React.FC<CloneRepoModalProps> = ({ isOpen, onClose 
       setIsCloning(true);
       setError(null);
 
-      // Normalize the URL
+      
       const normalizedUrl = normalizeRepoUrl(repoUrl);
 
-      // Open folder dialog to select where to clone
+      
       const selectedFolder = await tauriApi.openFolderDialog();
       if (!selectedFolder) {
         setIsCloning(false);
         return;
       }
 
-      // Extract repo name from URL
+      
       const urlParts = normalizedUrl.split('/');
       const repoName = urlParts[urlParts.length - 1].replace('.git', '');
       const clonePath = `${selectedFolder}/${repoName}`;
 
-      // Clone the repository
+      
       await tauriApi.gitClone(normalizedUrl, clonePath);
 
-      // Open the cloned repository
+      
       setWorkspace(clonePath);
       onClose();
     } catch (err: any) {

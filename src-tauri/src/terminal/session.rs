@@ -83,7 +83,7 @@ impl TerminalSession {
             if self.pid > 0 {
                 let _ = std::process::Command::new("taskkill")
                     .args(&["/F", "/T", "/PID", &self.pid.to_string()])
-                    .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                    .creation_flags(0x08000000) 
                     .output();
             }
         }

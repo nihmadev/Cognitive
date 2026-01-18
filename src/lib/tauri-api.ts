@@ -74,6 +74,7 @@ export type GitFileStatus = {
     path: string;
     status: string;
     is_staged: boolean;
+    is_dir: boolean;
 };
 
 export type GitInfo = {
@@ -149,7 +150,7 @@ export type InitialState = {
     profile: string | null;
 };
 
-// Timeline types
+
 export type TimelineEntry = {
     id: string;
     timestamp: number;
@@ -176,7 +177,7 @@ export type RenameResult = {
     was_file: boolean;
 };
 
-// NPM types
+
 export type NpmScript = {
     name: string;
     command: string;
@@ -189,13 +190,13 @@ export type RunningScript = {
     start_time: string;
 };
 
-// Google API types
+
 export type GoogleMessage = {
     role: string;
     parts: { text: string }[];
 };
 
-// AgentRouter types
+
 export type AgentRouterMessage = {
     role: string;
     content: string;
@@ -270,13 +271,13 @@ export type AgentRouterModelsResponse = {
 
 
 export const tauriApi = {
-    // Initial state
+
     getInitialState: () => invoke<InitialState>('get_initial_state'),
     readDir: (path: string) => invoke<any[]>('read_dir', { path }),
     readFile: (path: string) => invoke<string>('read_file', { path }),
     readFileBinary: (path: string) => invoke<number[]>('read_file_binary', { path }),
-    readFileBinaryChunked: (path: string, offset?: number, size?: number) =>
-        invoke<number[]>('read_file_binary_chunked', { path, offset, size }),
+    readFileBinaryChunked: (path: string, offset?: number, chunk_size?: number) =>
+        invoke<number[]>('read_file_binary_chunked', { path, offset, chunk_size }),
     getFileSize: (path: string) => invoke<number>('get_file_size', { path }),
     writeFile: (path: string, content: string) => invoke<void>('write_file', { path, content }),
     createFile: (path: string) => invoke<void>('create_file', { path }),
@@ -288,7 +289,7 @@ export const tauriApi = {
     openFileDialog: () => invoke<string | null>('open_file_dialog'),
     openFolderDialog: () => invoke<string | null>('open_folder_dialog'),
     saveFileDialog: () => invoke<string | null>('save_file_dialog'),
-    // Git commands
+
     gitStatus: (path: string) => invoke<GitFileStatus[]>('git_status', { path }),
     gitInfo: (path: string) => invoke<GitInfo>('git_info', { path }),
     gitClone: (url: string, path: string) => invoke<void>('git_clone', { url, path }),
@@ -316,18 +317,18 @@ export const tauriApi = {
     replaceAll: (root_path: string, options: SearchOptions, replace_query: string, preserve_case_flag: boolean) =>
         invoke<ReplaceAllResult>('replace_all', { rootPath: root_path, options, replace_query, preserve_case_flag }),
     getAllFiles: (root_path: string) => invoke<any[]>('get_all_files', { rootPath: root_path }),
-    // Ports commands
+
     getListeningPorts: () => invoke<PortInfo[]>('get_listening_ports'),
-    // Problems commands
+
     getProblems: (projectPath: string) => invoke<ProblemsResult>('get_problems', { projectPath }),
     clearProblemsCache: () => invoke<void>('clear_problems_cache'),
     getProblemsCacheStats: () => invoke<ProblemsCacheStats>('get_problems_cache_stats'),
-    // Shell commands
+
     openUrl: (url: string) => openUrl(url),
-    // Window commands
+
     openNewWindow: (folderPath: string, profileName: string) =>
         invoke<void>('open_new_window', { folderPath, profileName }),
-    // Timeline commands
+
     timelineSaveSnapshot: (workspace: string, filePath: string, content: string) =>
         invoke<TimelineEntry>('timeline_save_snapshot', { workspace, filePath, content }),
     timelineGetHistory: (workspace: string, filePath: string) =>
@@ -342,22 +343,22 @@ export const tauriApi = {
         invoke<void>('timeline_delete_entry', { workspace, filePath, entryId }),
     timelineClearHistory: (workspace: string, filePath: string) =>
         invoke<void>('timeline_clear_history', { workspace, filePath }),
-    // NPM commands
+
     npmGetScripts: (workspace: string) => invoke<NpmScript[]>('npm_get_scripts', { workspace }),
     npmRunScript: (workspace: string, scriptName: string) => invoke<string>('npm_run_script', { workspace, scriptName }),
     npmStopScript: (scriptName: string) => invoke<string>('npm_stop_script', { scriptName }),
     npmGetRunningScripts: () => invoke<RunningScript[]>('npm_get_running_scripts'),
     npmRunScriptInTerminal: (workspace: string, scriptName: string) => invoke<string>('npm_run_script_in_terminal', { workspace, scriptName }),
-    // File watcher commands
+
     startFileWatcher: (path: string) => invoke<void>('start_file_watcher', { path }),
     stopFileWatcher: (path: string) => invoke<void>('stop_file_watcher', { path }),
     addWatchPath: (path: string) => invoke<void>('add_watch_path', { path }),
-    // Audio cache commands
-    getCachedAudio: (path: string) => invoke<number[] | null>('get_cached_audio', { path }),
-    cacheAudio: (path: string, data: number[]) => invoke<void>('cache_audio', { path, data }),
+
+    getCachedAudio: (key: string) => invoke<number[] | null>('get_cached_audio', { key }),
+    cacheAudio: (key: string, data: number[]) => invoke<void>('cache_audio', { key, data }),
     clearAudioCache: () => invoke<void>('clear_audio_cache'),
     getAudioCacheStats: () => invoke<[number, number, number]>('get_audio_cache_stats'),
-    // Audio player commands
+
     audioLoadFile: (path: string) => invoke<void>('audio_load_file', { path }),
     audioGetState: () => invoke<any>('audio_get_state'),
     audioPlay: () => invoke<void>('audio_play'),
@@ -365,7 +366,7 @@ export const tauriApi = {
     audioStop: () => invoke<void>('audio_stop'),
     audioSeek: (position: number) => invoke<void>('audio_seek', { position }),
     audioSetVolume: (volume: number) => invoke<void>('audio_set_volume', { volume }),
-    // Ollama commands
+
     ollamaChat: (model: string, messages: any[], options?: any) =>
         invoke<any>('ollama_chat', { model, messages, options }),
     ollamaChatStream: (model: string, messages: any[], options?: any) =>
@@ -377,7 +378,7 @@ export const tauriApi = {
     ollamaGenerate: (prompt: string, model: string) =>
         invoke<string>('ollama_generate', { prompt, model }),
     ollamaListLocalModels: () => invoke<any[]>('ollama_list_local_models'),
-    // AgentRouter commands
+
     agentrouterConfigure: (apiKey: string, baseUrl?: string) =>
         invoke<void>('agentrouter_configure', { apiKey, baseUrl }),
     agentrouterChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number, topP?: number) =>
@@ -389,7 +390,7 @@ export const tauriApi = {
     agentrouterCreateFile: (filePath: string, content?: string) =>
         invoke<string>('agentrouter_create_file', { filePath, content }),
     agentrouterListModels: () => invoke<AgentRouterModelsResponse>('agentrouter_list_models'),
-    // OpenAI commands
+
     openaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('openai_chat', { model, messages, maxTokens, temperature }),
     openaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
@@ -398,36 +399,30 @@ export const tauriApi = {
         invoke<string>('openai_chat_stream_with_tools', { model, messages, tools, toolChoice, maxTokens, temperature }),
     openaiChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('openai_chat_complete', { model, messages, maxTokens }),
-    // Anthropic commands
+
     anthropicChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('anthropic_chat', { model, messages, maxTokens, temperature }),
     anthropicChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('anthropic_chat_stream', { model, messages, maxTokens, temperature }),
     anthropicChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('anthropic_chat_complete', { model, messages, maxTokens }),
-    // Google commands
+
     googleChat: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('google_chat', { model, messages, maxTokens, temperature }),
     googleChatStream: (model: string, messages: GoogleMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('google_chat_stream', { model, messages, maxTokens, temperature }),
     googleChatComplete: (model: string, messages: GoogleMessage[], maxTokens?: number) =>
         invoke<string>('google_chat_complete', { model, messages, maxTokens }),
-    // xAI commands
+
     xaiChat: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('xai_chat', { model, messages, maxTokens, temperature }),
     xaiChatStream: (model: string, messages: AgentRouterMessage[], maxTokens?: number, temperature?: number) =>
         invoke<string>('xai_chat_stream', { model, messages, maxTokens, temperature }),
     xaiChatComplete: (model: string, messages: any[], maxTokens?: number) =>
         invoke<string>('xai_chat_complete', { model, messages, maxTokens }),
-    // API key management
+
     setApiKey: (provider: string, key: string) =>
         invoke<void>('set_api_key', { provider, key }),
     getApiKeys: () => invoke<Record<string, boolean>>('get_api_keys'),
-    // Terminal commands
-    createTerminal: (terminalType: string, cwd?: string, size?: { rows: number; cols: number }) =>
-        invoke<{ terminal_id: string; pid: number; process_name: string }>('create_terminal', { terminalType, cwd, size }),
-    writeTerminal: (terminalId: string, data: string) =>
-        invoke<void>('write_terminal', { terminalId, data }),
-    closeTerminal: (terminalId: string) =>
-        invoke<void>('close_terminal', { terminalId }),
+
 };

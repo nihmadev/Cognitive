@@ -18,7 +18,7 @@ export class OpenAIModelsService {
   }
 
   private async getFallbackModels(): Promise<OpenAIModel[]> {
-    // Return the specified OpenAI models
+    
     return [
       {
         id: 'gpt-5.2',
@@ -132,7 +132,7 @@ export class OpenAIModelsService {
   }
 
 
-  // Get model details by ID
+  
   async getModelDetails(_apiKey: string, modelId: string): Promise<OpenAIModel | null> {
     try {
       const models = await this.fetchAvailableModels();
@@ -143,7 +143,7 @@ export class OpenAIModelsService {
     }
   }
 
-  // Get models by capability
+  
   async getModelsByCapability(_apiKey: string, capability: string): Promise<OpenAIModel[]> {
     try {
       const models = await this.fetchAvailableModels();
@@ -154,7 +154,7 @@ export class OpenAIModelsService {
     }
   }
 
-  // Get recommended model for specific use case
+  
   getRecommendedModel(models: OpenAIModel[], useCase: 'coding' | 'analysis' | 'general' | 'vision' | 'cost-effective'): string {
     const availableModels = models.filter(model => 
       model.capabilities.includes(useCase === 'vision' ? 'vision' : 'text')
@@ -191,22 +191,22 @@ export class OpenAIModelsService {
     }
   }
 
-  // Clear cache manually (no-op since we don't use cache anymore)
+  
   clearCache(): void {
     console.log('OpenAIModelsService: Cache cleared (no-op)');
   }
 
-  // Get cache status (no-op since we don't use cache anymore)
+  
   getCacheStatus(): { size: number; keys: string[] } {
     return { size: 0, keys: [] };
   }
 
-  // Force refresh models
+  
   async refreshModels(_apiKey?: string): Promise<OpenAIModel[]> {
     return this.fetchAvailableModels();
   }
 
-  // Get models by category
+  
   getModelsByCategory(models: OpenAIModel[], category: 'reasoning' | 'multimodal' | 'cost-effective' | 'general'): OpenAIModel[] {
     switch (category) {
       case 'reasoning':
@@ -221,7 +221,7 @@ export class OpenAIModelsService {
     }
   }
 
-  // Get model statistics
+  
   getModelStats(models: OpenAIModel[]): {
     total: number;
     withVision: number;
@@ -237,5 +237,5 @@ export class OpenAIModelsService {
   }
 }
 
-// Export singleton instance
+
 export const openAIModelsService = new OpenAIModelsService();

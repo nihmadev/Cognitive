@@ -11,7 +11,7 @@ use crate::keybindings::utils::normalize_platform_modifiers;
 
 pub type KeybindingsState = Mutex<KeybindingsStore>;
 
-/// Get config path for keybindings
+
 fn get_keybindings_path(app: &AppHandle) -> PathBuf {
     app.path()
         .app_config_dir()
@@ -19,7 +19,7 @@ fn get_keybindings_path(app: &AppHandle) -> PathBuf {
         .join("keybindings.json")
 }
 
-/// Initialize keybindings store
+
 #[tauri::command]
 pub fn keybindings_init(app: AppHandle, state: State<'_, KeybindingsState>) -> Result<(), String> {
     let config_path = get_keybindings_path(&app);
@@ -37,7 +37,7 @@ pub fn keybindings_get_all(
     Ok(store.get_all())
 }
 
-/// Lookup keybinding
+
 #[tauri::command]
 pub fn keybindings_lookup(
     modifiers: Vec<Modifier>,
@@ -72,7 +72,7 @@ pub fn keybindings_lookup_chord(
     ))
 }
 
-/// Set user keybinding
+
 #[tauri::command]
 pub fn keybindings_set(
     app: AppHandle,
@@ -100,7 +100,7 @@ pub fn keybindings_remove(
     Ok(())
 }
 
-/// Disable keybinding
+
 #[tauri::command]
 pub fn keybindings_disable(
     app: AppHandle,
@@ -123,14 +123,14 @@ pub fn keybindings_get_conflicts(
     Ok(store.get_conflicts())
 }
 
-/// Reset to defaults
+
 #[tauri::command]
 pub fn keybindings_reset(app: AppHandle, state: State<'_, KeybindingsState>) -> Result<(), String> {
     let config_path = get_keybindings_path(&app);
     let mut store = state.lock().map_err(|e| e.to_string())?;
     store.reset_to_defaults();
 
-    // Delete user config file
+    
     if config_path.exists() {
         fs::remove_file(&config_path)
             .map_err(|e| format!("Failed to delete config file: {}", e))?;
@@ -138,7 +138,7 @@ pub fn keybindings_reset(app: AppHandle, state: State<'_, KeybindingsState>) -> 
     Ok(())
 }
 
-/// Format keybinding for display (platform-aware)
+
 #[tauri::command]
 pub fn keybindings_format_display(binding: Keybinding) -> String {
     let mut parts = Vec::new();
@@ -163,7 +163,7 @@ pub fn keybindings_format_display(binding: Keybinding) -> String {
         parts.push(symbol.to_string());
     }
 
-    // Format key
+    
     let key_display = match binding.key.as_str() {
         "ArrowUp" => "↑",
         "ArrowDown" => "↓",

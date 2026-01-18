@@ -31,7 +31,7 @@ interface OutlineState {
     isLoading: boolean;
     activeSymbol: string | null;
     expandedSymbols: Set<string>;
-    // Cache symbols per file path
+    
     symbolsCache: Map<string, OutlineSymbol[]>;
     currentFile: string | null;
     setSymbols: (symbols: OutlineSymbol[], filePath?: string) => void;
@@ -41,13 +41,13 @@ interface OutlineState {
     expandAll: () => void;
     collapseAll: () => void;
     clearSymbols: () => void;
-    // Load cached symbols for a file (returns true if cache hit)
+    
     loadFromCache: (filePath: string) => boolean;
-    // Invalidate cache for a file (on content change)
+    
     invalidateCache: (filePath: string) => void;
 }
 
-// Helper to collect all symbol names for expand all
+
 const collectSymbolNames = (symbols: OutlineSymbol[]): string[] => {
     const names: string[] = [];
     const collect = (syms: OutlineSymbol[]) => {
@@ -71,7 +71,7 @@ export const useOutlineStore = create<OutlineState>((set, get) => ({
     currentFile: null,
 
     setSymbols: (symbols, filePath) => {
-        // Auto-expand top-level symbols
+        
         const topLevelNames = symbols
             .filter(s => s.children && s.children.length > 0)
             .map(s => s.name);
@@ -79,11 +79,11 @@ export const useOutlineStore = create<OutlineState>((set, get) => ({
         const { symbolsCache, currentFile } = get();
         const newCache = new Map(symbolsCache);
         
-        // Cache the symbols for this file
+        
         const cacheKey = filePath || currentFile;
         if (cacheKey) {
             newCache.set(cacheKey, symbols);
-            // Limit cache size to 20 files
+            
             if (newCache.size > 20) {
                 const firstKey = newCache.keys().next().value;
                 if (firstKey) newCache.delete(firstKey);

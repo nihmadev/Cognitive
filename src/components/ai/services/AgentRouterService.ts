@@ -11,7 +11,7 @@ interface ToolCall {
   };
 }
 
-// Define available tools for AgentRouter API
+
 const AGENT_ROUTER_TOOLS: AgentRouterTool[] = [
   {
     type: 'function',
@@ -151,23 +151,23 @@ export class AgentRouterService implements AIService {
     let unlistenToolCalls: (() => void) | undefined;
     
     try {
-      // Check if already aborted
+      
       if (signal?.aborted) {
         return;
       }
 
-      // Determine mode from system prompt
-      // Check if system message contains "autonomous coding agent" (agent mode) or "concise coding assistant" (responder mode)
+      
+      
       const systemMessage = messages.find(m => m.role === 'system');
       const isAgentMode = systemMessage?.content.includes('autonomous coding agent') || 
                          systemMessage?.content.includes('You are an autonomous coding agent');
       const isResponderMode = systemMessage?.content.includes('concise coding assistant') ||
                              systemMessage?.content.includes('Do not use or mention tools');
 
-      // In responder mode, don't pass tools to API
+      
       const shouldUseTools = isAgentMode && !isResponderMode;
 
-      // Setup listener for streaming content events
+      
       unlistenStream = await listen<string>('agentrouter-stream', (event) => {
         if (signal?.aborted) {
           if (unlistenStream) unlistenStream();
@@ -178,7 +178,7 @@ export class AgentRouterService implements AIService {
         onStreamChunk(chunk);
       });
 
-      // Setup listener for tool call events (from Rust) - only in agent mode
+      
       if (shouldUseTools) {
         unlistenToolCalls = await listen<string>('agentrouter-tool-call', (event) => {
           if (signal?.aborted) {
@@ -186,16 +186,16 @@ export class AgentRouterService implements AIService {
           }
           try {
             const toolCall: ToolCall = JSON.parse(event.payload);
-            // Parse arguments JSON string to object
+            
             const args = JSON.parse(toolCall.function.arguments);
-            // Convert to JSON format that ToolParser can understand
-            // Format: { "tool": "name", "args": {...} }
+            
+            
             const toolCallJson = JSON.stringify({
               tool: toolCall.function.name,
               args: args
             });
-            // Inject tool call into stream in JSON format
-            // Add newlines to separate tool call from regular text
+            
+            
             onStreamChunk(`\n${toolCallJson}\n`);
           } catch (error) {
             console.error('Failed to parse tool call:', error);
@@ -203,7 +203,7 @@ export class AgentRouterService implements AIService {
         });
       }
 
-      // Setup abort handler
+      
       const abortHandler = () => {
         if (unlistenStream) {
           unlistenStream();
@@ -216,7 +216,7 @@ export class AgentRouterService implements AIService {
       };
       signal?.addEventListener('abort', abortHandler);
       
-      // Call AgentRouter API - only pass tools in agent mode
+      
       await tauriApi.agentrouterChatStream(
         modelId, 
         messages, 
@@ -224,7 +224,7 @@ export class AgentRouterService implements AIService {
         undefined, 
         undefined, 
         shouldUseTools ? AGENT_ROUTER_TOOLS : undefined, 
-        shouldUseTools ? 'auto' : undefined // Let the model decide when to use tools (only in agent mode)
+        shouldUseTools ? 'auto' : undefined 
       );
       
       signal?.removeEventListener('abort', abortHandler);

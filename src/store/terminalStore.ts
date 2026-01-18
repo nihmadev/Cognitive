@@ -65,12 +65,15 @@ export const useTerminalStore = create<TerminalState>((set, get) => {
             const { terminals, activeTerminalId } = get();
             const terminal = terminals.find((t) => t.id === id);
 
-            // Close backend terminal if exists
+
+            // PTY closure is handled by the component's cleanup or the plugin automatically
+            /*
             if (terminal?.backendTerminalId) {
                 tauriApi.closeTerminal(terminal.backendTerminalId).catch((err) => {
                     console.error('Failed to close backend terminal:', err);
                 });
             }
+            */
 
             const newTerminals = terminals.filter((t) => t.id !== id);
 

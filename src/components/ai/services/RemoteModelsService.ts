@@ -9,7 +9,7 @@ export interface RemoteModel {
 }
 
 class RemoteModelsService {
-  // This service is deprecated - models are now statically defined in OpenAIModelsService
+  
   async getAllModels(): Promise<RemoteModel[]> {
     return [];
   }
@@ -19,7 +19,7 @@ class RemoteModelsService {
   }
 
   clearCache(): void {
-    // No-op - cache removed
+    
   }
 }
 

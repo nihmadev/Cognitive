@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 
-// Получить статус диагностики для файла
+
 export const useFileDiagnosticStatus = (filePath: string, isDir: boolean) => {
     const monacoDiagnostics = useDiagnosticsStore(state => state.monacoDiagnostics);
     
@@ -19,7 +19,7 @@ export const useFileDiagnosticStatus = (filePath: string, isDir: boolean) => {
         for (const d of diagnostics) {
             if (d.type === 'error') {
                 hasError = true;
-                break; // Ошибка имеет приоритет
+                break; 
             } else if (d.type === 'warning') {
                 hasWarning = true;
             }

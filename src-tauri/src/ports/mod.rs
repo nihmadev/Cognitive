@@ -30,9 +30,9 @@ pub async fn get_listening_ports() -> Result<Vec<PortInfo>, String> {
     }
 }
 
-// ============================================================================
-// Windows Implementation
-// ============================================================================
+
+
+
 
 #[cfg(target_os = "windows")]
 fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
@@ -49,7 +49,7 @@ fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
     let mut ports: Vec<PortInfo> = Vec::new();
     let mut seen_ports: HashSet<(u16, String)> = HashSet::new();
 
-    // Build process name cache for better performance
+    
     let process_cache = build_process_cache_windows();
 
     for line in stdout.lines().skip(4) {
@@ -70,12 +70,12 @@ fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
             "LISTENING".to_string()
         };
 
-        // Only show LISTENING TCP or UDP ports
+        
         if protocol == "TCP" && state != "LISTENING" {
             continue;
         }
 
-        // Parse port from address (format: 0.0.0.0:port or [::]:port)
+        
         let port = match local_addr.rsplit(':').next() {
             Some(port_str) => match port_str.parse::<u16>() {
                 Ok(p) if p > 0 => p,
@@ -84,14 +84,14 @@ fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
             None => continue,
         };
 
-        // Skip duplicates by (port, protocol)
+        
         let key = (port, protocol.clone());
         if seen_ports.contains(&key) {
             continue;
         }
         seen_ports.insert(key);
 
-        // PID is always the last column in netstat -ano output
+        
         let pid = parts.last().and_then(|s| s.parse::<u32>().ok());
         let process_name = pid.and_then(|p| process_cache.get(&p).cloned());
 
@@ -125,7 +125,7 @@ fn build_process_cache_windows() -> std::collections::HashMap<u32, String> {
     let stdout = String::from_utf8_lossy(&output.stdout);
 
     for line in stdout.lines() {
-        // Parse CSV format: "process.exe","pid","Session Name","Session#","Mem Usage"
+        
         let fields: Vec<&str> = line.split(',').collect();
         if fields.len() < 2 {
             continue;
@@ -144,13 +144,13 @@ fn build_process_cache_windows() -> std::collections::HashMap<u32, String> {
     cache
 }
 
-// ============================================================================
-// Linux Implementation
-// ============================================================================
+
+
+
 
 #[cfg(target_os = "linux")]
 fn get_ports_linux() -> Result<Vec<PortInfo>, String> {
-    // Try ss first, fallback to netstat if not available
+    
     match get_ports_linux_ss() {
         Ok(ports) => Ok(ports),
         Err(_) => get_ports_linux_netstat(),
@@ -192,15 +192,15 @@ fn get_ports_linux_ss() -> Result<Vec<PortInfo>, String> {
             None => continue,
         };
 
-        // Skip duplicates by (port, protocol)
+        
         let key = (port, protocol.clone());
         if seen_ports.contains(&key) {
             continue;
         }
         seen_ports.insert(key);
 
-        // Find the users: field - it's not always at a fixed position
-        // Look for field starting with "users:" in the line
+        
+        
         let (pid, process_name) = parts
             .iter()
             .find(|&&field| field.starts_with("users:"))
@@ -263,14 +263,14 @@ fn get_ports_linux_netstat() -> Result<Vec<PortInfo>, String> {
             None => continue,
         };
 
-        // Skip duplicates
+        
         let key = (port, protocol_clean.clone());
         if seen_ports.contains(&key) {
             continue;
         }
         seen_ports.insert(key);
 
-        // PID/Program is the last column in netstat -tulnp
+        
         let (pid, process_name) = parts
             .last()
             .map(|&field| parse_netstat_process_info(field))
@@ -292,11 +292,11 @@ fn get_ports_linux_netstat() -> Result<Vec<PortInfo>, String> {
 
 #[cfg(target_os = "linux")]
 fn parse_linux_process_info(info: &str) -> (Option<u32>, Option<String>) {
-    // Format: users:(("process",pid=1234,fd=3)) or users:(("ssh",pid=1234,fd=12),("ssh",pid=5678,fd=13))
+    
     let mut pid = None;
     let mut name = None;
 
-    // Extract PID
+    
     if let Some(p) = info.find("pid=") {
         let rest = &info[p + 4..];
         if let Some(end) = rest.find(|c| c == ',' || c == ')') {
@@ -304,7 +304,7 @@ fn parse_linux_process_info(info: &str) -> (Option<u32>, Option<String>) {
         }
     }
 
-    // Extract process name
+    
     if let Some(start) = info.find("((\"") {
         let rest = &info[start + 3..];
         if let Some(end) = rest.find('"') {
@@ -317,7 +317,7 @@ fn parse_linux_process_info(info: &str) -> (Option<u32>, Option<String>) {
 
 #[cfg(target_os = "linux")]
 fn parse_netstat_process_info(info: &str) -> (Option<u32>, Option<String>) {
-    // Format: 1234/process_name or -
+    
     if info == "-" {
         return (None, None);
     }
@@ -329,16 +329,16 @@ fn parse_netstat_process_info(info: &str) -> (Option<u32>, Option<String>) {
     (pid, name)
 }
 
-// ============================================================================
-// macOS Implementation
-// ============================================================================
+
+
+
 
 #[cfg(target_os = "macos")]
 fn get_ports_macos() -> Result<Vec<PortInfo>, String> {
     let mut ports: Vec<PortInfo> = Vec::new();
     let mut seen_ports: HashSet<(u16, String)> = HashSet::new();
 
-    // Get TCP LISTEN ports
+    
     if let Ok(tcp_ports) = get_ports_macos_tcp() {
         for port_info in tcp_ports {
             let key = (port_info.port, port_info.protocol.clone());
@@ -349,7 +349,7 @@ fn get_ports_macos() -> Result<Vec<PortInfo>, String> {
         }
     }
 
-    // Get UDP ports
+    
     if let Ok(udp_ports) = get_ports_macos_udp() {
         for port_info in udp_ports {
             let key = (port_info.port, port_info.protocol.clone());

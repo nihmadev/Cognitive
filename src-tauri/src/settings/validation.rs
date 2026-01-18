@@ -1,10 +1,10 @@
 use super::types::*;
 
-/// Validates UI settings
+
 pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
     let mut errors = Vec::new();
 
-    // Validate font size
+    
     if settings.font_size < 8 || settings.font_size > 72 {
         errors.push(ValidationError {
             path: "ui.fontSize".to_string(),
@@ -12,7 +12,7 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
         });
     }
 
-    // Validate line height
+    
     if settings.line_height < 1.0 || settings.line_height > 3.0 {
         errors.push(ValidationError {
             path: "ui.lineHeight".to_string(),
@@ -20,7 +20,7 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
         });
     }
 
-    // Validate tab size
+    
     if settings.tab_size < 1 || settings.tab_size > 8 {
         errors.push(ValidationError {
             path: "ui.tabSize".to_string(),
@@ -28,7 +28,7 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
         });
     }
 
-    // Validate zoom level
+    
     if settings.zoom_level < 0.5 || settings.zoom_level > 2.0 {
         errors.push(ValidationError {
             path: "ui.zoomLevel".to_string(),
@@ -36,7 +36,7 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
         });
     }
 
-    // Validate sidebar width
+    
     if settings.sidebar_width < 150 || settings.sidebar_width > 600 {
         errors.push(ValidationError {
             path: "ui.sidebarWidth".to_string(),
@@ -44,7 +44,7 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
         });
     }
 
-    // Validate AI panel width
+    
     if settings.ai_panel_width < 200 || settings.ai_panel_width > 800 {
         errors.push(ValidationError {
             path: "ui.aiPanelWidth".to_string(),
@@ -58,11 +58,11 @@ pub fn validate_ui_settings(settings: &UISettings) -> ValidationResult {
     }
 }
 
-/// Validates editor settings
+
 pub fn validate_editor_settings(settings: &EditorSettings) -> ValidationResult {
     let mut errors = Vec::new();
 
-    // Validate auto save delay
+    
     if settings.auto_save_delay < 100 || settings.auto_save_delay > 60000 {
         errors.push(ValidationError {
             path: "editor.autoSaveDelay".to_string(),
@@ -70,7 +70,7 @@ pub fn validate_editor_settings(settings: &EditorSettings) -> ValidationResult {
         });
     }
 
-    // Validate cursor blinking
+    
     let valid_blinking = ["blink", "smooth", "phase", "expand", "solid"];
     if !valid_blinking.contains(&settings.cursor_blinking.as_str()) {
         errors.push(ValidationError {
@@ -79,7 +79,7 @@ pub fn validate_editor_settings(settings: &EditorSettings) -> ValidationResult {
         });
     }
 
-    // Validate cursor style
+    
     let valid_styles = ["line", "block", "underline", "line-thin", "block-outline", "underline-thin"];
     if !valid_styles.contains(&settings.cursor_style.as_str()) {
         errors.push(ValidationError {
@@ -94,11 +94,11 @@ pub fn validate_editor_settings(settings: &EditorSettings) -> ValidationResult {
     }
 }
 
-/// Validates AI settings
+
 pub fn validate_ai_settings(settings: &AISettings) -> ValidationResult {
     let mut errors = Vec::new();
 
-    // Validate mode
+    
     let valid_modes = ["responder", "agent"];
     if !valid_modes.contains(&settings.active_mode.as_str()) {
         errors.push(ValidationError {
@@ -107,7 +107,7 @@ pub fn validate_ai_settings(settings: &AISettings) -> ValidationResult {
         });
     }
 
-    // Validate max tokens
+    
     if settings.max_tokens < 1 || settings.max_tokens > 128000 {
         errors.push(ValidationError {
             path: "ai.maxTokens".to_string(),
@@ -115,7 +115,7 @@ pub fn validate_ai_settings(settings: &AISettings) -> ValidationResult {
         });
     }
 
-    // Validate temperature
+    
     if settings.temperature < 0.0 || settings.temperature > 2.0 {
         errors.push(ValidationError {
             path: "ai.temperature".to_string(),
@@ -129,7 +129,7 @@ pub fn validate_ai_settings(settings: &AISettings) -> ValidationResult {
     }
 }
 
-/// Validates all settings
+
 pub fn validate_settings(settings: &AppSettings) -> ValidationResult {
     let mut all_errors = Vec::new();
 

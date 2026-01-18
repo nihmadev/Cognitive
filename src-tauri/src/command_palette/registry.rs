@@ -7,7 +7,7 @@ use crate::command_palette::types::{
     SearchOptions,
 };
 
-/// Central registry for all commands
+
 pub struct CommandRegistry {
     commands: RwLock<HashMap<String, Command>>,
 }
@@ -19,7 +19,7 @@ impl CommandRegistry {
         }
     }
 
-    /// Register a new command
+    
     pub fn register(&self, command: Command) -> Result<(), String> {
         let mut commands = self.commands.write().map_err(|e| e.to_string())?;
         
@@ -31,7 +31,7 @@ impl CommandRegistry {
         Ok(())
     }
 
-    /// Register multiple commands at once
+    
     pub fn register_many(&self, cmds: Vec<Command>) -> Result<(), String> {
         let mut commands = self.commands.write().map_err(|e| e.to_string())?;
         
@@ -43,13 +43,13 @@ impl CommandRegistry {
         Ok(())
     }
 
-    /// Unregister a command by ID
+    
     pub fn unregister(&self, id: &str) -> Result<bool, String> {
         let mut commands = self.commands.write().map_err(|e| e.to_string())?;
         Ok(commands.remove(id).is_some())
     }
 
-    /// Unregister all commands from a specific source
+    
     pub fn unregister_by_source(&self, source: CommandSource) -> Result<usize, String> {
         let mut commands = self.commands.write().map_err(|e| e.to_string())?;
         let before = commands.len();
@@ -57,12 +57,12 @@ impl CommandRegistry {
         Ok(before - commands.len())
     }
 
-    /// Get a command by ID
+    
     pub fn get(&self, id: &str) -> Option<Command> {
         self.commands.read().ok()?.get(id).cloned()
     }
 
-    /// Get all commands
+    
     pub fn get_all(&self) -> Vec<Command> {
         self.commands
             .read()
@@ -70,7 +70,7 @@ impl CommandRegistry {
             .unwrap_or_default()
     }
 
-    /// Get commands by category
+    
     pub fn get_by_category(&self, category: CommandCategory) -> Vec<Command> {
         self.commands
             .read()
@@ -83,7 +83,7 @@ impl CommandRegistry {
             .unwrap_or_default()
     }
 
-    /// Search commands with fuzzy matching
+    
     pub fn search(
         &self,
         query: &str,
@@ -98,23 +98,23 @@ impl CommandRegistry {
         let mut results: Vec<CommandSearchResult> = commands
             .values()
             .filter(|cmd| {
-                // Filter by enabled
+                
                 if !options.include_disabled && !cmd.enabled {
                     return false;
                 }
-                // Filter by category
+                
                 if let Some(ref cat) = options.category {
                     if &cmd.category != cat {
                         return false;
                     }
                 }
-                // Filter by source
+                
                 if let Some(ref src) = options.source {
                     if &cmd.source != src {
                         return false;
                     }
                 }
-                // Filter by context
+                
                 if let Some(ref ctx) = options.context {
                     if let Some(ref when) = cmd.when {
                         if !context_matches(when, ctx) {
@@ -143,10 +143,10 @@ impl CommandRegistry {
             })
             .collect();
 
-        // Sort by score descending
+        
         results.sort_by(|a, b| b.score.cmp(&a.score));
 
-        // Apply limit
+        
         if let Some(limit) = options.limit {
             results.truncate(limit);
         }
@@ -154,7 +154,7 @@ impl CommandRegistry {
         results
     }
 
-    /// Enable/disable a command
+    
     pub fn set_enabled(&self, id: &str, enabled: bool) -> Result<bool, String> {
         let mut commands = self.commands.write().map_err(|e| e.to_string())?;
         if let Some(cmd) = commands.get_mut(id) {
@@ -165,7 +165,7 @@ impl CommandRegistry {
         }
     }
 
-    /// Update command label/description
+    
     pub fn update(
         &self,
         id: &str,
@@ -186,7 +186,7 @@ impl CommandRegistry {
         }
     }
 
-    /// Get command count
+    
     pub fn count(&self) -> usize {
         self.commands.read().map(|c| c.len()).unwrap_or(0)
     }
@@ -198,9 +198,9 @@ impl Default for CommandRegistry {
     }
 }
 
-/// Simple context matching (can be extended for complex expressions)
+
 fn context_matches(when: &str, context: &str) -> bool {
-    // Simple implementation: check if context contains the when condition
-    // Can be extended to support && || ! operators
+    
+    
     context.contains(when) || when == "*"
 }

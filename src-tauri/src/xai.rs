@@ -167,7 +167,7 @@ pub async fn xai_chat_stream(
                                 }
                             }
                             Err(_) => {
-                                // Ignore parsing errors for malformed chunks
+                                
                                 continue;
                             }
                         }

@@ -17,7 +17,7 @@ const TitleBar = () => {
   return (
     <div className="titlebar-drag">
       <div className="app-menu">
-        {/* Add your app menu items here */}
+        {}
         <button>File</button>
         <button>Edit</button>
         <button>View</button>

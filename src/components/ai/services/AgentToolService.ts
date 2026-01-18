@@ -6,11 +6,11 @@ export interface ToolExecutionResult {
   result: ToolResult;
 }
 
-// Rate limiting configuration
+
 const RATE_LIMIT_CONFIG = {
   maxCallsPerMinute: 30,
   maxCallsPerSession: 100,
-  cooldownMs: 2000, // Minimum time between calls
+  cooldownMs: 2000, 
 };
 
 interface RateLimitState {
@@ -19,10 +19,7 @@ interface RateLimitState {
   lastCallTime: number;
 }
 
-/**
- * Service for handling AI agent tool execution
- * Detects tool calls in AI responses and executes them
- */
+
 export class AgentToolService {
   private executor: ToolExecutor;
   private pendingBuffer: string = '';
@@ -37,18 +34,16 @@ export class AgentToolService {
     this.executor = new ToolExecutor(workspace);
   }
 
-  /**
-   * Check if rate limit is exceeded
-   */
+  
   private checkRateLimit(): { allowed: boolean; error?: string } {
     const now = Date.now();
     
-    // Clean up old timestamps (older than 1 minute)
+    
     this.rateLimitState.callsInLastMinute = this.rateLimitState.callsInLastMinute.filter(
       time => now - time < 60000
     );
 
-    // Check session limit
+    
     if (this.rateLimitState.totalCallsInSession >= RATE_LIMIT_CONFIG.maxCallsPerSession) {
       return { 
         allowed: false, 
@@ -56,7 +51,7 @@ export class AgentToolService {
       };
     }
 
-    // Check per-minute limit
+    
     if (this.rateLimitState.callsInLastMinute.length >= RATE_LIMIT_CONFIG.maxCallsPerMinute) {
       return { 
         allowed: false, 
@@ -64,7 +59,7 @@ export class AgentToolService {
       };
     }
 
-    // Check cooldown
+    
     if (now - this.rateLimitState.lastCallTime < RATE_LIMIT_CONFIG.cooldownMs) {
       return { 
         allowed: false, 
@@ -75,9 +70,7 @@ export class AgentToolService {
     return { allowed: true };
   }
 
-  /**
-   * Record a tool call for rate limiting
-   */
+  
   private recordToolCall(): void {
     const now = Date.now();
     this.rateLimitState.callsInLastMinute.push(now);
@@ -85,10 +78,7 @@ export class AgentToolService {
     this.rateLimitState.lastCallTime = now;
   }
 
-  /**
-   * Process a chunk of AI response and detect/execute tool calls
-   * Returns the processed text and any tool results
-   */
+  
   async processChunk(
     chunk: string,
     onToolStart?: (tool: string, args: Record<string, any>) => void,
@@ -97,18 +87,18 @@ export class AgentToolService {
     this.pendingBuffer += chunk;
     const toolResults: ToolExecutionResult[] = [];
 
-    // Check for complete tool calls
+    
     const calls = parseToolCalls(this.pendingBuffer);
     
     for (const call of calls) {
-      // Create unique key for this call
+      
       const callKey = `${call.tool}:${JSON.stringify(call.args)}:${call.startIndex}`;
       
       if (this.executedCalls.has(callKey)) {
         continue;
       }
 
-      // Check rate limit before execution
+      
       const rateLimitCheck = this.checkRateLimit();
       if (!rateLimitCheck.allowed) {
         onToolResult?.(call.tool, { 
@@ -122,19 +112,19 @@ export class AgentToolService {
         continue;
       }
 
-      // Mark as executed
+      
       this.executedCalls.add(callKey);
 
-      // Record for rate limiting
+      
       this.recordToolCall();
 
-      // Notify about tool start
+      
       onToolStart?.(call.tool, call.args);
 
-      // Execute the tool
+      
       const result = await this.executor.execute(call.tool, call.args);
 
-      // Notify about result
+      
       onToolResult?.(call.tool, result);
 
       toolResults.push({ call, result });
@@ -146,9 +136,7 @@ export class AgentToolService {
     };
   }
 
-  /**
-   * Process complete AI response and execute all tool calls
-   */
+  
   async processResponse(
     response: string,
     onToolStart?: (tool: string, args: Record<string, any>) => void,
@@ -164,7 +152,7 @@ export class AgentToolService {
     let processedText = response;
 
     for (const call of calls) {
-      // Check rate limit before execution
+      
       const rateLimitCheck = this.checkRateLimit();
       if (!rateLimitCheck.allowed) {
         onToolResult?.(call.tool, { 
@@ -178,7 +166,7 @@ export class AgentToolService {
         continue;
       }
 
-      // Record for rate limiting
+      
       this.recordToolCall();
 
       onToolStart?.(call.tool, call.args);
@@ -189,7 +177,7 @@ export class AgentToolService {
       
       toolResults.push({ call, result });
 
-      // Replace tool call with result in text
+      
       if (result.formatted) {
         processedText = processedText.replace(call.raw, `\n${result.formatted}\n`);
       }
@@ -198,32 +186,28 @@ export class AgentToolService {
     return { processedText, toolResults };
   }
 
-  /**
-   * Execute a single tool call directly
-   */
+  
   async executeTool(
     toolName: string,
     args: Record<string, any>
   ): Promise<ToolResult> {
-    // Check rate limit
+    
     const rateLimitCheck = this.checkRateLimit();
     if (!rateLimitCheck.allowed) {
       return { success: false, error: rateLimitCheck.error };
     }
 
-    // Record for rate limiting
+    
     this.recordToolCall();
 
     return this.executor.execute(toolName, args);
   }
 
-  /**
-   * Reset the service state
-   */
+  
   reset(): void {
     this.pendingBuffer = '';
     this.executedCalls.clear();
-    // Reset rate limit state for new session
+    
     this.rateLimitState = {
       callsInLastMinute: [],
       totalCallsInSession: 0,
@@ -231,9 +215,7 @@ export class AgentToolService {
     };
   }
 
-  /**
-   * Get current rate limit status
-   */
+  
   getRateLimitStatus(): { 
     callsInLastMinute: number; 
     totalCallsInSession: number; 
@@ -253,9 +235,7 @@ export class AgentToolService {
     };
   }
 
-  /**
-   * Get available tools info for system prompt
-   */
+  
   static getToolsDescription(): string {
     return `
 ## Available Tools
@@ -313,18 +293,14 @@ Examples:
   }
 }
 
-/**
- * Create a tool-aware message processor
- */
+
 export function createToolProcessor(workspace: string) {
   const service = new AgentToolService(workspace);
   
   return {
     service,
     
-    /**
-     * Process streaming response with tool execution
-     */
+    
     async processStream(
       onChunk: (chunk: string) => void,
       onToolStart?: (tool: string) => void,
@@ -343,7 +319,7 @@ export function createToolProcessor(workspace: string) {
         
         onChunk(chunk);
         
-        // If we have tool results, append them
+        
         for (const { result } of toolResults) {
           if (result.formatted) {
             onChunk(`\n\n${result.formatted}\n`);

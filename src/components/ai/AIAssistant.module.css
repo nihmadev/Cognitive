@@ -55,7 +55,7 @@
     background: var(--theme-background-secondary);
 }
 
-/* Home View Layout */
+
 .mainContent {
     flex: 1;
     display: flex;
@@ -84,7 +84,7 @@
     margin-bottom: 32px;
 }
 
-/* Chat container */
+
 .chatContainer {
     position: relative;
     background: var(--theme-background);
@@ -95,7 +95,7 @@
     overflow: hidden;
 }
 
-/* Input Area - Floating/Pinned Bottom */
+
 .chatInputContainer {
     padding: 20px;
     width: 100%;
@@ -118,7 +118,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 768px; /* Standard wide width */
+    max-width: 768px; 
     box-sizing: border-box;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -257,7 +257,7 @@
     background: #dc2626;
 }
 
-/* Chat Messages Area */
+
 .chatMessages {
     flex: 1;
     overflow-y: auto;
@@ -268,13 +268,13 @@
     gap: 8px;
 }
 
-/* User messages */
+
 .userMessageWrapper {
     margin-left: auto;
     max-width: 70%;
     display: flex;
     justify-content: flex-end;
-    padding: 0 20px; /* Добавляю боковые padding для обычных сообщений */
+    padding: 0 20px; 
 }
 
 .userBubble {
@@ -292,7 +292,7 @@
     white-space: pre-wrap;
 }
 
-/* First message on top of chat (from Home view) */
+
 .firstUserMessage {
     align-self: flex-start !important;
     width: calc(100% - 32px) !important;
@@ -310,7 +310,7 @@
     white-space: pre-wrap !important;
 }
 
-/* Second user message - same styling as userBubble but aligned right */
+
 .secondUserMessage {
     background-color: var(--theme-background-secondary);
     color: var(--theme-foreground);
@@ -326,7 +326,7 @@
     white-space: pre-wrap;
 }
 
-/* Right-aligned second user message wrapper */
+
 .secondUserMessageWrapper {
     margin-left: auto;
     margin-right: 20px;
@@ -335,12 +335,12 @@
     justify-content: flex-end;
 }
 
-/* Assistant messages */
+
 .aiMessageWrapper {
     align-self: flex-start;
     max-width: 80%;
     display: flex;
-    padding: 0 20px; /* Добавляю боковые padding для AI сообщений */
+    padding: 0 20px; 
     min-width: 0;
     overflow: hidden;
 }
@@ -378,7 +378,7 @@
 }
 
 .aiContent pre {
-    background: var(--theme-background-tertiary); /* Darker block */
+    background: var(--theme-background-tertiary); 
     border: 1px solid var(--theme-border);
     border-radius: 8px;
     padding: 16px;
@@ -397,7 +397,7 @@
     font-style: italic;
 }
 
-/* Thinking Animation */
+
 .thinkingContainer {
     display: flex;
     align-items: center;
@@ -447,7 +447,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Dropdown Styles */
+
 .dropdownMenu {
     position: absolute;
     top: 100%;
@@ -491,7 +491,7 @@
     font-weight: 500;
 }
 
-/* History */
+
 .historyContainer {
     padding: 20px;
 }
@@ -521,7 +521,7 @@
     color: var(--theme-foreground-subtle);
 }
 
-/* Scrollbar */
+
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -536,7 +536,7 @@
     background: transparent;
 }
 
-/* Settings */
+
 .settingsOverlay {
     position: absolute;
     top: 0;
@@ -715,7 +715,7 @@
     transform: translateY(-1px);
 }
 
-/* Model Settings */
+
 .settingItem {
     margin-bottom: 20px;
 }
@@ -812,7 +812,7 @@
     gap: 8px;
 }
 
-/* Model Dropdown Menu */
+
 .modelDropdownMenu {
     max-height: 240px;
     overflow-y: auto;
@@ -837,7 +837,7 @@
     background: transparent;
 }
 
-/* Mode Dropdown Menu */
+
 .modeDropdownMenu {
     width: 320px;
     position: absolute !important;
@@ -847,7 +847,7 @@
     transform-origin: top right;
 }
 
-/* Chat variant - dropdowns open up */
+
 .chatContainer .dropdownMenu {
     top: auto;
     bottom: 100%;
@@ -905,7 +905,7 @@
     line-height: 1.4;
 }
 
-/* Icon Button */
+
 .iconBtn {
     background: transparent;
     border: none;
@@ -924,7 +924,7 @@
     background: var(--theme-background-secondary);
 }
 
-/* History List */
+
 .historyList {
     display: flex;
     flex-direction: column;
@@ -951,7 +951,7 @@
     border-color: var(--theme-foreground-muted);
 }
 
-/* Chat Header Buttons */
+
 .chatHeader {
     display: flex;
     align-items: center;
@@ -983,14 +983,14 @@
     background: var(--theme-background-secondary);
 }
 
-/* Show animation for dropdowns */
+
 .show {
     opacity: 1;
     visibility: visible;
     transform: scale(1) translateY(0);
 }
 
-/* Additional button styles for consistency */
+
 .headerIcons button {
     background: transparent;
     border: none;
@@ -1009,7 +1009,7 @@
 }
 
 
-/* File Read Indicator */
+
 .fileReadIndicator {
     display: inline-flex;
     align-items: center;
@@ -1055,7 +1055,7 @@
 }
 
 
-/* Tool Execution Indicator */
+
 .toolExecutionIndicator {
     display: inline-flex;
     align-items: center;
@@ -1132,7 +1132,7 @@
     letter-spacing: 0.5px;
 }
 
-/* Tool Result Block */
+
 .toolResultBlock {
     margin: 12px 0;
     padding: 16px;
@@ -1192,7 +1192,7 @@
     border-radius: 3px;
 }
 
-/* Tool Error */
+
 .toolError {
     border-left-color: var(--theme-error, #ef4444);
 }
@@ -1201,14 +1201,14 @@
     color: var(--theme-error, #ef4444);
 }
 
-/* Search Result Highlight */
+
 .searchMatch {
     background: rgba(var(--theme-accent-rgb, 59, 130, 246), 0.2);
     padding: 1px 3px;
     border-radius: 3px;
 }
 
-/* File Path in Results */
+
 .resultFilePath {
     display: flex;
     align-items: center;
@@ -1240,7 +1240,7 @@
 }
 
 
-/* Search Results Block (like in screenshot) */
+
 .searchResultsBlock {
     margin: 8px 0;
     background: var(--theme-background);
@@ -1336,19 +1336,19 @@
     font-weight: 500;
 }
 
-/* Directory item styling */
+
 .searchResultItem.isDir .searchResultPath {
     color: var(--theme-warning, #f59e0b);
 }
 
 
-/* Directory path styling */
+
 .searchResultPathDir {
     color: var(--theme-warning, #f59e0b) !important;
 }
 
 
-/* Markdown Content Styles */
+
 .markdownContent {
     line-height: 1.6;
     word-wrap: break-word;
@@ -1445,7 +1445,7 @@
     color: var(--theme-foreground);
 }
 
-/* Table styles for markdown */
+
 .markdownContent table {
     border-collapse: collapse;
     margin: 12px 0;

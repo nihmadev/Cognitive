@@ -7,7 +7,7 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// Types for search results
+
 interface SearchResultFile {
   name: string;
   path: string;
@@ -27,14 +27,14 @@ interface SearchResultData {
   files: SearchResultFile[];
 }
 
-// Content part types
+
 type ContentPart = 
   | { type: 'text'; content: string }
   | { type: 'file-read'; content: string; filename: string }
   | { type: 'tool-result'; content: string; tool: string; isError: boolean }
   | { type: 'search-result'; data: SearchResultData };
 
-// Try to parse JSON search results
+
 const tryParseSearchResult = (content: string): SearchResultData | null => {
   try {
     const data = JSON.parse(content);
@@ -42,50 +42,50 @@ const tryParseSearchResult = (content: string): SearchResultData | null => {
       return data as SearchResultData;
     }
   } catch {
-    // Not JSON
+    
   }
   return null;
 };
 
-// Parse message content to extract file read indicators and tool results
-// Optimized: single-pass parsing instead of multiple regex.exec() loops
+
+
 const parseMessageContent = (content: string): ContentPart[] => {
   const parts: ContentPart[] = [];
   
-  // Combined regex for all markers (single pass)
+  
   const combinedMarkerRegex = /\[\[TOOL_(RESULT|ERROR):(\w+):([\s\S]*?)\]\]|(?:📊|❌)\s*\*\*(\w+)\s*(result|error):\*\*\n([\s\S]*?)(?=(?:📊|❌)\s*\*\*|\[\[TOOL_|$)|\[\[(READ_FILE|READ):([^\]]+)\]\]/g;
   
-  // Tool call patterns to remove (combined into single regex)
-  // Includes JSON format: {"tool":"name","args":{...}} with various spacing
+  
+  
   const toolCallRemoveRegex = /```[\s\S]*?(?:grep|find|list_dir|search|read_file)\s*\([^)]*\)[\s\S]*?```|\b(grep|Grep|search|find|find_by_name|list_dir|ls|read_file|readFile)\s*\(\s*(?:{[\s\S]*?}|"[^"]*"|'[^']*'|[^)]*)\s*\)|\[\[(GREP|FIND|LIST_DIR|SEARCH):[^\]]+\]\]|`(?:grep|find|list_dir|search|read_file)\s*\([^`]*\)`|```\s*```|```\s+```|\{\s*"tool"\s*:\s*"(?:grep|find_by_name|list_dir|read_file|readFile|find|search)"\s*,\s*"args"\s*:\s*\{[\s\S]*?\}\s*\}|\n\s*\{\s*"tool"\s*:\s*"[^"]+"\s*,\s*"args"\s*:\s*\{[\s\S]*?\}\s*\}\s*\n/gi;
   
-  // Single pass: extract all markers
+  
   const toolResults: Array<{ tool: string; isError: boolean; content: string }> = [];
   const fileReads: string[] = [];
   let match;
   
   while ((match = combinedMarkerRegex.exec(content)) !== null) {
     if (match[1]) {
-      // New format: [[TOOL_RESULT:tool:content]] or [[TOOL_ERROR:tool:content]]
+      
       toolResults.push({
         tool: match[2],
         isError: match[1] === 'ERROR',
         content: match[3].trim()
       });
     } else if (match[4]) {
-      // Legacy format: 📊 **tool result:**
+      
       toolResults.push({
         tool: match[4],
         isError: match[5] === 'error',
         content: match[6].trim()
       });
     } else if (match[7]) {
-      // File read: [[READ_FILE:path]] or [[READ:path]]
+      
       fileReads.push(match[8].trim());
     }
   }
   
-  // Remove all markers and tool calls in one pass each
+  
   let processedContent = content
     .replace(combinedMarkerRegex, '')
     .replace(toolCallRemoveRegex, '')
@@ -93,14 +93,14 @@ const parseMessageContent = (content: string): ContentPart[] => {
     .replace(/---\s*\n\s*---/g, '---')
     .trim();
   
-  // Build parts - tools first, then text
   
-  // Add file read indicators first
+  
+  
   for (const filename of fileReads) {
     parts.push({ type: 'file-read', content: '', filename });
   }
   
-  // Add tool results
+  
   for (const tr of toolResults) {
     const searchData = tryParseSearchResult(tr.content);
     if (searchData) {
@@ -115,7 +115,7 @@ const parseMessageContent = (content: string): ContentPart[] => {
     }
   }
   
-  // Add text content last (after tools)
+  
   if (processedContent && processedContent !== '---') {
     parts.push({ type: 'text', content: processedContent });
   }
@@ -123,7 +123,7 @@ const parseMessageContent = (content: string): ContentPart[] => {
   return parts.length > 0 ? parts : [{ type: 'text', content: content }];
 };
 
-// File read indicator component
+
 const FileReadIndicator = ({ filename, styles }: { filename: string; styles: any }) => {
   const { openFile, currentWorkspace } = useProjectStore();
   const baseName = filename.split(/[\\/]/).pop() || filename;
@@ -149,7 +149,7 @@ const FileReadIndicator = ({ filename, styles }: { filename: string; styles: any
   );
 };
 
-// Search results component (like in the screenshot)
+
 const SearchResultsBlock = ({ data, styles }: { data: SearchResultData; styles: any }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const { openFile } = useProjectStore();
@@ -204,7 +204,7 @@ const SearchResultsBlock = ({ data, styles }: { data: SearchResultData; styles: 
   );
 };
 
-// Tool result component (for non-search results)
+
 const ToolResultBlock = ({ tool, content, isError, styles }: { 
   tool: string; 
   content: string; 
@@ -231,9 +231,9 @@ const ToolResultBlock = ({ tool, content, isError, styles }: {
     }
   };
   
-  // Parse file path from read_file result
+  
   const parseFilePath = () => {
-    // Format: 📄 path (X lines)\n```\ncontent\n```
+    
     const fileMatch = content.match(/📄\s*([^\s(]+)\s*\((\d+)\s*lines?\)/);
     if (fileMatch) {
       return {
@@ -262,7 +262,7 @@ const ToolResultBlock = ({ tool, content, isError, styles }: {
     }
   };
   
-  // For read_file, show only clickable file link (no content)
+  
   if (tool.toLowerCase() === 'read_file' && !isError) {
     const fileInfo = parseFilePath();
     const filePath = fileInfo?.path || '';
@@ -385,7 +385,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
         </button>
       </div>
 
-      {/* Enable messages rendering */}
+      {}
       <div className={styles.chatMessages}>
         {activeConversation?.messages?.map((msg: any, index: number) => (
           <div key={msg.id}>

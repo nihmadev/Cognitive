@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// Cursor position in editor
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct CursorPosition {
@@ -9,7 +9,7 @@ pub struct CursorPosition {
     pub column: u32,
 }
 
-/// Editor view state for a single file
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct EditorViewState {
@@ -22,7 +22,7 @@ pub struct EditorViewState {
     pub folded_regions: Vec<FoldedRegion>,
 }
 
-/// Text selection range
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Selection {
@@ -32,7 +32,7 @@ pub struct Selection {
     pub end_column: u32,
 }
 
-/// Folded code region
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FoldedRegion {
@@ -40,7 +40,7 @@ pub struct FoldedRegion {
     pub end_line: u32,
 }
 
-/// Open tab information
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenTab {
@@ -51,7 +51,7 @@ pub struct OpenTab {
     pub is_preview: bool,
 }
 
-/// Panel state (sidebar, terminal, etc.)
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct PanelState {
@@ -70,7 +70,7 @@ impl Default for PanelState {
     }
 }
 
-/// UI panels configuration
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct PanelsState {
@@ -104,7 +104,7 @@ impl Default for PanelsState {
     }
 }
 
-/// Split view configuration
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitViewState {
@@ -113,25 +113,25 @@ pub struct SplitViewState {
     pub split_ratio: f64,
 }
 
-/// Workspace session state
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceSession {
-    /// Workspace root path
+    
     pub workspace_path: String,
-    /// List of open tabs
+    
     pub open_tabs: Vec<OpenTab>,
-    /// Currently active file path
+    
     pub active_file: Option<String>,
-    /// Editor view states per file
+    
     pub editor_states: HashMap<String, EditorViewState>,
-    /// Panels configuration
+    
     pub panels: PanelsState,
-    /// Split view state
+    
     pub split_view: SplitViewState,
-    /// Expanded folders in file explorer
+    
     pub expanded_folders: Vec<String>,
-    /// Last opened timestamp
+    
     pub last_opened: i64,
 }
 
@@ -150,21 +150,21 @@ impl Default for WorkspaceSession {
     }
 }
 
-/// Global session state (across all workspaces)
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalSession {
-    /// Recently opened workspaces (paths)
+    
     pub recent_workspaces: Vec<RecentWorkspace>,
-    /// Last active workspace path
+    
     pub last_workspace: Option<String>,
-    /// Global zoom level
+    
     pub zoom_level: f64,
-    /// Window state
+    
     pub window: WindowState,
 }
 
-/// Recent workspace entry
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RecentWorkspace {
@@ -173,7 +173,7 @@ pub struct RecentWorkspace {
     pub last_opened: i64,
 }
 
-/// Window state for restoration
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct WindowState {
@@ -196,7 +196,7 @@ impl Default for WindowState {
     }
 }
 
-/// Session change event for IPC broadcast
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SessionChangeEvent {
@@ -205,7 +205,7 @@ pub struct SessionChangeEvent {
     pub data: serde_json::Value,
 }
 
-/// Types of session events
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum SessionEventType {

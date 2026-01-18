@@ -6,7 +6,7 @@ import { useEditorStore } from '../../../store/editorStore';
 import clsx from 'clsx';
 import styles from './OutlineSection.module.css';
 
-// SVG icons for better visual consistency
+
 const SymbolIcon = ({ kind }: { kind: SymbolKind }) => {
     const colorMap: Record<SymbolKind, string> = {
         file: '#cccccc',
@@ -204,7 +204,7 @@ const SymbolItem = ({ symbol, depth, onNavigate }: SymbolItemProps) => {
 };
 
 interface OutlineSectionProps {
-    // No props needed - uses global store
+    
 }
 
 export const OutlineSection = ({}: OutlineSectionProps) => {

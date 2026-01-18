@@ -5,7 +5,7 @@ use super::store::SettingsStore;
 use super::types::*;
 use super::watcher::SettingsWatcher;
 
-/// Combined state for settings
+
 pub struct SettingsState {
     pub store: Mutex<SettingsStore>,
     pub watcher: Mutex<SettingsWatcher>,
@@ -26,7 +26,7 @@ impl Default for SettingsState {
     }
 }
 
-/// Initialize settings system
+
 #[tauri::command]
 pub fn settings_init(
     app_handle: AppHandle,
@@ -63,7 +63,7 @@ pub fn settings_get_all(state: State<'_, SettingsState>) -> Result<AppSettings, 
     Ok(store.get_settings())
 }
 
-/// Get user settings only
+
 #[tauri::command]
 pub fn settings_get_user(state: State<'_, SettingsState>) -> Result<AppSettings, String> {
     let store = state.store.lock().unwrap();
@@ -77,7 +77,7 @@ pub fn settings_get_workspace(state: State<'_, SettingsState>) -> Result<Option<
     Ok(store.get_workspace_settings())
 }
 
-/// Update a settings section
+
 #[tauri::command]
 pub fn settings_update_section(
     app_handle: AppHandle,
@@ -150,7 +150,7 @@ pub fn settings_update_value(
     let store = state.store.lock().unwrap();
     store.update_value(&section, &key, value.clone(), source.clone())?;
 
-    // Broadcast change to all windows
+    
     let event = SettingsChangeEvent {
         section,
         key: Some(key),
@@ -162,7 +162,7 @@ pub fn settings_update_value(
     Ok(())
 }
 
-/// Set workspace path
+
 #[tauri::command]
 pub fn settings_set_workspace(
     app_handle: AppHandle,
@@ -200,7 +200,7 @@ pub fn settings_clear_workspace(
 ) -> Result<(), String> {
     let store = state.store.lock().unwrap();
     
-    // Remove workspace config from watcher
+    
     if let Some(workspace_config) = store.get_workspace_config_path() {
         drop(store);
         let mut watcher = state.watcher.lock().unwrap();
@@ -213,7 +213,7 @@ pub fn settings_clear_workspace(
         store.clear_workspace();
     }
 
-    // Broadcast that settings may have changed
+    
     let store = state.store.lock().unwrap();
     let event = SettingsChangeEvent {
         section: "all".to_string(),
@@ -226,7 +226,7 @@ pub fn settings_clear_workspace(
     Ok(())
 }
 
-/// Reload settings from files
+
 #[tauri::command]
 pub fn settings_reload(
     app_handle: AppHandle,
@@ -253,7 +253,7 @@ pub fn settings_get_paths(state: State<'_, SettingsState>) -> Result<serde_json:
     }))
 }
 
-/// Reset settings to defaults
+
 #[tauri::command]
 pub fn settings_reset(
     app_handle: AppHandle,

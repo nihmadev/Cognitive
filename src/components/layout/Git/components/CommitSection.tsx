@@ -25,7 +25,7 @@ export const CommitSection = ({
 
     const handleAction = (action: CommitAction) => {
         setShowMenu(false);
-        // TODO: Implement different actions
+        
         switch (action) {
             case 'commit':
                 console.log('Commit only');

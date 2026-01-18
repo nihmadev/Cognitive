@@ -8,14 +8,14 @@ use crate::keybindings::types::{
 };
 use crate::keybindings::utils::{evaluate_when_clause, normalize_key_combo};
 
-/// Keybindings store
+
 #[derive(Debug, Default)]
 pub struct KeybindingsStore {
     default_bindings: Vec<KeybindingEntry>,
     user_bindings: Vec<KeybindingEntry>,
-    /// Cached merged bindings (user overrides default)
+    
     merged: Vec<KeybindingEntry>,
-    /// Index by normalized key combo for fast lookup
+    
     index: HashMap<String, Vec<usize>>,
 }
 
@@ -27,7 +27,7 @@ impl KeybindingsStore {
         store
     }
 
-    /// Load default keybindings
+    
     fn load_defaults(&mut self) {
         self.default_bindings = get_default_keybindings()
             .into_iter()
@@ -39,7 +39,7 @@ impl KeybindingsStore {
             .collect();
     }
 
-    /// Load user keybindings from config file
+    
     pub fn load_user_bindings(&mut self, config_path: &PathBuf) -> Result<(), String> {
         if !config_path.exists() {
             return Ok(());
@@ -65,7 +65,7 @@ impl KeybindingsStore {
         Ok(())
     }
 
-    /// Save user keybindings to config file
+    
     pub fn save_user_bindings(&self, config_path: &PathBuf) -> Result<(), String> {
         let bindings: Vec<&Keybinding> = self.user_bindings.iter().map(|e| &e.binding).collect();
 
@@ -83,11 +83,11 @@ impl KeybindingsStore {
         Ok(())
     }
 
-    /// Rebuild merged bindings (user overrides default)
+    
     fn rebuild_merged(&mut self) {
         let mut merged = self.default_bindings.clone();
 
-        // User bindings override defaults by command
+        
         for user_entry in &self.user_bindings {
             if let Some(idx) = merged
                 .iter()
@@ -102,7 +102,7 @@ impl KeybindingsStore {
         self.merged = merged;
     }
 
-    /// Rebuild index for fast lookup
+    
     fn rebuild_index(&mut self) {
         self.rebuild_merged();
         self.index.clear();
@@ -116,7 +116,7 @@ impl KeybindingsStore {
         }
     }
 
-    /// Lookup keybinding by key combo
+    
     pub fn lookup(
         &self,
         modifiers: &[crate::keybindings::types::Modifier],
@@ -134,7 +134,7 @@ impl KeybindingsStore {
             .iter()
             .filter_map(|&idx| {
                 let entry = &self.merged[idx];
-                // Check context condition
+                
                 if let Some(when) = &entry.binding.when {
                     if let Some(ctx) = context {
                         if !evaluate_when_clause(when, ctx) {
@@ -159,7 +159,7 @@ impl KeybindingsStore {
                 }
             }
             _ => {
-                // Check if all are chord starters
+                
                 let all_chords = matching.iter().all(|e| e.binding.is_chord);
                 if all_chords {
                     KeybindingLookupResult::ChordPending { bindings: matching }
@@ -175,7 +175,7 @@ impl KeybindingsStore {
         }
     }
 
-    /// Complete chord lookup (second part)
+    
     pub fn lookup_chord(
         &self,
         first_modifiers: &[crate::keybindings::types::Modifier],
@@ -200,7 +200,7 @@ impl KeybindingsStore {
                     return None;
                 }
 
-                // Check chord part matches
+                
                 if let Some(chord) = &entry.binding.chord_part {
                     let chord_combo = normalize_key_combo(&chord.modifiers, &chord.key);
                     if chord_combo != second_combo {
@@ -210,7 +210,7 @@ impl KeybindingsStore {
                     return None;
                 }
 
-                // Check context
+                
                 if let Some(when) = &entry.binding.when {
                     if let Some(ctx) = context {
                         if !evaluate_when_clause(when, ctx) {
@@ -236,9 +236,9 @@ impl KeybindingsStore {
         }
     }
 
-    /// Add or update user keybinding
+    
     pub fn set_user_binding(&mut self, binding: Keybinding) {
-        // Remove existing binding for same command
+        
         self.user_bindings
             .retain(|e| e.binding.command != binding.command);
 
@@ -251,15 +251,15 @@ impl KeybindingsStore {
         self.rebuild_index();
     }
 
-    /// Remove user keybinding (reverts to default if exists)
+    
     pub fn remove_user_binding(&mut self, command: &str) {
         self.user_bindings.retain(|e| e.binding.command != command);
         self.rebuild_index();
     }
 
-    /// Disable a keybinding
+    
     pub fn disable_binding(&mut self, command: &str) {
-        // Add disabled user binding to override default
+        
         if let Some(entry) = self.merged.iter().find(|e| e.binding.command == command) {
             let mut disabled_entry = entry.clone();
             disabled_entry.disabled = true;
@@ -271,12 +271,12 @@ impl KeybindingsStore {
         }
     }
 
-    /// Get all keybindings
+    
     pub fn get_all(&self) -> Vec<KeybindingEntry> {
         self.merged.clone()
     }
 
-    /// Get conflicts
+    
     pub fn get_conflicts(&self) -> Vec<KeybindingConflict> {
         let mut conflicts = Vec::new();
         let mut seen: HashMap<String, Vec<usize>> = HashMap::new();
@@ -291,7 +291,7 @@ impl KeybindingsStore {
 
         for (key_combo, indices) in seen {
             if indices.len() > 1 {
-                // Check if they have different contexts (not a real conflict)
+                
                 let bindings: Vec<_> = indices.iter().map(|&i| self.merged[i].clone()).collect();
                 let all_have_context = bindings.iter().all(|b| b.binding.when.is_some());
 
@@ -304,7 +304,7 @@ impl KeybindingsStore {
         conflicts
     }
 
-    /// Reset to defaults
+    
     pub fn reset_to_defaults(&mut self) {
         self.user_bindings.clear();
         self.rebuild_index();

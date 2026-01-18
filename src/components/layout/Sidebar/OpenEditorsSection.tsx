@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import layoutStyles from './SidebarLayout.module.css';
 import styles from './OpenEditorsSection.module.css';
 
-// Open Editors Section Component
+
 export const OpenEditorsSection = () => {
     const { openFiles, activeFile, openFile, closeFile, unsavedChanges, deletedFiles } = useProjectStore();
     const [isOpen, setIsOpen] = useState(true);

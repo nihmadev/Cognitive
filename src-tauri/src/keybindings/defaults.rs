@@ -1,9 +1,9 @@
 use crate::keybindings::types::{ChordPart, Keybinding, Modifier};
 
-/// Get default keybindings
+
 pub fn get_default_keybindings() -> Vec<Keybinding> {
     vec![
-        // File operations
+        
         kb("file.newFile", "n", &[Modifier::Ctrl]),
         kb("file.newWindow", "n", &[Modifier::Ctrl, Modifier::Shift]),
         kb("file.open", "o", &[Modifier::Ctrl]),
@@ -13,7 +13,7 @@ pub fn get_default_keybindings() -> Vec<Keybinding> {
         kb_chord("file.saveAll", "k", &[Modifier::Ctrl], "s", &[]),
         kb("file.reopenClosedEditor", "t", &[Modifier::Ctrl, Modifier::Shift]),
         
-        // Edit operations
+        
         kb_ctx("edit.undo", "z", &[Modifier::Ctrl], "editorFocus"),
         kb_ctx("edit.redo", "y", &[Modifier::Ctrl], "editorFocus"),
         kb_ctx("edit.redoAlt", "z", &[Modifier::Ctrl, Modifier::Shift], "editorFocus"),
@@ -27,7 +27,7 @@ pub fn get_default_keybindings() -> Vec<Keybinding> {
         kb_ctx("edit.toggleLineComment", "/", &[Modifier::Ctrl], "editorFocus"),
         kb_ctx("edit.toggleBlockComment", "a", &[Modifier::Ctrl, Modifier::Shift], "editorFocus"),
         
-        // Selection
+        
         kb("selection.selectAll", "a", &[Modifier::Ctrl]),
         kb_ctx("selection.expandSelection", "ArrowRight", &[Modifier::Shift, Modifier::Alt], "editorFocus"),
         kb_ctx("selection.shrinkSelection", "ArrowLeft", &[Modifier::Shift, Modifier::Alt], "editorFocus"),
@@ -42,11 +42,11 @@ pub fn get_default_keybindings() -> Vec<Keybinding> {
         kb_ctx("selection.selectAllOccurrences", "l", &[Modifier::Ctrl, Modifier::Shift], "editorFocus"),
         kb_ctx("selection.selectLine", "l", &[Modifier::Ctrl], "editorFocus"),
         
-        // View
+        
         kb("view.commandPalette", "p", &[Modifier::Ctrl, Modifier::Shift]),
         kb("view.quickOpen", "p", &[Modifier::Ctrl]),
         
-        // Go
+        
         kb("go.back", "ArrowLeft", &[Modifier::Alt]),
         kb("go.forward", "ArrowRight", &[Modifier::Alt]),
         kb_ctx("go.goToSymbol", "o", &[Modifier::Ctrl, Modifier::Shift], "editorFocus"),
@@ -66,19 +66,19 @@ pub fn get_default_keybindings() -> Vec<Keybinding> {
         kb_ctx("go.goToPreviousChange", "F3", &[Modifier::Shift, Modifier::Alt], "editorFocus"),
         kb("go.switchWindow", "Tab", &[Modifier::Ctrl]),
         
-        // Run
+        
         kb("run.startDebugging", "F5", &[]),
         kb("run.runWithoutDebugging", "F5", &[Modifier::Ctrl]),
         
-        // Sidebar
+        
         kb_ctx("sidebar.rename", "F2", &[], "sidebarFocus"),
         
-        // Editor
+        
         kb_ctx("editor.toggleInsertMode", "Insert", &[], "editorFocus"),
     ]
 }
 
-/// Helper to create simple keybinding
+
 fn kb(command: &str, key: &str, modifiers: &[Modifier]) -> Keybinding {
     Keybinding {
         id: command.to_string(),
@@ -92,7 +92,7 @@ fn kb(command: &str, key: &str, modifiers: &[Modifier]) -> Keybinding {
     }
 }
 
-/// Helper to create keybinding with context
+
 fn kb_ctx(command: &str, key: &str, modifiers: &[Modifier], when: &str) -> Keybinding {
     Keybinding {
         id: command.to_string(),
@@ -106,7 +106,7 @@ fn kb_ctx(command: &str, key: &str, modifiers: &[Modifier], when: &str) -> Keybi
     }
 }
 
-/// Helper to create chord keybinding
+
 fn kb_chord(
     command: &str,
     key1: &str,

@@ -1,9 +1,7 @@
-/* Settings Pane - Sidebar Navigation */
-
 .sidebar {
   width: 280px;
   min-width: 280px;
-  background-color: #1e1e1e;
+  background-color: var(--theme-background);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -31,12 +29,12 @@
   font-size: 11px;
   text-transform: uppercase;
   font-weight: 700;
-  color: #cccccc;
+  color: var(--theme-foreground-muted);
   cursor: pointer;
 }
 
 .navGroupHeader:hover {
-  color: #ffffff;
+  color: var(--theme-foreground);
 }
 
 .navGroupItems {
@@ -50,18 +48,18 @@
   gap: 8px;
   padding: 4px 28px;
   font-size: 13px;
-  color: #cccccc;
+  color: var(--theme-foreground-muted);
   cursor: pointer;
   position: relative;
 }
 
 .navItem:hover {
-  background-color: #2a2d2e;
+  background-color: var(--theme-background-secondary);
 }
 
 .navItemActive {
-  background-color: #37373d;
-  color: #ffffff !important;
+  background-color: var(--theme-background-tertiary);
+  color: var(--theme-foreground) !important;
 }
 
 .navItemActive::before {
@@ -71,10 +69,9 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: #007acc;
+  background-color: var(--theme-accent);
 }
 
-/* Scrollbar styling */
 .sidebarNav::-webkit-scrollbar {
   width: 8px;
 }
@@ -92,7 +89,7 @@
   background-color: var(--theme-scrollbar-thumb-hover);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .sidebar {
     width: 200px;

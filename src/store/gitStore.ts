@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { tauriApi, GitFileStatus, GitInfo, GitContributor, GitCommit, GitPushResult } from '../lib/tauri-api';
 
 interface GitStore {
-    // State
+
     files: GitFileStatus[];
     info: GitInfo | null;
     contributors: GitContributor[];
@@ -15,8 +15,16 @@ interface GitStore {
     isPushing: boolean;
     pushResult: GitPushResult | null;
     isAuthModalOpen: boolean;
-    
-    // Actions
+    repositoriesVisible: boolean;
+    changesVisible: boolean;
+    graphVisible: boolean;
+
+    setRepositoriesVisible: (visible: boolean) => void;
+    setChangesVisible: (visible: boolean) => void;
+    setGraphVisible: (visible: boolean) => void;
+    toggleRepositories: () => void;
+    toggleChanges: () => void;
+    toggleGraph: () => void;
     setCommitMessage: (message: string) => void;
     setSearchQuery: (query: string) => void;
     setGraphOpen: (open: boolean) => void;
@@ -43,16 +51,26 @@ export const useGitStore = create<GitStore>((set, get) => ({
     error: null,
     commitMessage: '',
     searchQuery: '',
-    graphOpen: true,
+    graphOpen: false,
     isPushing: false,
     pushResult: null,
     isAuthModalOpen: false,
-    
+    repositoriesVisible: true,
+    changesVisible: true,
+    graphVisible: true,
+
     setCommitMessage: (message) => set({ commitMessage: message }),
     setSearchQuery: (query) => set({ searchQuery: query }),
     setGraphOpen: (open) => set({ graphOpen: open }),
     setAuthModalOpen: (open) => set({ isAuthModalOpen: open }),
-    
+
+    setRepositoriesVisible: (visible) => set({ repositoriesVisible: visible }),
+    setChangesVisible: (visible) => set({ changesVisible: visible }),
+    setGraphVisible: (visible) => set({ graphVisible: visible }),
+    toggleRepositories: () => set(state => ({ repositoriesVisible: !state.repositoriesVisible })),
+    toggleChanges: () => set(state => ({ changesVisible: !state.changesVisible })),
+    toggleGraph: () => set(state => ({ graphVisible: !state.graphVisible })),
+
     refresh: async (workspacePath) => {
         if (!workspacePath) return;
         set({ isLoading: true, error: null });
@@ -66,7 +84,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString(), isLoading: false, files: [], info: null });
         }
     },
-    
+
     refreshContributors: async (workspacePath) => {
         if (!workspacePath) return;
         try {
@@ -77,7 +95,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ contributors: [] });
         }
     },
-    
+
     refreshCommits: async (workspacePath) => {
         if (!workspacePath) return;
         try {
@@ -88,7 +106,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ commits: [] });
         }
     },
-    
+
     stageFile: async (workspacePath, filePath) => {
         try {
             await tauriApi.gitStage(workspacePath, filePath);
@@ -97,7 +115,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     unstageFile: async (workspacePath, filePath) => {
         try {
             await tauriApi.gitUnstage(workspacePath, filePath);
@@ -106,7 +124,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     stageAll: async (workspacePath) => {
         try {
             await tauriApi.gitStageAll(workspacePath);
@@ -115,7 +133,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     unstageAll: async (workspacePath) => {
         try {
             await tauriApi.gitUnstageAll(workspacePath);
@@ -124,7 +142,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     commit: async (workspacePath) => {
         const { commitMessage } = get();
         if (!commitMessage.trim()) {
@@ -132,18 +150,18 @@ export const useGitStore = create<GitStore>((set, get) => ({
             return;
         }
         try {
-            // Выполняем коммит
+
             await tauriApi.gitCommit(workspacePath, commitMessage);
             set({ commitMessage: '' });
             await get().refresh(workspacePath);
-            
-            // Автоматически выполняем push если есть удаленный репозиторий
+
+
             const { info } = get();
             if (info?.has_remote && info.branch) {
                 try {
                     await get().push(workspacePath);
                 } catch (pushError) {
-                    // Если push не удался, показываем ошибку но не прерываем процесс
+
                     console.warn('Push failed after commit:', pushError);
                 }
             }
@@ -151,7 +169,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     discardChanges: async (workspacePath, filePath) => {
         try {
             await tauriApi.gitDiscardChanges(workspacePath, filePath);
@@ -160,7 +178,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
             set({ error: e.toString() });
         }
     },
-    
+
     push: async (workspacePath, remoteName, branchName, force = false) => {
         set({ isPushing: true, error: null, pushResult: null });
         try {
@@ -171,13 +189,13 @@ export const useGitStore = create<GitStore>((set, get) => ({
             if (!result.success && (msg.includes('authentication') || msg.includes('auth') || msg.includes('credentials'))) {
                 set({ isAuthModalOpen: true });
             }
-            
-            // После успешного push обновляем информацию
+
+
             if (result.success) {
                 await get().refresh(workspacePath);
                 await get().refreshCommits(workspacePath);
             }
-            
+
             return result;
         } catch (e: any) {
             const errorResult: GitPushResult = {
@@ -195,6 +213,6 @@ export const useGitStore = create<GitStore>((set, get) => ({
             return errorResult;
         }
     },
-    
+
     clearPushResult: () => set({ pushResult: null }),
 }));

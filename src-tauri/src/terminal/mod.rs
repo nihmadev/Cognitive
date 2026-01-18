@@ -20,20 +20,20 @@ pub fn default_terminal_sessions() -> TerminalSessions {
     Arc::new(Mutex::new(std::collections::HashMap::new()))
 }
 
-/// Фильтрует опасные escape-последовательности которые могут сломать layout терминала
+
 fn filter_dangerous_escapes(data: &str) -> String {
     let mut result = String::with_capacity(data.len());
     let mut chars = data.chars().peekable();
     
     while let Some(c) = chars.next() {
         if c == '\x1b' {
-            // Начало escape-последовательности
+            
             if let Some(&next) = chars.peek() {
                 if next == '[' {
-                    chars.next(); // consume '['
+                    chars.next(); 
                     let mut seq = String::new();
                     
-                    // Собираем параметры последовательности
+                    
                     while let Some(&ch) = chars.peek() {
                         if ch.is_ascii_digit() || ch == ';' || ch == '?' || ch == '>' || ch == '!' {
                             seq.push(chars.next().unwrap());
@@ -42,22 +42,22 @@ fn filter_dangerous_escapes(data: &str) -> String {
                         }
                     }
                     
-                    // Получаем финальный символ команды
+                    
                     let cmd = chars.next();
                     
-                    // Проверяем, является ли это опасной последовательностью
+                    
                     let is_dangerous = match cmd {
-                        // DECCOLM - переключение 80/132 колонок
+                        
                         Some('h') | Some('l') if seq.contains("?3") => true,
-                        // Resize window sequences
+                        
                         Some('t') if seq.starts_with('8') => true,
-                        // DECSCNM - reverse video (может вызвать визуальные проблемы)
+                        
                         Some('h') | Some('l') if seq.contains("?5") => true,
                         _ => false,
                     };
                     
                     if !is_dangerous {
-                        // Восстанавливаем безопасную последовательность
+                        
                         result.push('\x1b');
                         result.push('[');
                         result.push_str(&seq);
@@ -65,13 +65,13 @@ fn filter_dangerous_escapes(data: &str) -> String {
                             result.push(cmd_char);
                         }
                     }
-                    // Опасные последовательности просто пропускаем
+                    
                 } else if next == ']' {
-                    // OSC последовательности (например, изменение заголовка окна)
-                    chars.next(); // consume ']'
+                    
+                    chars.next(); 
                     let mut seq = String::new();
                     
-                    // Читаем до BEL или ST
+                    
                     while let Some(&ch) = chars.peek() {
                         if ch == '\x07' {
                             chars.next();
@@ -87,9 +87,9 @@ fn filter_dangerous_escapes(data: &str) -> String {
                         }
                     }
                     
-                    // Пропускаем OSC последовательности которые меняют размер окна
-                    // OSC 4 - изменение цвета, безопасно
-                    // OSC 0,1,2 - изменение заголовка, безопасно
+                    
+                    
+                    
                     if !seq.starts_with("10") && !seq.starts_with("11") {
                         result.push('\x1b');
                         result.push(']');

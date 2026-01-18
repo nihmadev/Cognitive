@@ -11,9 +11,7 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  /**
-   * Get model details dynamically
-   */
+  
   async getModelDetails(apiKey: string, modelId: string) {
     try {
       const { openAIModelsService } = await import('./OpenAIModelsService');

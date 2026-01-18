@@ -1,7 +1,7 @@
 import clsx from 'clsx';
+import { Trash2, SplitSquareHorizontal, Terminal } from 'lucide-react';
 import styles from '../TerminalPanel.module.css';
 import { useTerminalStore } from '../../../../store/terminalStore';
-import { CloseIcon } from '../Icons';
 
 interface TerminalSidebarProps {
     setShowTerminalSidebar: (show: boolean) => void;
@@ -17,20 +17,12 @@ export const TerminalSidebar = ({
         activeTerminalId,
         removeTerminal,
         setActiveTerminal,
+        addTerminal,
         getTerminalTypeLabel,
     } = useTerminalStore();
 
     return (
         <div className={styles.terminalSidebar}>
-            <div className={styles.sidebarHeader}>
-                <h4>Terminals</h4>
-                <button
-                    className={styles.sidebarCloseButton}
-                    onClick={() => setShowTerminalSidebar(false)}
-                >
-                    <CloseIcon />
-                </button>
-            </div>
             <div className={styles.terminalList}>
                 {terminals.map((terminal) => (
                     <div
@@ -43,29 +35,38 @@ export const TerminalSidebar = ({
                             setActiveTerminal(terminal.id);
                             setSelectedTerminalId(terminal.id);
                         }}
-                        title={
-                            terminal.pid && terminal.processName
-                                ? `PID: ${terminal.pid}, Process: ${terminal.processName}`
-                                : undefined
-                        }
                     >
-                        <div className={styles.terminalItemInfo}>
-                            <div className={styles.terminalItemName}>
-                                {getTerminalTypeLabel(terminal.type)}
+                        <div className={styles.terminalItemMain}>
+                            <div className={styles.terminalItemIcon}>
+                                {/* Use Lucide Terminal icon or custom logic based on shell type */}
+                                <Terminal size={14} />
                             </div>
-                            <div className={styles.terminalItemStatus}>
-                                {terminal.pid && terminal.processName ? `PID: ${terminal.pid}` : 'Ready'}
+                            <div className={styles.terminalItemName}>
+                                {getTerminalTypeLabel(terminal.type).toLowerCase()}
                             </div>
                         </div>
-                        <button
-                            className={styles.terminalItemClose}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                removeTerminal(terminal.id);
-                            }}
-                        >
-                            <CloseIcon />
-                        </button>
+                        <div className={styles.terminalItemActions}>
+                            <button
+                                className={styles.terminalItemAction}
+                                title="Split Terminal"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    addTerminal(terminal.type); // Simple split simulation
+                                }}
+                            >
+                                <SplitSquareHorizontal />
+                            </button>
+                            <button
+                                className={styles.terminalItemAction}
+                                title="Kill Terminal"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeTerminal(terminal.id);
+                                }}
+                            >
+                                <Trash2 />
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>

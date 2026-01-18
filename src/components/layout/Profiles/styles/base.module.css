@@ -1,4 +1,4 @@
-/* Profiles Pane - Base Styles */
+
 
 .profilesPane {
     width: 100%;
@@ -10,7 +10,7 @@
     font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Common Icon Button */
+
 .iconBtn {
     width: 20px;
     height: 20px;
@@ -31,7 +31,7 @@
     color: var(--theme-foreground);
 }
 
-/* Scrollbar */
+
 .scrollable::-webkit-scrollbar {
     width: 8px;
 }
@@ -49,7 +49,7 @@
     background-color: var(--theme-scrollbar-thumb-hover);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .profilesPane {
         flex-direction: column;

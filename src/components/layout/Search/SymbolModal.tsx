@@ -12,7 +12,7 @@ interface SymbolModalProps {
   onClose: () => void;
 }
 
-// Flatten symbols for search
+
 const flattenSymbols = (symbols: OutlineSymbol[]): OutlineSymbol[] => {
   const result: OutlineSymbol[] = [];
   
@@ -29,7 +29,7 @@ const flattenSymbols = (symbols: OutlineSymbol[]): OutlineSymbol[] => {
   return result;
 };
 
-// Symbol icon component (simplified version from OutlineSection)
+
 const SymbolIcon = ({ kind }: { kind: string }) => {
   const colorMap: Record<string, string> = {
     file: '#cccccc',
@@ -137,10 +137,10 @@ export const SymbolModal: React.FC<SymbolModalProps> = ({ isOpen, onClose }) => 
   const { activeFile } = useProjectStore();
   const { editorInstance } = useEditorStore();
 
-  // Flatten symbols for searchable list
+  
   const flatSymbols = useMemo(() => flattenSymbols(symbols), [symbols]);
 
-  // Filter symbols based on search query
+  
   const filteredSymbols = useMemo(() => {
     if (!searchQuery.trim()) return flatSymbols;
     
@@ -152,7 +152,7 @@ export const SymbolModal: React.FC<SymbolModalProps> = ({ isOpen, onClose }) => 
     );
   }, [flatSymbols, searchQuery]);
 
-  // Reset selected index when filtered results change
+  
   useEffect(() => {
     setSelectedIndex(0);
   }, [filteredSymbols]);
@@ -168,7 +168,7 @@ export const SymbolModal: React.FC<SymbolModalProps> = ({ isOpen, onClose }) => 
     }
   }, [isOpen]);
 
-  // Handle keyboard navigation
+  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;

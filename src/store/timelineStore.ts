@@ -37,7 +37,7 @@ export const useTimelineStore = create<TimelineStore>((set, get) => ({
     saveSnapshot: async (workspace, filePath, content) => {
         try {
             await tauriApi.timelineSaveSnapshot(workspace, filePath, content);
-            // Reload history after save
+            
             if (get().currentFile === filePath) {
                 await get().loadHistory(workspace, filePath);
             }

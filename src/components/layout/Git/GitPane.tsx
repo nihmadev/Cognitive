@@ -1,22 +1,28 @@
 import { useEffect, useState, useRef } from 'react';
 import { useGitStore } from '../../../store/gitStore';
 import { useProjectStore } from '../../../store/projectStore';
-import { RotateCw, GitBranch, Cloud } from 'lucide-react';
+import { RotateCw, GitBranch, Cloud, MoreHorizontal, Check } from 'lucide-react';
 import { GitCommit, tauriApi } from '../../../lib/tauri-api';
-import { CommitSection, GraphSection, ChangesSection, CommitTooltip } from './components';
+import { CommitSection, GraphSection, ChangesSection, CommitTooltip, RepositoriesSection } from './components';
 import { TooltipPosition } from './types';
 import styles from './GitPane.module.css';
 
 export const GitPane = () => {
     const { currentWorkspace, openDiffTab } = useProjectStore();
-    const { 
+    const {
         files, info, commits, isLoading, error, commitMessage, graphOpen, pushResult,
         isAuthModalOpen,
-        setCommitMessage, setGraphOpen, refresh, refreshCommits, stageFile, 
-        stageAll, commit, discardChanges, clearPushResult, setAuthModalOpen, push
+        repositoriesVisible, changesVisible, graphVisible,
+        setCommitMessage, setGraphOpen, refresh, refreshCommits, stageFile,
+        stageAll, commit, discardChanges, clearPushResult, setAuthModalOpen, push,
+        toggleRepositories, toggleChanges, toggleGraph
     } = useGitStore();
-    
-    const [changesOpen, setChangesOpen] = useState(true);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
+    const [repositoriesOpen, setRepositoriesOpen] = useState(false);
+    const [changesOpen, setChangesOpen] = useState(false);
     const [hoveredCommit, setHoveredCommit] = useState<GitCommit | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({ x: 0, y: 0 });
     const [isTooltipHovered, setIsTooltipHovered] = useState(false);
@@ -80,7 +86,7 @@ export const GitPane = () => {
                 return;
             }
         } catch {
-            // ignore
+
         }
         try {
             await tauriApi.gitGithubAuthLogin();
@@ -114,8 +120,8 @@ export const GitPane = () => {
                 <div className={styles.header}>
                     <span>Source Control</span>
                     <div className={styles.headerActions}>
-                        <button 
-                            className={styles.headerBtn} 
+                        <button
+                            className={styles.headerBtn}
                             onClick={() => refresh(currentWorkspace)}
                             title="Refresh"
                         >
@@ -145,8 +151,8 @@ export const GitPane = () => {
             <div className={styles.header}>
                 <span>Source Control</span>
                 <div className={styles.headerActions}>
-                    <button 
-                        className={styles.headerBtn} 
+                    <button
+                        className={styles.headerBtn}
                         onClick={() => {
                             refresh(currentWorkspace);
                             refreshCommits(currentWorkspace);
@@ -155,34 +161,90 @@ export const GitPane = () => {
                     >
                         <RotateCw size={14} />
                     </button>
+                    <button
+                        className={styles.headerBtn}
+                        onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setMenuPosition({ x: rect.right - 180, y: rect.bottom + 12 });
+                            setIsMenuOpen(true);
+                        }}
+                        title="Views and More Actions..."
+                    >
+                        <MoreHorizontal size={14} />
+                    </button>
                 </div>
             </div>
 
-            <CommitSection
-                commitMessage={commitMessage}
-                filesCount={files.length}
-                onCommitMessageChange={setCommitMessage}
-                onCommit={handleCommit}
-            />
+            {isMenuOpen && (
+                <>
+                    <div className={styles.menuOverlay} onClick={() => setIsMenuOpen(false)} />
+                    <div
+                        className={styles.visibilityMenu}
+                        style={{ left: menuPosition.x, top: menuPosition.y }}
+                    >
+                        <button className={styles.visibilityMenuItem} onClick={() => { toggleRepositories(); setIsMenuOpen(false); }}>
+                            <div className={styles.menuCheck}>{repositoriesVisible && <Check size={12} />}</div>
+                            Repositories
+                        </button>
+                        <button className={styles.visibilityMenuItem} onClick={() => { toggleChanges(); setIsMenuOpen(false); }}>
+                            <div className={styles.menuCheck}>{changesVisible && <Check size={12} />}</div>
+                            Changes
+                        </button>
+                        <button className={styles.visibilityMenuItem} onClick={() => { toggleGraph(); setIsMenuOpen(false); }}>
+                            <div className={styles.menuCheck}>{graphVisible && <Check size={12} />}</div>
+                            Graph
+                        </button>
+                    </div>
+                </>
+            )}
 
-            <ChangesSection
-                files={files}
-                changesOpen={changesOpen}
-                onToggle={() => setChangesOpen(!changesOpen)}
-                onFileClick={handleFileClick}
-                onStageFile={(path) => stageFile(currentWorkspace, path)}
-                onStageAll={() => stageAll(currentWorkspace)}
-                onDiscardChanges={(path) => discardChanges(currentWorkspace, path)}
-            />
+            {repositoriesVisible && (
+                <RepositoriesSection
+                    repositoriesOpen={repositoriesOpen}
+                    onToggle={() => setRepositoriesOpen(!repositoriesOpen)}
+                    currentWorkspace={currentWorkspace}
+                    branchName={info?.branch}
+                    isClean={info?.is_clean ?? true}
+                    onRefresh={() => {
+                        refresh(currentWorkspace);
+                        refreshCommits(currentWorkspace);
+                    }}
+                    onCommit={handleCommit}
+                    onPush={() => push(currentWorkspace)}
+                />
+            )}
 
-            <GraphSection
-                commits={commits}
-                graphOpen={graphOpen}
-                remoteName={info?.remote_name}
-                onToggle={() => setGraphOpen(!graphOpen)}
-                onCommitHover={handleCommitHover}
-                onCommitLeave={handleCommitLeave}
-            />
+            {changesVisible && changesOpen && (
+                <CommitSection
+                    commitMessage={commitMessage}
+                    filesCount={files.length}
+                    onCommitMessageChange={setCommitMessage}
+                    onCommit={handleCommit}
+                />
+            )}
+
+            {changesVisible && (
+                <ChangesSection
+                    files={files}
+                    changesOpen={changesOpen}
+                    onToggle={() => setChangesOpen(!changesOpen)}
+                    onFileClick={handleFileClick}
+                    onStageFile={(path) => stageFile(currentWorkspace, path)}
+                    onStageAll={() => stageAll(currentWorkspace)}
+                    onDiscardChanges={(path) => discardChanges(currentWorkspace, path)}
+                />
+            )}
+
+            {graphVisible && (
+                <GraphSection
+                    commits={commits}
+                    graphOpen={graphOpen}
+                    remoteName={info?.remote_name}
+                    onToggle={() => setGraphOpen(!graphOpen)}
+                    onCommitHover={handleCommitHover}
+                    onCommitLeave={handleCommitLeave}
+                />
+            )}
 
             {pushResult && (
                 <div className={`${styles.pushResult} ${pushResult.success ? styles.success : styles.error}`}>
@@ -206,7 +268,7 @@ export const GitPane = () => {
                 </div>
             )}
 
-            
+
             {hoveredCommit && (
                 <CommitTooltip
                     commit={hoveredCommit}

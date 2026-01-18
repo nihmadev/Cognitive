@@ -316,8 +316,8 @@ pub async fn ollama_chat_stream(
 
     while let Some(item) = stream.next().await {
         let chunk = item.map_err(|e| e.to_string())?;
-        // Use lossy utf8 conversion to handle potential split multibyte characters
-        // In a perfect implementation we would use a decoder
+        
+        
         let chunk_str = String::from_utf8_lossy(&chunk);
         buffer.push_str(&chunk_str);
 
@@ -328,12 +328,12 @@ pub async fn ollama_chat_stream(
                 continue;
             }
 
-            // Parse each line as JSON
+            
             match serde_json::from_str::<StreamResponse>(line) {
                 Ok(stream_res) => {
                     if let Some(msg) = stream_res.message {
                         if !msg.content.is_empty() {
-                            // Emit the chunk content to the frontend
+                            
                             if let Err(e) = window.emit("ollama-stream", &msg.content) {
                                 println!("Failed to emit event: {}", e);
                             }

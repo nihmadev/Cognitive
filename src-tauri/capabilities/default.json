@@ -19,6 +19,11 @@
     "core:window:allow-toggle-maximize",
     "opener:default",
     "dialog:allow-open",
-    "dialog:allow-save"
+    "dialog:allow-save",
+    "pty:default",
+    "pty:allow-spawn",
+    "pty:allow-write",
+    "pty:allow-resize",
+    "pty:allow-kill"
   ]
 }

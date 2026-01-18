@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { tauriApi } from '../../lib/tauri-api';
-import styles from './ImageViewer.module.css';
+import { tauriApi } from '../../../lib/tauri-api';
+import styles from './styles.module.css';
 
 interface ImageViewerProps {
     path: string;
@@ -29,8 +29,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
                         setLoading(false);
                     }
                 } else {
-                    // SVG is handled separately for potential manipulation, 
-                    // other types (including .ico) use convertFileSrc
+
+
                     const url = await tauriApi.getAssetUrl(path);
                     if (isMounted) {
                         setAssetUrl(url);
@@ -48,7 +48,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
         loadMedia();
         return () => {
             isMounted = false;
-            // Clean up object URL to prevent memory leaks
+
             if (icoDataUrl) {
                 URL.revokeObjectURL(icoDataUrl);
             }
@@ -69,7 +69,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
 
     return (
         <div className={styles.root}>
-            {/* Main Viewport */}
+            { }
             <div
                 className={styles.viewport}
                 onWheel={handleWheel}

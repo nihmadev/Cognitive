@@ -23,15 +23,15 @@ export interface FileDiagnostics {
 }
 
 interface DiagnosticsState {
-    // Monaco diagnostics by file path
+    
     monacoDiagnostics: Record<string, MonacoDiagnostic[]>;
-    // Set diagnostics for a file
+    
     setFileDiagnostics: (filePath: string, diagnostics: MonacoDiagnostic[]) => void;
-    // Clear diagnostics for a file
+    
     clearFileDiagnostics: (filePath: string) => void;
-    // Get all diagnostics grouped by file
+    
     getAllDiagnostics: () => FileDiagnostics[];
-    // Get total counts
+    
     getTotalCounts: () => { errors: number; warnings: number };
 }
 

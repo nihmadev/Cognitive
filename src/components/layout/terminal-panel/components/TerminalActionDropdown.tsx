@@ -1,17 +1,17 @@
 import clsx from 'clsx';
+import {
+    Plus,
+    ChevronDown,
+    SplitSquareHorizontal,
+    Terminal,
+    AppWindow,
+    Bug,
+    Settings,
+    User,
+    Play
+} from 'lucide-react';
 import styles from '../TerminalPanel.module.css';
 import { useTerminalStore } from '../../../../store/terminalStore';
-import {
-    PlusIcon,
-    ChevronDownIcon,
-    SplitIcon,
-    TerminalIcon,
-    WindowIcon,
-    BugIcon,
-    SettingsIcon,
-    ProfileIcon,
-    TaskIcon,
-} from '../Icons';
 
 type TabId = 'problems' | 'output' | 'debug' | 'terminal' | 'ports';
 
@@ -42,33 +42,33 @@ export const TerminalActionDropdown = ({
                 onClick={() => handleAddTerminal()}
                 title="Add Terminal"
             >
-                <PlusIcon />
+                <Plus size={16} />
             </button>
             <button
                 className={clsx(styles.actionButton, styles.dropdownArrow)}
                 onClick={() => setShowActionDropdown(!showActionDropdown)}
                 title="Terminal Actions"
             >
-                <ChevronDownIcon />
+                <ChevronDown size={14} />
             </button>
             {showActionDropdown && (
                 <div className={styles.actionDropdownMenu}>
                     <button className={styles.actionDropdownItem} onClick={() => handleAddTerminal()}>
-                        <TerminalIcon /> New Terminal
+                        <Terminal size={14} /> New Terminal
                         <span className={styles.keyboardShortcut}>Ctrl+Shift+`</span>
                     </button>
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <WindowIcon /> New Terminal Window
+                        <AppWindow size={14} /> New Terminal Window
                         <span className={styles.keyboardShortcut}>Ctrl+Shift+Alt+`</span>
                     </button>
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <SplitIcon /> Split Terminal
+                        <SplitSquareHorizontal size={14} /> Split Terminal
                         <span className={styles.keyboardShortcut}>Ctrl+Shift+5</span>
                     </button>
                     <hr className={styles.dropdownDivider} />
@@ -82,39 +82,39 @@ export const TerminalActionDropdown = ({
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <BugIcon /> JavaScript Debug Terminal
+                        <Bug size={14} /> JavaScript Debug Terminal
                     </button>
                     <hr className={styles.dropdownDivider} />
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <SplitIcon /> Split Terminal with Profile
+                        <SplitSquareHorizontal size={14} /> Split Terminal with Profile
                     </button>
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <SettingsIcon /> Configure Terminal Settings
+                        <Settings size={14} /> Configure Terminal Settings
                     </button>
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <ProfileIcon /> Select Default Profile
+                        <User size={14} /> Select Default Profile
                     </button>
                     <hr className={styles.dropdownDivider} />
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <TaskIcon /> Run Task...
+                        <Play size={14} /> Run Task...
                     </button>
                     <button
                         className={styles.actionDropdownItem}
                         onClick={() => setShowActionDropdown(false)}
                     >
-                        <SettingsIcon /> Configure Tasks...
+                        <Settings size={14} /> Configure Tasks...
                     </button>
                 </div>
             )}

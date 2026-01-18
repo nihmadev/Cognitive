@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { getFileIcon } from '../../utils/fileIcons';
+import { getFileIcon } from '../../../utils/fileIcons';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useProjectStore } from '../../store/projectStore';
-import { tauriApi } from '../../lib/tauri-api';
+import { useProjectStore } from '../../../store/projectStore';
+import { tauriApi } from '../../../lib/tauri-api';
 import clsx from 'clsx';
-import styles from './GoToFileModal.module.css';
+import styles from './styles.module.css';
 
 interface GoToFileModalProps {
     isOpen: boolean;
@@ -19,7 +19,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
     const [allFiles, setAllFiles] = useState<any[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(0);
     
-    // Get last 3 unique files from history
+    
     const recentFiles = Array.from(new Set(history))
         .reverse()
         .slice(0, 3)
@@ -29,7 +29,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
             icon: getFileIcon(path.split(/[/\\]/).pop() || path, path)
         }));
 
-    // Filter all files based on search query
+    
     const filteredFiles = allFiles
         .map(file => ({
             name: file.name,
@@ -41,7 +41,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
             f.path.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
-    // Show recent files when no search query, otherwise show filtered files
+    
     const displayFiles = searchQuery.length > 0 ? filteredFiles : [...recentFiles, ...filteredFiles];
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    // Handle keyboard navigation
+    
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
@@ -99,7 +99,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose, displayFiles, selectedIndex, openFile]);
 
-    // Reset selected index when search query changes
+    
     useEffect(() => {
         setSelectedIndex(0);
     }, [searchQuery]);
@@ -137,7 +137,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
                         </div>
 
                         <div className={styles.body}>
-                            {/* Recent Files Section - only show when no search query */}
+                            {}
                             {searchQuery.length === 0 && recentFiles.length > 0 && (
                                 <div>
                                     <div className={styles.recentTitle}>recently opened</div>
@@ -161,7 +161,7 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                             )}
 
-                            {/* All Files Section */}
+                            {}
                             {(searchQuery.length > 0 ? filteredFiles : allFiles.map(file => ({
                                 name: file.name,
                                 path: file.path,

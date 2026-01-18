@@ -21,7 +21,7 @@ export const useAIAssistant = () => {
   } = useAIStore();
   const { currentWorkspace } = useProjectStore();
 
-  // Add debug logging to see what models are detected
+  
   useEffect(() => {
     console.log('Available Ollama local models:', ollamaLocalModels);
     console.log('Available models:', availableModels);
@@ -44,7 +44,7 @@ export const useAIAssistant = () => {
 
   const activeConversation = conversations.find(c => c.id === activeConversationId);
 
-  // Auto-resize textarea
+  
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -65,8 +65,8 @@ export const useAIAssistant = () => {
   }, [inputValue]);
 
   const scrollToBottom = () => {
-    // Отключаем автоматическую прокрутку чтобы избежать подъема интерфейса
-    // messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    
+    
   };
 
   useEffect(() => {
@@ -75,15 +75,15 @@ export const useAIAssistant = () => {
     }
   }, [activeConversationId, activeConversation?.messages]);
 
-  // Click outside listener for dropdowns
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Handle model dropdown
+      
       if (isModelDropdownOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsModelDropdownOpen(false);
       }
 
-      // Handle mode dropdown
+      
       if (isModeDropdownOpen) {
         const target = event.target as Node;
         const isClickInsideModeButton = modeDropdownRef.current?.contains(target);
@@ -99,7 +99,7 @@ export const useAIAssistant = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isModelDropdownOpen, isModeDropdownOpen]);
 
-  // Add keyboard navigation for dropdowns
+  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -111,7 +111,7 @@ export const useAIAssistant = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Handle view changes
+  
   useEffect(() => {
     if (activeConversationId && activeConversation) {
       setCurrentView('chat');
@@ -121,7 +121,7 @@ export const useAIAssistant = () => {
   }, [activeConversationId, activeConversation]);
 
   return {
-    // State
+    
     inputValue,
     isHistoryModalOpen,
     isModelDropdownOpen,
@@ -131,7 +131,7 @@ export const useAIAssistant = () => {
     activeConversation,
     activeModelName: availableModels.find(m => m.id === activeModelId)?.name || 'Select Model',
     
-    // Store data
+    
     conversations,
     activeConversationId,
     activeModelId,
@@ -140,22 +140,22 @@ export const useAIAssistant = () => {
     ollamaLocalModels,
     currentWorkspace,
     
-    // Store actions
+    
     createConversation,
     addMessage,
     appendMessageContent,
     
-    // Loading actions
+    
     setIsLoading,
     
-    // Refs
+    
     textareaRef: textareaRef as RefObject<HTMLTextAreaElement>,
     messagesEndRef: messagesEndRef as RefObject<HTMLDivElement>,
     dropdownRef: dropdownRef as RefObject<HTMLDivElement>,
     modeDropdownRef: modeDropdownRef as RefObject<HTMLDivElement>,
     extendedModeDropdownRef: extendedModeDropdownRef as RefObject<HTMLDivElement>,
     
-    // Actions
+    
     setInputValue,
     setIsHistoryModalOpen,
     setIsModelDropdownOpen,

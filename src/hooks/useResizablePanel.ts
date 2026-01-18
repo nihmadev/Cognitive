@@ -39,7 +39,7 @@ export const useResizablePanel = ({
     setWidth(newWidth);
     onResize?.(newWidth);
 
-    // Prevent text selection during resize
+    
     e.preventDefault();
   }, [isResizing, direction, minWidth, maxWidth, onResize]);
 
@@ -55,12 +55,12 @@ export const useResizablePanel = ({
     startX.current = e.clientX;
     startWidth.current = width;
 
-    // Change cursor and prevent selection during resize
+    
     document.body.style.cursor = direction === 'right' ? 'col-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
   }, [width, direction]);
 
-  // Set up global mouse event listeners
+  
   useEffect(() => {
     if (isResizing) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -73,7 +73,7 @@ export const useResizablePanel = ({
     }
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
-  // Clean up cursor styles on unmount
+  
   useEffect(() => {
     return () => {
       document.body.style.cursor = '';

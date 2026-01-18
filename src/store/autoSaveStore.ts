@@ -4,7 +4,7 @@ import { useEditorStore } from './editorStore';
 
 interface AutoSaveState {
     isEnabled: boolean;
-    delay: number; // milliseconds
+    delay: number; 
     saveOnFocusLoss: boolean;
     lastSaveTime: { [key: string]: number };
     pendingSaves: { [key: string]: ReturnType<typeof setTimeout> };
@@ -26,20 +26,20 @@ interface AutoSaveActions {
 type AutoSaveStore = AutoSaveState & AutoSaveActions;
 
 export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
-    // Default state
+    
     isEnabled: true,
-    delay: 1000, // 1 second default
+    delay: 1000, 
     saveOnFocusLoss: true,
     lastSaveTime: {},
     pendingSaves: {},
     isAutoSaving: false,
     autoSaveCount: 0,
 
-    // Actions
+    
     setAutoSaveEnabled: (enabled: boolean) => {
         set({ isEnabled: enabled });
         
-        // Cancel all pending saves when disabled
+        
         if (!enabled) {
             const { pendingSaves } = get();
             Object.values(pendingSaves).forEach(timer => clearTimeout(timer));
@@ -48,7 +48,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
     },
 
     setAutoSaveDelay: (delay: number) => {
-        set({ delay: Math.max(100, delay) }); // Minimum 100ms
+        set({ delay: Math.max(100, delay) }); 
     },
 
     setSaveOnFocusLoss: (enabled: boolean) => {
@@ -62,7 +62,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
         const projectStore = useProjectStore.getState();
         const editorStore = useEditorStore.getState();
         
-        // Determine which file to save
+        
         const fileToSave = filePath || projectStore.activeFile || editorStore.currentFilePath;
         
         if (!fileToSave) {
@@ -70,7 +70,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
             return;
         }
 
-        // Check if file has unsaved changes
+        
         if (!projectStore.unsavedChanges[fileToSave]) {
             console.log('No unsaved changes for:', fileToSave);
             return;
@@ -79,10 +79,10 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
         set({ isAutoSaving: true });
 
         try {
-            // Use existing save functionality
+            
             await projectStore.saveFile(fileToSave);
             
-            // Update last save time and count
+            
             const now = Date.now();
             set(state => ({
                 lastSaveTime: { ...state.lastSaveTime, [fileToSave]: now },
@@ -101,16 +101,16 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
         const { isEnabled, delay, pendingSaves } = get();
         if (!isEnabled) return;
 
-        // Cancel existing pending save for this file
+        
         if (pendingSaves[filePath]) {
             clearTimeout(pendingSaves[filePath]);
         }
 
-        // Schedule new auto-save
+        
         const saveDelay = customDelay || delay;
         const timer = setTimeout(() => {
             get().triggerAutoSave(filePath);
-            // Remove from pending saves after execution
+            
             set(state => {
                 const newPendingSaves = { ...state.pendingSaves };
                 delete newPendingSaves[filePath];
@@ -149,12 +149,12 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
         set({ isAutoSaving: true });
 
         try {
-            // Save all files with unsaved changes
+            
             await Promise.all(
                 unsavedFiles.map(file => projectStore.saveFile(file))
             );
 
-            // Update last save times for all saved files
+            
             const now = Date.now();
             const newLastSaveTimes: { [key: string]: number } = {};
             unsavedFiles.forEach(file => {

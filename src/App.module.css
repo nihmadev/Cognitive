@@ -1,10 +1,10 @@
-/* Windows Title Bar */
+
 .titlebar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 32px;
-  /* Standard Windows title bar height */
+  
   background-color: var(--theme-background-secondary);
   border-bottom: 1px solid var(--theme-border);
   padding-left: 10px;
@@ -47,7 +47,7 @@
 }
 
 .systemControlsSpacer {
-  /* Width of the three standard Windows buttons (Close, Maximize, Minimize) */
+  
   width: 138px;
   height: 100%;
   -webkit-app-region: drag;

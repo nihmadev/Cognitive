@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GitBranch, Plus, GitCommit, X } from 'lucide-react';
-import { tauriApi, GitBranch as GitBranchType } from '../../lib/tauri-api';
-import { useProjectStore } from '../../store/projectStore';
-import styles from './BranchModal.module.css';
+import { tauriApi, GitBranch as GitBranchType } from '../../../lib/tauri-api';
+import { useProjectStore } from '../../../store/projectStore';
+import styles from './styles.module.css';
 
 interface BranchModalProps {
   isOpen: boolean;
@@ -33,22 +33,22 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
     if (isOpen && currentWorkspace) {
       loadBranches();
       
-      // Find search-bar and calculate position like CloneRepoModal
+      
       const searchBar = 
         (document.querySelector('[class*="searchBar"]') as HTMLElement) ||
         (document.querySelector('.searchBar') as HTMLElement);
       
       if (searchBar) {
         const rect = searchBar.getBoundingClientRect();
-        const modalWidth = 600; // Same as in CSS
+        const modalWidth = 600; 
         const searchBarWidth = rect.width;
         
-        // Calculate symmetric position: modal should extend equally on both sides
+        
         const offset = (modalWidth - searchBarWidth) / 2;
         let left = rect.left - offset;
         
-        // Ensure modal doesn't go off-screen
-        const minLeft = 8; // Minimum margin from screen edge
+        
+        const minLeft = 8; 
         const maxLeft = window.innerWidth - modalWidth - minLeft;
         left = Math.max(minLeft, Math.min(left, maxLeft));
         
@@ -58,7 +58,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
           width: modalWidth
         });
       } else {
-        // Fallback to center if search-bar not found
+        
         setPosition(null);
       }
     }
@@ -115,7 +115,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
 
       await tauriApi.gitCreateBranch(currentWorkspace, request);
       
-      // Reset form and refresh branches
+      
       setNewBranchName('');
       setSelectedSourceBranch('');
       setShowCreateForm(false);
@@ -133,7 +133,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
     try {
       await tauriApi.gitCheckoutBranch(currentWorkspace, branchName);
       onClose();
-      // Refresh git info in status bar by triggering a reload
+      
       window.dispatchEvent(new CustomEvent('git-branch-changed'));
     } catch (err: any) {
       setError(err.message || 'Failed to checkout branch');
@@ -144,7 +144,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
     if (!currentWorkspace) return;
 
     try {
-      // Get the latest commit hash for detached checkout
+      
       const log = await tauriApi.gitLog(currentWorkspace, 1);
       if (log.length > 0) {
         await handleCheckoutBranch(log[0].hash);
@@ -204,7 +204,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
           >
             {!showCreateForm ? (
               <>
-                {/* Search/Input */}
+                {}
                 <div className={styles.inputWrapper}>
                   <input
                     type="text"
@@ -216,7 +216,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
                   />
                 </div>
 
-                {/* Actions */}
+                {}
                 <div className={styles.actions}>
                   <div 
                     className={styles.actionItem}
@@ -241,14 +241,14 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
                   </div>
                 </div>
 
-                {/* Error */}
+                {}
                 {error && (
                   <div className={styles.error}>
                     {error}
                   </div>
                 )}
 
-                {/* Branches */}
+                {}
                 <div className={styles.branchList}>
                   {isLoading ? (
                     <div className={styles.loading}>Loading branches...</div>
@@ -311,7 +311,7 @@ export const BranchModal: React.FC<BranchModalProps> = ({ isOpen, onClose }) => 
                 </div>
               </>
             ) : (
-              /* Create Branch Form */
+              
               <div className={styles.createForm}>
                 <div className={styles.formHeader}>
                   <h3>Create New Branch</h3>

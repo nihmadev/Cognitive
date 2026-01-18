@@ -1,4 +1,4 @@
-/* Header with tabs and controls */
+
 .header {
   display: flex;
   align-items: center;
@@ -9,7 +9,7 @@
   flex-shrink: 0;
 }
 
-/* Tabs */
+
 .tabs {
   display: flex;
   align-items: center;
@@ -55,7 +55,7 @@
   line-height: 1;
 }
 
-/* Right side controls */
+
 .controls {
   display: flex;
   align-items: center;

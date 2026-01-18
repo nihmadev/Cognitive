@@ -26,11 +26,11 @@ export interface FileSlice {
     warnings: { [key: string]: number };
     unsavedChanges: { [key: string]: boolean };
     fileContents: { [key: string]: string };
-    originalContents: { [key: string]: string }; // Оригинальное содержимое для Timeline
+    originalContents: { [key: string]: string }; 
     deletedFiles: { [key: string]: boolean };
-    editorVersion: number; // Для принудительного обновления редактора
-    fileSystemVersion: number; // Для принудительного обновления файловой системы
-    tabsLocked: boolean; // Whether tabs are locked from closing
+    editorVersion: number; 
+    fileSystemVersion: number; 
+    tabsLocked: boolean; 
     openFileDialog: () => Promise<void>;
     newFile: () => Promise<void>;
     newTextFile: () => Promise<void>;
@@ -88,22 +88,22 @@ export const createFileSlice: StateCreator<
     tabsLocked: false,
 
     openNewFileModal: () => {
-        // This function should be overridden by the UI layer
+        
         console.warn('openNewFileModal called but not implemented in store');
     },
 
     setWorkspace: async (path: string) => {
         try {
             const structure = await invoke<FileEntry[]>('read_dir', { path });
-            // Save the workspace path to localStorage
+            
             localStorage.setItem('lastWorkspace', path);
             set({ 
                 currentWorkspace: path, 
                 fileStructure: structure,
-                fileSystemVersion: get().fileSystemVersion + 1 // Force sidebar re-render
+                fileSystemVersion: get().fileSystemVersion + 1 
             });
             
-            // Start file watcher for the new workspace
+            
             const { startFileWatcher } = get();
             await startFileWatcher();
         } catch (error) {
@@ -112,11 +112,11 @@ export const createFileSlice: StateCreator<
     },
 
     closeWorkspace: async () => {
-        // Stop file watcher before clearing workspace
+        
         const { stopFileWatcher } = get();
         await stopFileWatcher();
         
-        // Clear workspace data and localStorage
+        
         localStorage.removeItem('lastWorkspace');
         set({
             currentWorkspace: null,
@@ -134,14 +134,14 @@ export const createFileSlice: StateCreator<
         });
     },
 
-    // Initialize the store with the last opened workspace if it exists
+    
     initWorkspace: async () => {
         const lastWorkspace = localStorage.getItem('lastWorkspace');
         if (lastWorkspace) {
             try {
                 const structure = await invoke<FileEntry[]>('read_dir', { path: lastWorkspace });
                 set({ currentWorkspace: lastWorkspace, fileStructure: structure });
-                // Start file watcher for the restored workspace
+                
                 const { startFileWatcher } = get();
                 await startFileWatcher();
                 return true;
@@ -160,7 +160,7 @@ export const createFileSlice: StateCreator<
             const structure = await invoke<FileEntry[]>('read_dir', { path: currentWorkspace });
             set({ 
                 fileStructure: structure,
-                fileSystemVersion: get().fileSystemVersion + 1 // Force sidebar re-render
+                fileSystemVersion: get().fileSystemVersion + 1 
             });
         }
     },
@@ -173,7 +173,7 @@ export const createFileSlice: StateCreator<
         
         const { openFiles, history, historyIndex, deletedFiles, activeFile } = get();
         
-        // If clicking on the currently active file, don't modify history
+        
         if (activeFile === path) {
             return;
         }
@@ -181,15 +181,15 @@ export const createFileSlice: StateCreator<
         let newHistory: string[];
         let newHistoryIndex: number;
         
-        // Check if the file exists anywhere in the existing history
+        
         const indexInHistory = history.indexOf(path);
         
         if (indexInHistory !== -1) {
-            // File exists in history (either backward or forward), jump to it without modifying history
+            
             newHistory = history;
             newHistoryIndex = indexInHistory;
         } else {
-            // File doesn't exist in history, add it and truncate forward history
+            
             newHistory = [...history.slice(0, historyIndex + 1), path];
             if (newHistory.length > 50) newHistory.shift();
             newHistoryIndex = newHistory.length - 1;
@@ -215,7 +215,7 @@ export const createFileSlice: StateCreator<
     closeFile: (path: string, force: boolean = false) => {
         const { openFiles, activeFile, history, historyIndex, errors, warnings, deletedFiles, tabsLocked } = get();
         
-        // Prevent closing files if tabs are locked (unless forced)
+        
         if (tabsLocked && !force) {
             return;
         }
@@ -248,7 +248,7 @@ export const createFileSlice: StateCreator<
     closeAllFiles: () => {
         const { tabsLocked } = get();
         
-        // Prevent closing files if tabs are locked
+        
         if (tabsLocked) {
             return;
         }
@@ -267,24 +267,24 @@ export const createFileSlice: StateCreator<
     closeAllSavedFiles: () => {
         const { openFiles, unsavedChanges, activeFile, history, historyIndex, errors, warnings, deletedFiles, tabsLocked } = get();
         
-        // Prevent closing files if tabs are locked
+        
         if (tabsLocked) {
             return;
         }
         
-        // Keep only files with unsaved changes
+        
         const filesWithUnsavedChanges = openFiles.filter(file => unsavedChanges[file]);
         
-        // Update active file if it was closed
+        
         const newActiveFile = activeFile && !unsavedChanges[activeFile] 
             ? (filesWithUnsavedChanges[0] || null) 
             : activeFile;
         
-        // Update history to only include files with unsaved changes
+        
         const newHistory = history.filter(file => unsavedChanges[file]);
         const newHistoryIndex = Math.min(historyIndex, newHistory.length - 1);
         
-        // Clean up errors and warnings for closed files
+        
         const newErrors = { ...errors };
         const newWarnings = { ...warnings };
         const newDeletedFiles = { ...deletedFiles };
@@ -343,7 +343,7 @@ export const createFileSlice: StateCreator<
         const originalContent = fileContents[filePath];
         const hasChanges = originalContent !== undefined && originalContent !== content;
         
-        // Сохраняем оригинальное содержимое при первом изменении
+        
         if (hasChanges && !originalContents[filePath] && originalContent !== undefined) {
             set({
                 originalContents: { ...originalContents, [filePath]: originalContent }
@@ -369,7 +369,7 @@ export const createFileSlice: StateCreator<
 
     forceUpdateContent: (filePath: string, content: string) => {
         const { fileContents, unsavedChanges, originalContents, editorVersion } = get();
-        // Очищаем оригинальное содержимое и помечаем как несохранённое
+        
         const newOriginalContents = { ...originalContents };
         delete newOriginalContents[filePath];
         
@@ -377,14 +377,14 @@ export const createFileSlice: StateCreator<
             fileContents: { ...fileContents, [filePath]: content },
             unsavedChanges: { ...unsavedChanges, [filePath]: false },
             originalContents: newOriginalContents,
-            editorVersion: editorVersion + 1, // Триггерим обновление редактора
+            editorVersion: editorVersion + 1, 
         });
     },
 
     saveFile: async (filePath: string) => {
         const { fileContents, originalContents, deletedFiles } = get();
         
-        // Check if file is deleted
+        
         if (deletedFiles[filePath]) {
             console.error('[Save] Cannot save deleted file:', filePath);
             throw new Error('Cannot save deleted file');
@@ -396,7 +396,7 @@ export const createFileSlice: StateCreator<
             try {
                 await invoke('write_file', { path: filePath, content });
                 get().markFileAsSaved(filePath);
-                // Очищаем оригинальное содержимое после сохранения
+                
                 const newOriginalContents = { ...originalContents };
                 delete newOriginalContents[filePath];
                 set({ originalContents: newOriginalContents });
@@ -428,7 +428,7 @@ export const createFileSlice: StateCreator<
             const { currentWorkspace, fileContents, unsavedChanges } = get();
             if (!currentWorkspace) return;
             
-            // Create a new untitled file
+            
             const newFilePath = `${currentWorkspace}/untitled-${Date.now()}.txt`;
             const newFileContents = { ...fileContents, [newFilePath]: '' };
             const newUnsavedChanges = { ...unsavedChanges, [newFilePath]: true };
@@ -440,10 +440,10 @@ export const createFileSlice: StateCreator<
                 activeFile: newFilePath
             });
             
-            // Save the empty file
+            
             await tauriApi.writeFile(newFilePath, '');
             
-            // Refresh workspace to show the new file in explorer
+            
             await get().refreshWorkspace();
         } catch (error) {
             console.error('Failed to create new file:', error);
@@ -455,7 +455,7 @@ export const createFileSlice: StateCreator<
             const { currentWorkspace, fileContents, unsavedChanges } = get();
             if (!currentWorkspace) return;
             
-            // Create a new untitled text file without extension
+            
             const newFilePath = `${currentWorkspace}/untitled-${Date.now()}`;
             const newFileContents = { ...fileContents, [newFilePath]: '' };
             const newUnsavedChanges = { ...unsavedChanges, [newFilePath]: true };
@@ -467,10 +467,10 @@ export const createFileSlice: StateCreator<
                 activeFile: newFilePath
             });
             
-            // Save the empty file
+            
             await tauriApi.writeFile(newFilePath, '');
             
-            // Refresh workspace to show the new file in explorer
+            
             await get().refreshWorkspace();
         } catch (error) {
             console.error('Failed to create new text file:', error);
@@ -482,7 +482,7 @@ export const createFileSlice: StateCreator<
             const { currentWorkspace, fileContents, unsavedChanges } = get();
             if (!currentWorkspace) return;
             
-            // Create a new file with the custom name provided by user
+            
             const newFilePath = `${currentWorkspace}/${fileName}`;
             const newFileContents = { ...fileContents, [newFilePath]: '' };
             const newUnsavedChanges = { ...unsavedChanges, [newFilePath]: true };
@@ -494,10 +494,10 @@ export const createFileSlice: StateCreator<
                 activeFile: newFilePath
             });
             
-            // Save the empty file
+            
             await tauriApi.writeFile(newFilePath, '');
             
-            // Refresh workspace to show the new file in explorer
+            
             await get().refreshWorkspace();
         } catch (error) {
             console.error('Failed to create custom file:', error);
@@ -509,7 +509,7 @@ export const createFileSlice: StateCreator<
             const { currentWorkspace, fileContents, unsavedChanges } = get();
             if (!currentWorkspace) return;
             
-            // Create a new file with the specified extension
+            
             const newFilePath = `${currentWorkspace}/untitled-${Date.now()}${extension}`;
             const newFileContents = { ...fileContents, [newFilePath]: '' };
             const newUnsavedChanges = { ...unsavedChanges, [newFilePath]: true };
@@ -521,10 +521,10 @@ export const createFileSlice: StateCreator<
                 activeFile: newFilePath
             });
             
-            // Save the empty file
+            
             await tauriApi.writeFile(newFilePath, '');
             
-            // Refresh workspace to show the new file in explorer
+            
             await get().refreshWorkspace();
         } catch (error) {
             console.error('Failed to create new file with extension:', error);
@@ -566,14 +566,14 @@ export const createFileSlice: StateCreator<
         console.log('[FileStore] Currently open files:', openFiles);
         console.log('[FileStore] Is file open?', openFiles.includes(path));
         
-        // Mark as deleted but keep the file open so user can see it's deleted
+        
         const newDeletedFiles = { ...deletedFiles, [path]: true };
         
         console.log('[FileStore] Updated deletedFiles:', newDeletedFiles);
         
         set({
             deletedFiles: newDeletedFiles,
-            fileSystemVersion: get().fileSystemVersion + 1 // Force UI update
+            fileSystemVersion: get().fileSystemVersion + 1 
         });
     },
 
@@ -605,51 +605,51 @@ export const createFileSlice: StateCreator<
     updateFilePath: (oldPath: string, newPath: string) => {
         const { openFiles, activeFile, history, fileContents, unsavedChanges, originalContents, errors, warnings, deletedFiles } = get();
         
-        // Update openFiles array
+        
         const newOpenFiles = openFiles.map(path => path === oldPath ? newPath : path);
         
-        // Update activeFile if it matches
+        
         const newActiveFile = activeFile === oldPath ? newPath : activeFile;
         
-        // Update history
+        
         const newHistory = history.map(path => path === oldPath ? newPath : path);
         
-        // Update fileContents
+        
         const newFileContents = { ...fileContents };
         if (fileContents[oldPath] !== undefined) {
             newFileContents[newPath] = fileContents[oldPath];
             delete newFileContents[oldPath];
         }
         
-        // Update unsavedChanges
+        
         const newUnsavedChanges = { ...unsavedChanges };
         if (unsavedChanges[oldPath] !== undefined) {
             newUnsavedChanges[newPath] = unsavedChanges[oldPath];
             delete newUnsavedChanges[oldPath];
         }
         
-        // Update originalContents
+        
         const newOriginalContents = { ...originalContents };
         if (originalContents[oldPath] !== undefined) {
             newOriginalContents[newPath] = originalContents[oldPath];
             delete newOriginalContents[oldPath];
         }
         
-        // Update errors
+        
         const newErrors = { ...errors };
         if (errors[oldPath] !== undefined) {
             newErrors[newPath] = errors[oldPath];
             delete newErrors[oldPath];
         }
         
-        // Update warnings
+        
         const newWarnings = { ...warnings };
         if (warnings[oldPath] !== undefined) {
             newWarnings[newPath] = warnings[oldPath];
             delete newWarnings[oldPath];
         }
         
-        // Update deletedFiles
+        
         const newDeletedFiles = { ...deletedFiles };
         if (deletedFiles[oldPath] !== undefined) {
             newDeletedFiles[newPath] = deletedFiles[oldPath];
@@ -666,8 +666,8 @@ export const createFileSlice: StateCreator<
             errors: newErrors,
             warnings: newWarnings,
             deletedFiles: newDeletedFiles,
-            editorVersion: get().editorVersion + 1, // Force editor update
-            fileSystemVersion: get().fileSystemVersion + 1 // Force file system UI update
+            editorVersion: get().editorVersion + 1, 
+            fileSystemVersion: get().fileSystemVersion + 1 
         });
     },
 });

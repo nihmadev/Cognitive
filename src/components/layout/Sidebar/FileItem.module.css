@@ -1,7 +1,6 @@
 .fileItemWrap {
   user-select: none;
   position: relative;
-  contain: layout style paint;
 }
 
 .fileRow {

@@ -35,7 +35,7 @@ export const SettingsPane = ({ initialSection }: SettingsPaneProps) => {
         }
     }, [initialSection]);
 
-    // Update tab title when section changes
+    
     useEffect(() => {
         if (activeSettingsTab) {
             updateSettingsTabTitle(activeSettingsTab, meta.label, activeSection);

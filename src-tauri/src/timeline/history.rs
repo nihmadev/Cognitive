@@ -51,7 +51,7 @@ pub fn timeline_save_snapshot(workspace: String, file_path: String, content: Str
     let timestamp = Utc::now().timestamp_millis();
     let id = format!("{}_{}", timestamp, &content_hash);
     
-    // Check if identical content already exists (skip duplicate saves)
+    
     let entries = list_entries(&history_dir)?;
     if let Some(last) = entries.first() {
         if last.hash == content_hash {
@@ -59,12 +59,12 @@ pub fn timeline_save_snapshot(workspace: String, file_path: String, content: Str
         }
     }
     
-    // Compress and save
+    
     let compressed = compress_content(content_bytes)?;
     let snapshot_path = history_dir.join(format!("{}.gz", id));
     fs::write(&snapshot_path, &compressed).map_err(|e| e.to_string())?;
     
-    // Save metadata
+    
     let meta_path = history_dir.join("meta.json");
     let mut meta: serde_json::Value = if meta_path.exists() {
         let data = fs::read_to_string(&meta_path).unwrap_or_default();
@@ -75,7 +75,7 @@ pub fn timeline_save_snapshot(workspace: String, file_path: String, content: Str
     meta["file_path"] = serde_json::json!(file_path);
     fs::write(&meta_path, serde_json::to_string_pretty(&meta).unwrap()).ok();
     
-    // Cleanup old entries if exceeds limit
+    
     cleanup_old_entries(&history_dir, MAX_ENTRIES_PER_FILE)?;
     
     let date = Local.timestamp_millis_opt(timestamp)
@@ -144,7 +144,7 @@ fn list_entries(history_dir: &Path) -> Result<Vec<TimelineEntry>, String> {
         }
     }
     
-    // Sort by timestamp descending (newest first)
+    
     entries.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
     
     Ok(entries)
@@ -195,14 +195,14 @@ pub fn timeline_get_diff(workspace: String, file_path: String, old_id: String, n
 pub fn timeline_restore(workspace: String, file_path: String, entry_id: String) -> Result<String, String> {
     let content = timeline_get_content(workspace.clone(), file_path.clone(), entry_id)?;
     
-    // Save current state before restore
+    
     let current_path = Path::new(&workspace).join(&file_path);
     if current_path.exists() {
         let current_content = fs::read_to_string(&current_path).map_err(|e| e.to_string())?;
         timeline_save_snapshot(workspace.clone(), file_path.clone(), current_content)?;
     }
     
-    // Write restored content
+    
     fs::write(&current_path, &content).map_err(|e| e.to_string())?;
     
     Ok(content)

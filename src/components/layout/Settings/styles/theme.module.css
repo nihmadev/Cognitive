@@ -1,6 +1,6 @@
-/* Settings Pane - Theme Section */
 
-/* Theme Preview Grid */
+
+
 .themePreview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -58,7 +58,7 @@
   gap: 4px;
 }
 
-/* Font Preview */
+
 .fontPreview {
   background-color: var(--theme-background-secondary);
   border: 1px solid var(--theme-border);
@@ -100,7 +100,7 @@
   color: var(--theme-syntax-variable);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .themePreview {
     grid-template-columns: 1fr;

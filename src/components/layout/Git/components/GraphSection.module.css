@@ -1,10 +1,13 @@
-/* Graph Section */
 .graphSection {
     display: flex;
     flex-direction: column;
     border-bottom: 1px solid var(--theme-border);
     flex-shrink: 0;
-    margin-top: auto;
+    min-height: 0;
+}
+
+.graphSection.open {
+    flex: 1;
 }
 
 .sectionHeader {
@@ -75,7 +78,7 @@
 
 .graphContent {
     overflow-y: auto;
-    max-height: 300px;
+    flex: 1;
 }
 
 .commitsList {
@@ -193,4 +196,52 @@
 .pushBtn:hover {
     background-color: var(--theme-hover-overlay);
     color: var(--theme-foreground);
+}
+
+.graphIconBtn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.menuOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.dropdownMenu {
+    position: fixed;
+    z-index: 1001;
+    background-color: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    padding: 4px 0;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--theme-foreground);
+    cursor: pointer;
+}
+
+.menuItem:hover {
+    background-color: var(--theme-accent);
+    color: #ffffff;
+}
+
+.menuItemIcon {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

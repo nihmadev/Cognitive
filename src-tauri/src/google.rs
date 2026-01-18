@@ -78,7 +78,8 @@ pub async fn google_chat(
     
     let client = reqwest::Client::new();
     
-    // Convert messages to Google format
+    
+
     let contents: Vec<GoogleContent> = messages
         .into_iter()
         .map(|msg| {
@@ -166,7 +167,7 @@ pub async fn google_chat_stream(
     
     let client = reqwest::Client::new();
     
-    // Convert messages to Google format
+    
     let contents: Vec<GoogleContent> = messages
         .into_iter()
         .map(|msg| {
@@ -249,7 +250,7 @@ pub async fn google_chat_stream(
                                 }
                             }
                             Err(_) => {
-                                // Ignore parsing errors for malformed chunks
+                                
                                 continue;
                             }
                         }

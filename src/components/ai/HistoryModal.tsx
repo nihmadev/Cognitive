@@ -3,7 +3,7 @@ import { useAIStore } from '../../store/aiStore';
 import { Trash2, CheckSquare, AlertTriangle } from 'lucide-react';
 import styles from './HistoryModal.module.css';
 
-// Helper for relative time since I can't guarantee date-fns is installed
+
 const getRelativeTime = (timestamp: number) => {
     const diff = Date.now() - timestamp;
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -28,12 +28,12 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
-    // Filter conversations
+    
     const filtered = conversations.filter(c =>
         c.title.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Handle selection with right mouse button
+    
     const handleRightMouseDown = useCallback((e: React.MouseEvent, index: number) => {
         e.preventDefault();
         setIsRightButtonPressed(true);
@@ -65,7 +65,7 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
         }
     }, [isSelecting, isRightButtonPressed, selectionStart, filtered]);
 
-    // Handle keyboard events
+    
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (e.key === 'Delete' && selectedItems.size > 0) {
             handleDeleteSelected();
@@ -74,14 +74,14 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
         }
     }, [selectedItems.size]);
 
-    // Clear selection when clicking outside
+    
     const handleModalClick = useCallback((e: React.MouseEvent) => {
         if (e.target === modalRef.current) {
             setSelectedItems(new Set());
         }
     }, []);
 
-    // Delete selected conversations
+    
     const handleDeleteSelected = useCallback(() => {
         if (selectedItems.size > 0) {
             deleteMultipleConversations(Array.from(selectedItems));
@@ -89,7 +89,7 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
         }
     }, [selectedItems, deleteMultipleConversations]);
 
-    // Delete all conversations
+    
     const handleDeleteAll = useCallback(() => {
         if (conversations.length > 0 && window.confirm('Are you sure you want to delete all conversations? This action cannot be undone.')) {
             deleteMultipleConversations(conversations.map(c => c.id));
@@ -97,7 +97,7 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
         }
     }, [conversations, deleteMultipleConversations]);
 
-    // Toggle individual selection
+    
     const toggleSelection = useCallback((id: string, e?: React.MouseEvent) => {
         e?.stopPropagation();
         setSelectedItems(prev => {
@@ -111,7 +111,7 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
         });
     }, []);
 
-    // Close on click outside
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -138,7 +138,7 @@ export const HistoryModal = ({ onClose }: HistoryModalProps) => {
 
     const handleSelect = (id: string) => {
         if (selectedItems.size > 0) {
-            // If in selection mode, toggle selection instead of opening
+            
             toggleSelection(id);
         } else {
             setActiveConversation(id);

@@ -1,15 +1,15 @@
 import type { Monaco } from '@monaco-editor/react';
 import { themes, type ThemeId } from './index';
 
-// Track registered themes
+
 let themesRegistered = false;
 
-// Monaco theme name mapping
+
 export const getMonacoThemeName = (themeId: ThemeId): string => {
     return `cognitive-${themeId}`;
 };
 
-// Convert our theme colors to Monaco theme format
+
 const createMonacoTheme = (themeId: ThemeId): any => {
     const theme = themes[themeId];
     if (!theme) return null;
@@ -47,13 +47,13 @@ const createMonacoTheme = (themeId: ThemeId): any => {
             { token: 'attribute.value', foreground: colors.syntaxString.replace('#', '') },
             { token: 'metatag', foreground: colors.syntaxKeyword.replace('#', '') },
             { token: 'annotation', foreground: colors.syntaxFunction.replace('#', '') },
-            // JSON specific
+            
             { token: 'string.key.json', foreground: colors.syntaxVariable.replace('#', '') },
             { token: 'string.value.json', foreground: colors.syntaxString.replace('#', '') },
-            // HTML/XML
+            
             { token: 'tag.html', foreground: colors.syntaxKeyword.replace('#', '') },
             { token: 'tag.xml', foreground: colors.syntaxKeyword.replace('#', '') },
-            // CSS
+            
             { token: 'attribute.name.css', foreground: colors.syntaxVariable.replace('#', '') },
             { token: 'attribute.value.css', foreground: colors.syntaxString.replace('#', '') },
             { token: 'selector.css', foreground: colors.syntaxFunction.replace('#', '') },
@@ -96,7 +96,7 @@ const createMonacoTheme = (themeId: ThemeId): any => {
     };
 };
 
-// Register all themes with Monaco
+
 export const registerMonacoThemes = (monaco: Monaco): void => {
     if (themesRegistered) return;
 
@@ -112,7 +112,7 @@ export const registerMonacoThemes = (monaco: Monaco): void => {
     themesRegistered = true;
 };
 
-// Force re-registration (useful for hot reload)
+
 export const forceRegisterMonacoThemes = (monaco: Monaco): void => {
     themesRegistered = false;
     registerMonacoThemes(monaco);

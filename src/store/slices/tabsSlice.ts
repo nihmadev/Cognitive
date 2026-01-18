@@ -23,7 +23,7 @@ export interface TabsSlice {
     openDiffTab: (filePath: string, isStaged: boolean) => void;
     closeDiffTab: (id: string) => void;
     setActiveDiffTab: (id: string | null) => void;
-    // Timeline diff tabs
+    
     openTimelineDiffTabs: TimelineDiffTab[];
     activeTimelineDiffTab: string | null;
     openTimelineDiffTab: (filePath: string, entryId: string, oldContent: string, newContent: string, date: string) => void;

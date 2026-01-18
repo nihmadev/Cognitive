@@ -66,7 +66,7 @@ export const WelcomeScreen = () => {
   };
 
   const handleConnectSSH = () => {
-    // TODO: Implement SSH connection dialog
+    
     console.log('Connect via SSH clicked');
   };
 

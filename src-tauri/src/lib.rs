@@ -72,12 +72,13 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_pty::init())
         .manage(npm::RunningScriptsState::default())
         .manage(FileWatcherState::default())
-        .manage(AudioCache::new(50, 24)) // 50 files, 24 hours cache
+        .manage(AudioCache::new(50, 24)) 
         .manage(ollama::OllamaState::default())
         .manage(agentrouter::AgentRouterState::default())
-        // Wrap ApiKeyStore in a Mutex to match State<'_, Mutex<ApiKeyStore>> in commands
+        
         .manage(Mutex::new(api_keys::ApiKeyStore::default()))
         .manage(keybindings::KeybindingsState::new(keybindings::KeybindingsStore::new()))
         .manage(settings::SettingsState::new())
@@ -87,7 +88,7 @@ pub fn run() {
             initial_state,
         }))
         .setup(move |app| {
-            // Register asset protocol for audio files
+            
             let asset_protocol_scope = app.asset_protocol_scope();
             asset_protocol_scope.allow_directory("**", true).unwrap();
 

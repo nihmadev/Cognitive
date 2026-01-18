@@ -18,7 +18,7 @@ export class GLMModelsService {
   }
 
   private async getFallbackModels(): Promise<GLMModel[]> {
-    // Return the specified GLM models
+    
     return [
       {
         id: 'GLM-4',
@@ -113,7 +113,7 @@ export class GLMModelsService {
     ];
   }
 
-  // Get model details by ID
+  
   async getModelDetails(_apiKey: string, modelId: string): Promise<GLMModel | null> {
     try {
       const models = await this.fetchAvailableModels();
@@ -124,7 +124,7 @@ export class GLMModelsService {
     }
   }
 
-  // Get models by capability
+  
   async getModelsByCapability(_apiKey: string, capability: string): Promise<GLMModel[]> {
     try {
       const models = await this.fetchAvailableModels();
@@ -135,7 +135,7 @@ export class GLMModelsService {
     }
   }
 
-  // Get recommended model for specific use case
+  
   getRecommendedModel(models: GLMModel[], useCase: 'coding' | 'analysis' | 'general' | 'vision' | 'cost-effective'): string {
     const availableModels = models.filter(model => 
       model.capabilities.includes('text')
@@ -173,22 +173,22 @@ export class GLMModelsService {
     }
   }
 
-  // Clear cache manually (no-op since we don't use cache anymore)
+  
   clearCache(): void {
     console.log('GLMModelsService: Cache cleared (no-op)');
   }
 
-  // Get cache status (no-op since we don't use cache anymore)
+  
   getCacheStatus(): { size: number; keys: string[] } {
     return { size: 0, keys: [] };
   }
 
-  // Force refresh models
+  
   async refreshModels(_apiKey?: string): Promise<GLMModel[]> {
     return this.fetchAvailableModels();
   }
 
-  // Get models by category
+  
   getModelsByCategory(models: GLMModel[], category: 'reasoning' | 'multimodal' | 'cost-effective' | 'general'): GLMModel[] {
     switch (category) {
       case 'reasoning':
@@ -203,7 +203,7 @@ export class GLMModelsService {
     }
   }
 
-  // Get model statistics
+  
   getModelStats(models: GLMModel[]): {
     total: number;
     withVision: number;
@@ -219,5 +219,5 @@ export class GLMModelsService {
   }
 }
 
-// Export singleton instance
+
 export const glmModelsService = new GLMModelsService();

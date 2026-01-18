@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { themes, type ThemeId, type Theme, type ThemeColors } from '../themes';
 
-// Re-export theme types for convenience
+
 export type { ThemeId, Theme, ThemeColors };
 export { themes };
 
-type BottomPanelTab = 'problems' | 'output' | 'debug' | 'ports';
+type BottomPanelTab = 'problems' | 'output' | 'debug' | 'ports' | 'terminal';
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2.0;
@@ -40,27 +40,27 @@ interface UIState {
     bottomPanelTab: BottomPanelTab;
     setBottomPanelTab: (tab: BottomPanelTab) => void;
     openPorts: () => void;
-    // Zoom
+
     zoomLevel: number;
     zoomIn: () => void;
     zoomOut: () => void;
     resetZoom: () => void;
     setZoomLevel: (level: number) => void;
-    // Insert mode
+
     insertMode: boolean;
     toggleInsertMode: () => void;
     setInsertMode: (mode: boolean) => void;
-    // Theme
+
     theme: ThemeId;
     setTheme: (theme: ThemeId) => void;
-    // Font settings
+
     fontSettings: FontSettings;
     availableFonts: Array<{ id: string; name: string; stack: string }>;
     setFontFamily: (fontId: string) => void;
     setFontSize: (size: number) => void;
     setLineHeight: (height: number) => void;
     updateFontSettings: (settings: Partial<FontSettings>) => void;
-    // Editor settings
+
     minimapEnabled: boolean;
     setMinimapEnabled: (enabled: boolean) => void;
     lineNumbersEnabled: boolean;
@@ -69,15 +69,15 @@ interface UIState {
     setTabSize: (size: number) => void;
 }
 
-// Apply theme CSS variables to document
+
 const applyTheme = (themeId: ThemeId) => {
     const theme = themes[themeId];
     if (!theme) return;
-    
+
     const root = document.documentElement;
     const colors = theme.colors;
-    
-    // Set CSS variables
+
+
     root.style.setProperty('--theme-background', colors.background);
     root.style.setProperty('--theme-background-secondary', colors.backgroundSecondary);
     root.style.setProperty('--theme-background-tertiary', colors.backgroundTertiary);
@@ -120,30 +120,30 @@ const applyTheme = (themeId: ThemeId) => {
     root.style.setProperty('--theme-git-added', colors.gitAdded);
     root.style.setProperty('--theme-git-modified', colors.gitModified);
     root.style.setProperty('--theme-git-deleted', colors.gitDeleted);
-    
-    // Set theme type class
+
+
     root.classList.remove('theme-light', 'theme-dark');
     root.classList.add(`theme-${theme.type}`);
-    
-    // Update meta theme-color for browser
+
+
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
         metaThemeColor.setAttribute('content', colors.background);
     }
 };
 
-// Apply font settings to document
+
 const applyFontSettings = (fontSettings: FontSettings) => {
     const root = document.documentElement;
     const font = availableFonts.find(f => f.id === fontSettings.fontFamily);
     const fontStack = font?.stack || availableFonts[0].stack;
-    
-    // Set CSS variables for fonts
+
+
     root.style.setProperty('--font-family', fontStack);
     root.style.setProperty('--font-size', `${fontSettings.fontSize}px`);
     root.style.setProperty('--line-height', fontSettings.lineHeight.toString());
-    
-    // Apply font to all editor elements
+
+
     const editorElements = document.querySelectorAll('.monaco-editor, .editor-container, .code-editor');
     editorElements.forEach(element => {
         (element as HTMLElement).style.fontFamily = fontStack;
@@ -172,29 +172,29 @@ export const useUIStore = create<UIState>()(
             bottomPanelTab: 'ports',
             setBottomPanelTab: (tab) => set({ bottomPanelTab: tab }),
             openPorts: () => set({ showTerminal: true, bottomPanelTab: 'ports' }),
-            // Zoom
+
             zoomLevel: 1.0,
-            zoomIn: () => set((state) => ({ 
+            zoomIn: () => set((state) => ({
                 zoomLevel: Math.min(MAX_ZOOM, Math.round((state.zoomLevel + ZOOM_STEP) * 10) / 10)
             })),
-            zoomOut: () => set((state) => ({ 
+            zoomOut: () => set((state) => ({
                 zoomLevel: Math.max(MIN_ZOOM, Math.round((state.zoomLevel - ZOOM_STEP) * 10) / 10)
             })),
             resetZoom: () => set({ zoomLevel: 1.0 }),
-            setZoomLevel: (level) => set({ 
+            setZoomLevel: (level) => set({
                 zoomLevel: Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, level))
             }),
-            // Insert mode
+
             insertMode: true,
             toggleInsertMode: () => set((state) => ({ insertMode: !state.insertMode })),
             setInsertMode: (mode) => set({ insertMode: mode }),
-            // Theme
+
             theme: 'dark-modern',
             setTheme: (themeId) => {
                 applyTheme(themeId);
                 set({ theme: themeId });
             },
-            // Font settings
+
             fontSettings: {
                 fontFamily: 'jetbrains',
                 fontSize: 14,
@@ -221,7 +221,7 @@ export const useUIStore = create<UIState>()(
                 applyFontSettings(newSettings);
                 return { fontSettings: newSettings };
             }),
-            // Editor settings
+
             minimapEnabled: true,
             setMinimapEnabled: (enabled) => set({ minimapEnabled: enabled }),
             lineNumbersEnabled: true,
@@ -231,8 +231,8 @@ export const useUIStore = create<UIState>()(
         }),
         {
             name: 'ui-storage',
-            partialize: (state) => ({ 
-                zoomLevel: state.zoomLevel, 
+            partialize: (state) => ({
+                zoomLevel: state.zoomLevel,
                 theme: state.theme,
                 fontSettings: state.fontSettings,
                 minimapEnabled: state.minimapEnabled,
@@ -242,11 +242,11 @@ export const useUIStore = create<UIState>()(
                 aiPanelWidth: state.aiPanelWidth
             }),
             onRehydrateStorage: () => (state) => {
-                // Apply theme on rehydration
+
                 if (state?.theme) {
                     applyTheme(state.theme);
                 }
-                // Apply font settings on rehydration
+
                 if (state?.fontSettings) {
                     applyFontSettings(state.fontSettings);
                 }
@@ -255,7 +255,7 @@ export const useUIStore = create<UIState>()(
     )
 );
 
-// Initialize theme and fonts on first load
+
 const initThemeAndFonts = () => {
     const stored = localStorage.getItem('ui-storage');
     if (stored) {

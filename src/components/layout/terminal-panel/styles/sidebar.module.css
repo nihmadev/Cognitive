@@ -1,53 +1,38 @@
-/* Terminal sidebar */
 .terminalSidebar {
   width: 250px;
-  background: #252526;
-  border-left: 1px solid #333333;
+  min-width: 180px;
+  max-width: min(350px, 30%);
+  background: var(--theme-background-secondary);
+  border-left: 1px solid var(--theme-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-}
-
-.sidebarHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid #333333;
-  height: 35px;
-  flex-shrink: 0;
-}
-
-.sidebarHeader h4 {
-  margin: 0;
-  color: #cccccc;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-.sidebarCloseButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: transparent;
-  border: none;
-  color: #cccccc;
-  cursor: pointer;
-  border-radius: 2px;
-  transition: background-color 0.1s ease;
-}
-
-.sidebarCloseButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .terminalList {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px;
+}
+
+.terminalList::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminalList::-webkit-scrollbar-track {
+  background: var(--theme-background-secondary);
+}
+
+.terminalList::-webkit-scrollbar-thumb {
+  background: var(--theme-scrollbar-thumb);
+  border-radius: 5px;
+}
+
+.terminalList::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-scrollbar-thumb-hover);
 }
 
 .terminalListItem {
@@ -58,19 +43,21 @@
   margin-bottom: 2px;
   background: transparent;
   border: none;
-  color: #cccccc;
+  color: var(--theme-foreground-muted);
   font-size: 13px;
   cursor: pointer;
   border-radius: 2px;
   transition: background-color 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .terminalListItem:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--theme-hover-overlay);
 }
 
 .activeTerminalItem {
-  background-color: #094771;
+  background-color: var(--theme-hover-overlay-strong);
 }
 
 .terminalItemInfo {
@@ -79,19 +66,47 @@
   gap: 2px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+}
+
+.terminalItemMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.terminalItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--theme-foreground-muted);
+  flex-shrink: 0;
+}
+
+.terminalItemIcon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .terminalItemName {
-  font-weight: 500;
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
 }
 
-.terminalItemStatus {
-  font-size: 11px;
-  color: #858585;
+.activeTerminalItem .terminalItemName {
+  color: var(--theme-foreground);
+}
+
+.activeTerminalItem .terminalItemIcon {
+  color: var(--theme-foreground);
 }
 
 .terminalItemClose {
@@ -102,11 +117,12 @@
   height: 16px;
   background: transparent;
   border: none;
-  color: #858585;
+  color: var(--theme-foreground-subtle);
   cursor: pointer;
   border-radius: 2px;
   transition: all 0.1s ease;
   opacity: 0;
+  flex-shrink: 0;
 }
 
 .terminalListItem:hover .terminalItemClose {
@@ -114,6 +130,6 @@
 }
 
 .terminalItemClose:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #cccccc;
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground);
 }

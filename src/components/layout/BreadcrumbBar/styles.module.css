@@ -22,7 +22,7 @@
   -ms-overflow-style: none;
 }
 
-/* Split breadcrumb styles */
+
 .splitBreadcrumb {
   display: flex;
   align-items: center;
@@ -120,7 +120,7 @@
   background: var(--vscode-toolbar-hoverBackground, #2a2d2e);
 }
 
-/* Mini-explorer styles */
+
 .miniExplorer {
   position: fixed;
   background: var(--vscode-editor-background, #1e1e1e);
@@ -133,6 +133,7 @@
   max-height: 300px;
   overflow: hidden;
   font-family: var(--vscode-font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+  margin-top: 0;
 }
 
 .miniExplorerHeader {
@@ -205,7 +206,7 @@
   flex: 1;
 }
 
-/* Tree structure styles */
+
 .treeItem {
   position: relative;
 }
@@ -227,7 +228,7 @@
   color: var(--vscode-foreground, #ffffff);
 }
 
-/* Add subtle lines for tree structure */
+
 .treeItem::before {
   content: '';
   position: absolute;

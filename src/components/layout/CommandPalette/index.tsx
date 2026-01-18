@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { getFileIcon } from '../../utils/fileIcons';
+import { getFileIcon } from '../../../utils/fileIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     File,
@@ -10,12 +10,12 @@ import {
     Search,
     ArrowRight
 } from 'lucide-react';
-import { useProjectStore } from '../../store/projectStore';
-import { tauriApi } from '../../lib/tauri-api';
+import { useProjectStore } from '../../../store/projectStore';
+import { tauriApi } from '../../../lib/tauri-api';
 import clsx from 'clsx';
-import styles from './CommandPalette.module.css';
-import { SearchModal } from './Search/SearchModal';
-import { SymbolModal } from './Search/SymbolModal';
+import styles from './styles.module.css';
+import { SearchModal } from '../Search/SearchModal';
+import { SymbolModal } from '../Search/SymbolModal';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -40,7 +40,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         icon: getFileIcon(path.split(/[/\\]/).pop() || path, path)
     })).filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    // Filter all files for "Go to file" mode
+    
     const allFilesFiltered = allFiles.map(file => ({
         name: file.name,
         path: file.path,
@@ -66,7 +66,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             shortcut: 'Ctrl + Shift + P', 
             icon: <ArrowRight className={styles.iconMd} />,
             action: () => {
-                // Handle command palette commands
+                
             }
         },
         { 
@@ -91,14 +91,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             label: 'Start Debugging debug', 
             icon: <Bug className={styles.iconMd} />,
             action: () => {
-                // Handle start debugging
+                
             }
         },
         { 
             label: 'Run Task task', 
             icon: <Terminal className={styles.iconMd} />,
             action: () => {
-                // Handle run task
+                
             }
         },
     ].filter(s => s.label.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -106,7 +106,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => inputRef.current?.focus(), 50);
-            // Load all files when palette opens
+            
             loadAllFiles();
         } else {
             setSearchQuery('');
@@ -116,7 +116,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     }, [isOpen]);
 
     
-    // Handle keyboard navigation and actions
+    
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
@@ -154,7 +154,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         }
     };
 
-    // Close on escape and handle navigation
+    
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -200,12 +200,12 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose, isGoToFileMode, allFilesFiltered, shortcuts, files, selectedIndex]);
 
-    // Handle special character input (@ for symbols)
+    
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
             
-            // Handle @ symbol for go to symbol
+            
             if (e.key === '@' && document.activeElement === inputRef.current) {
                 e.preventDefault();
                 setShowSymbolModal(true);
@@ -220,7 +220,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose]);
 
-    // Check if we should enter "Go to file" mode
+    
     useEffect(() => {
         if (searchQuery.length > 0) {
             setIsGoToFileMode(true);
@@ -265,7 +265,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                             </div>
 
                             <div className={styles.body}>
-                                {/* Go to File Mode */}
+                                {}
                                 {isGoToFileMode && (
                                     <div>
                                         {allFilesFiltered.length > 0 ? (
@@ -294,10 +294,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                                     </div>
                                 )}
 
-                                {/* Default Mode - Shortcuts and Recent Files */}
+                                {}
                                 {!isGoToFileMode && (
                                     <>
-                                        {/* Shortcuts Section */}
+                                        {}
                                         {shortcuts.length > 0 && (
                                             <div className={styles.section}>
                                                 {shortcuts.map((item, idx) => (
@@ -315,7 +315,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                                                         onMouseEnter={() => setSelectedIndex(idx)}
                                                     >
                                                         <div className={styles.itemLeft}>
-                                                            {/* Icons often invisible in screenshots if generic, but helpful visually */}
+                                                            {}
                                                             <span className={styles.hoverArrow}>
                                                                 <ArrowRight className={styles.iconSm} />
                                                             </span>
@@ -335,7 +335,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                                             </div>
                                         )}
 
-                                        {/* Recent Files Section */}
+                                        {}
                                         {files.length > 0 && (
                                             <div>
                                                 <div className={styles.recentTitle}>recently opened</div>

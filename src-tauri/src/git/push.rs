@@ -11,21 +11,21 @@ pub struct PushResult {
 pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Option<String>, force: bool) -> Result<PushResult, String> {
     let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
     
-    // Определяем удаленный репозиторий (по умолчанию "origin")
+    
     let remote_name = remote_name.unwrap_or_else(|| "origin".to_string());
     
-    // Находим удаленный репозиторий
+    
     let remote = repo.find_remote(&remote_name)
         .map_err(|e| format!("Remote '{}' not found: {}", remote_name, e))?;
     
-    // Определяем ветку для отправки (по умолчанию текущая ветка)
+    
     let branch_name = branch_name
         .or_else(|| {
             repo.head().ok().and_then(|head| {
                 let head_name = head.name()?.to_string();
                 if let Some(local) = head_name.strip_prefix("refs/heads/") {
-                    // Если локальная ветка имеет имя вида "origin/xxx", берём только последнюю часть
-                    // чтобы избежать создания refs/heads/origin/main
+                    
+                    
                     let branch = if local.contains('/') {
                         local.rsplit('/').next().unwrap_or(local)
                     } else {
@@ -34,7 +34,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
                     return Some(branch.to_string());
                 }
                 if let Some(remote_ref) = head_name.strip_prefix("refs/remotes/") {
-                    // Для remote refs берём только имя ветки после remote name
+                    
                     return remote_ref.split_once('/').map(|(_, b)| b.to_string());
                 }
                 None
@@ -45,7 +45,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
                 .ok()
                 .and_then(|head| head.shorthand().map(|s| s.to_string()))
                 .map(|s| {
-                    // Убираем prefix типа "origin/" если есть
+                    
                     if s.contains('/') {
                         s.rsplit('/').next().unwrap_or(&s).to_string()
                     } else {
@@ -55,16 +55,16 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
         })
         .ok_or_else(|| "Cannot determine branch to push".to_string())?;
 
-    // Получаем refspec для отправки
+    
     let refspec = format!("refs/heads/{0}:refs/heads/{0}", branch_name);
     
-    // Настраиваем опции отправки
+    
     let mut push_options = git2::PushOptions::new();
     let mut callbacks = git2::RemoteCallbacks::new();
     callbacks.credentials(|_url, username_from_url, _allowed_types| {
         let username = username_from_url.unwrap_or("git");
         
-        // Сначала пробуем GitHub CLI token
+        
         if let Ok(token) = std::process::Command::new("gh")
             .args(&["auth", "token"])
             .output()
@@ -81,24 +81,24 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
             }
         }
         
-        // Пробуем SSH ключи из агента
+        
         if let Ok(cred) = git2::Cred::ssh_key_from_agent(username) {
             return Ok(cred);
         }
         
-        // Пробуем credential helper (для HTTPS)
+        
         if let Ok(git_config) = git2::Config::open_default() {
             if let Ok(cred) = git2::Cred::credential_helper(&git_config, username, None) {
                 return Ok(cred);
             }
         }
         
-        // Возвращаем default credential как последнюю попытку
+        
         git2::Cred::default()
     });
     push_options.remote_callbacks(callbacks);
     
-    // Выполняем отправку
+    
     let mut remote = remote;
     let result = remote.push(&[&refspec], Some(&mut push_options));
     
@@ -113,7 +113,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
         Err(e) => {
             let error_msg = e.to_string();
             
-            // Проверяем на распространенные ошибки
+            
             if error_msg.contains("rejected") && error_msg.contains("non-fast-forward") && !force {
                 Ok(PushResult {
                     success: false,

@@ -14,7 +14,7 @@ interface SettingsState {
     isInitialized: boolean;
     error: string | null;
     
-    // Actions
+    
     initialize: () => Promise<void>;
     updateUI: <K extends keyof AppSettings['ui']>(key: K, value: AppSettings['ui'][K], target?: SettingsTarget) => Promise<void>;
     updateEditor: <K extends keyof AppSettings['editor']>(key: K, value: AppSettings['editor'][K], target?: SettingsTarget) => Promise<void>;
@@ -24,7 +24,7 @@ interface SettingsState {
     setWorkspace: (path: string) => Promise<void>;
     clearWorkspace: () => Promise<void>;
     
-    // Internal
+    
     _setSettings: (settings: AppSettings) => void;
     _handleChange: (event: SettingsChangeEvent) => void;
 }
@@ -51,7 +51,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     updateUI: async (key, value, target = 'user') => {
         const { settings } = get();
         
-        // Optimistic update
+        
         set({
             settings: {
                 ...settings,
@@ -62,7 +62,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         try {
             await settingsApi.updateValue('ui', key, value, target);
         } catch (error) {
-            // Revert on error
+            
             console.error('Failed to update UI setting:', error);
             set({ settings, error: String(error) });
         }
@@ -154,12 +154,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         const { settings } = get();
         
         if (event.section === 'all') {
-            // Full settings update
+            
             if (typeof event.value === 'object' && event.value !== null) {
                 set({ settings: event.value as AppSettings });
             }
         } else if (event.key) {
-            // Single value update
+            
             const section = event.section as keyof AppSettings;
             if (settings[section] && typeof settings[section] === 'object') {
                 set({
@@ -173,7 +173,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
                 });
             }
         } else {
-            // Section update
+            
             const section = event.section as keyof AppSettings;
             if (typeof event.value === 'object' && event.value !== null) {
                 set({
@@ -187,22 +187,20 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     },
 }));
 
-/**
- * Hook to use settings with automatic initialization and event listening
- */
+
 export function useSettings() {
     const store = useSettingsStore();
     const unlistenRef = useRef<(() => void) | null>(null);
 
     useEffect(() => {
-        // Initialize settings
+        
         store.initialize();
 
-        // Set up event listeners
+        
         const setupListeners = async () => {
             const unlisten1 = await settingsApi.onSettingsChanged(store._handleChange);
             const unlisten2 = await settingsApi.onSettingsFileChanged(async () => {
-                // Reload settings when file changes externally
+                
                 await store.reload();
             });
 
@@ -234,25 +232,19 @@ export function useSettings() {
     };
 }
 
-/**
- * Hook for specific UI settings
- */
+
 export function useUISettings() {
     const { settings, updateUI } = useSettingsStore();
     return { ui: settings.ui, updateUI };
 }
 
-/**
- * Hook for specific editor settings
- */
+
 export function useEditorSettings() {
     const { settings, updateEditor } = useSettingsStore();
     return { editor: settings.editor, updateEditor };
 }
 
-/**
- * Hook for specific AI settings
- */
+
 export function useAISettings() {
     const { settings, updateAI } = useSettingsStore();
     return { ai: settings.ai, updateAI };

@@ -68,11 +68,11 @@ export const MenuRight = ({
             case 'profiles':
                 onOpenProfiles?.();
                 break;
-            // Add more handlers as needed
+            
         }
     };
 
-    // Close menu when clicking outside
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -96,7 +96,7 @@ export const MenuRight = ({
 
     return (
         <div className={styles.root}>
-            {/* Left Sidebar Toggle */}
+            {}
             <button
                 onClick={toggleSidebar}
                 className={styles.btn}
@@ -105,7 +105,7 @@ export const MenuRight = ({
                 <ActivitySquareIcon active={showSidebar} position="left" />
             </button>
 
-            {/* Bottom Ports Toggle */}
+            {}
             <button
                 onClick={handlePortsToggle}
                 className={styles.btn}
@@ -114,7 +114,7 @@ export const MenuRight = ({
                 <ActivitySquareIcon active={showTerminal} position="bottom" />
             </button>
 
-            {/* Right Assistant Toggle - только если открыт проект */}
+            {}
             {currentWorkspace && (
                 <button
                     onClick={toggleAssistant}
@@ -127,7 +127,7 @@ export const MenuRight = ({
 
             <div className={styles.divider} />
 
-            {/* Settings with Dropdown */}
+            {}
             <div className={styles.settingsWrapper}>
                 <button
                     ref={buttonRef}
@@ -164,7 +164,7 @@ export const MenuRight = ({
                 )}
             </div>
 
-            {/* Profile */}
+            {}
             <button
                 className={styles.btn}
                 title="Profile"

@@ -1,16 +1,13 @@
-/* Settings Pane - Base Layout */
-
 .settingsPane {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: #1e1e1e;
-  color: #cccccc;
+  background-color: var(--theme-background);
+  color: var(--theme-foreground);
   overflow: hidden;
   font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Content Area */
 .content {
   flex: 1;
   display: flex;
@@ -21,7 +18,7 @@
 .settingsHeader {
   display: flex;
   flex-direction: column;
-  background-color: #1e1e1e;
+  background-color: var(--theme-background);
   padding: 12px 24px 0 24px;
   z-index: 10;
 }
@@ -37,18 +34,18 @@
 
 .mainSearchInput {
   width: 100%;
-  background-color: #3c3c3c;
-  border: 1px solid #3c3c3c;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
   padding: 4px 30px 4px 8px;
-  color: #cccccc;
+  color: var(--theme-foreground);
   font-size: 13px;
   outline: none;
   height: 26px;
 }
 
 .mainSearchInput:focus {
-  border-color: #007acc;
-  background-color: #3c3c3c;
+  border-color: var(--theme-accent);
+  background-color: var(--theme-input-background);
 }
 
 .searchIcons {
@@ -56,31 +53,31 @@
   right: 6px;
   display: flex;
   gap: 4px;
-  color: #cccccc;
+  color: var(--theme-foreground-muted);
   opacity: 0.8;
 }
 
 .tabsContainer {
   display: flex;
   gap: 16px;
-  border-bottom: 1px solid #3c3c3c;
+  border-bottom: 1px solid var(--theme-border);
 }
 
 .tab {
   padding: 6px 0;
   font-size: 13px;
-  color: #969696;
+  color: var(--theme-foreground-subtle);
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
 }
 
 .tab:hover {
-  color: #dddddd;
+  color: var(--theme-foreground-muted);
 }
 
 .activeTab {
-  color: #e7e7e7;
+  color: var(--theme-foreground);
 }
 
 .activeTab::after {
@@ -90,14 +87,14 @@
   left: 0;
   right: 0;
   height: 1px;
-  background-color: #007acc;
+  background-color: var(--theme-accent);
 }
 
 .contentBody {
   flex: 1;
   overflow-y: auto;
   padding: 0;
-  background-color: #1e1e1e;
+  background-color: var(--theme-background);
 }
 
 .contentBodyHeader {
@@ -110,7 +107,7 @@
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #cccccc;
+  color: var(--theme-foreground);
   margin-bottom: 12px;
 }
 
@@ -135,18 +132,17 @@
 .contentTitle {
   font-size: 24px;
   font-weight: 400;
-  color: #e7e7e7;
+  color: var(--theme-foreground);
   margin: 0 0 8px 0;
 }
 
 .sectionTitle {
   font-size: 19px;
   font-weight: 300;
-  color: #e7e7e7;
+  color: var(--theme-foreground);
   margin: 24px 0 12px 0;
 }
 
-/* Setting Item V2 (VS Code Style) */
 .settingItemV2 {
   margin-bottom: 32px;
   max-width: 800px;
@@ -156,11 +152,11 @@
 }
 
 .settingItemV2:hover {
-  background-color: #2a2d2e;
+  background-color: var(--theme-background-secondary);
 }
 
 .settingItemV2:focus-within {
-  border-left-color: #007acc;
+  border-left-color: var(--theme-accent);
 }
 
 .settingLabelV2 {
@@ -175,7 +171,7 @@
 
 .settingDescriptionV2 {
   font-size: 13px;
-  color: #888;
+  color: var(--theme-foreground-subtle);
   margin-bottom: 12px;
   line-height: 1.4;
 }
@@ -189,11 +185,10 @@
 .modifiedElsewhere {
   font-style: italic;
   font-size: 12px;
-  color: #888;
+  color: var(--theme-foreground-subtle);
   margin-left: 8px;
 }
 
-/* Scrollbar styling */
 .contentBody::-webkit-scrollbar {
   width: 8px;
 }
@@ -211,7 +206,6 @@
   background-color: var(--theme-scrollbar-thumb-hover);
 }
 
-/* Empty state */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -229,7 +223,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--theme-foreground);
   margin-bottom: 16px;
 }
 
@@ -242,11 +236,10 @@
 
 .emptyStateText {
   font-size: 12px;
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   max-width: 280px;
 }
 
-/* Info Card */
 .infoCard {
   display: flex;
   gap: 12px;
@@ -277,11 +270,10 @@
 
 .infoCardText {
   font-size: 12px;
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   line-height: 1.4;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .contentBody {
     padding: 16px;

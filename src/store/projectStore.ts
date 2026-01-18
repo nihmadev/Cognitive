@@ -10,7 +10,7 @@ import {
     type ProfilesSlice,
 } from './slices';
 
-// Re-export types for backward compatibility
+
 export type { DiffTab, TimelineDiffTab } from './slices/tabsSlice';
 export type { SettingsTab } from './slices/settingsSlice';
 export type { ProfilesTab } from './slices/profilesSlice';

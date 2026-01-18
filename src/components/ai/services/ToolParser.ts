@@ -1,7 +1,4 @@
-/**
- * Tool call parser for AI responses
- * Parses tool calls in various formats and extracts arguments
- */
+
 
 export interface ParsedToolCall {
   tool: string;
@@ -22,17 +19,17 @@ export interface ArgPattern {
   type: 'string' | 'number' | 'boolean' | 'array';
   required?: boolean;
   default?: any;
-  maxLength?: number; // For string validation
-  min?: number; // For number validation
-  max?: number; // For number validation
+  maxLength?: number; 
+  min?: number; 
+  max?: number; 
 }
 
-// Validation constants
+
 const MAX_STRING_LENGTH = 10000;
 const MAX_ARRAY_LENGTH = 100;
 const MAX_PATH_LENGTH = 500;
 
-// Tool definitions with argument patterns
+
 const TOOL_DEFINITIONS: ToolCallPattern[] = [
   {
     name: 'grep',
@@ -85,16 +82,16 @@ const TOOL_DEFINITIONS: ToolCallPattern[] = [
   }
 ];
 
-// Generate tool name patterns from definitions (cached)
+
 const ALL_TOOL_NAMES = TOOL_DEFINITIONS.flatMap(def => [def.name, ...def.aliases]);
 const TOOL_NAMES_PATTERN = ALL_TOOL_NAMES.join('|');
 const SIMPLE_TOOL_NAMES = TOOL_DEFINITIONS.map(d => d.name.toUpperCase()).join('|');
 
-// Pre-compiled regex patterns (created once, reused)
+
 const PATTERNS = {
-  // Pattern 1: Function call style - tool_name(args) or tool_name({ json })
+  
   funcCall: new RegExp(`\\b(${TOOL_NAMES_PATTERN})\\s*\\(\\s*({[\\s\\S]*?}|[^)]+)\\s*\\)`, 'gi'),
-  // Pattern 2: JSON style - { "tool": "name", "args": {...} }
+  
   jsonTool: /\{\s*"tool"\s*:\s*"([^"]+)"\s*,\s*"args"\s*:\s*(\{[\s\S]*?\})\s*\}/gi,
   // Pattern 3: Simple format - [[TOOL:arg]] or [[TOOL:arg1,arg2]]
   simple: new RegExp(`\\[\\[(${SIMPLE_TOOL_NAMES}|READ):([^\\]]+)\\]\\]`, 'gi'),
@@ -413,7 +410,7 @@ function parseArgs(toolName: string, argsStr: string): Record<string, any> | nul
     }
   }
 
-  // Parse key=value or key:value pairs
+  
   const pairRegex = /(\w+)\s*[=:]\s*(?:"([^"]*)"|'([^']*)'|(\S+))/g;
   let pairMatch;
 
@@ -481,11 +478,9 @@ function convertValue(value: string, type: string): any {
   }
 }
 
-/**
- * Check if text contains any tool calls
- */
+
 export function hasToolCalls(text: string): boolean {
-  // Single combined pattern for quick check
+  
   const quickCheckPattern = new RegExp(
     `\\b(${TOOL_NAMES_PATTERN})\\s*\\(|\\[\\[(${SIMPLE_TOOL_NAMES}|READ):|\\{\\s*"tool"\\s*:`,
     'i'
@@ -493,11 +488,9 @@ export function hasToolCalls(text: string): boolean {
   return quickCheckPattern.test(text);
 }
 
-/**
- * Replace tool calls in text with results
- */
+
 export function replaceToolCalls(text: string, calls: ParsedToolCall[], results: Map<number, string>): string {
-  // Sort by position descending to replace from end
+  
   const sortedCalls = [...calls].sort((a, b) => b.startIndex - a.startIndex);
 
   let result = text;

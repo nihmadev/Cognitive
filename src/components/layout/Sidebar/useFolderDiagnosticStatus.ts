@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 
-// Получить статус диагностики для папки
+
 export const useFolderDiagnosticStatus = (folderPath: string, isDir: boolean) => {
     const monacoDiagnostics = useDiagnosticsStore(state => state.monacoDiagnostics);
     
@@ -15,17 +15,17 @@ export const useFolderDiagnosticStatus = (folderPath: string, isDir: boolean) =>
         
         for (const [filePath, diagnostics] of Object.entries(monacoDiagnostics)) {
             const normalizedFilePath = filePath.replace(/\\/g, '/');
-            // Проверяем все файлы в текущей папке и всех вложенных папках
+            
             if (normalizedFilePath.startsWith(normalizedFolderPath + '/')) {
                 for (const d of diagnostics) {
                     if (d.type === 'error') {
                         hasError = true;
-                        break; // Нашли ошибку - выходим из цикла диагностики
+                        break; 
                     } else if (d.type === 'warning') {
                         hasWarning = true;
                     }
                 }
-                if (hasError) break; // Нашли ошибку - выходим из цикла файлов
+                if (hasError) break; 
             }
         }
         

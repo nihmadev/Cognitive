@@ -22,6 +22,7 @@ impl ProxyConfig {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get_openai_models_url(&self) -> String {
         if self.enabled {
             format!("{}/openai/v1/models", self.base_url)

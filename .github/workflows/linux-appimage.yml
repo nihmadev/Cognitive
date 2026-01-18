@@ -69,29 +69,33 @@ jobs:
             
       - name: Build AppImage
         run: |
-          # Create temp directory for tools
+          
           mkdir -p /tmp/appimage-tools
           cd /tmp/appimage-tools
           
-          # Download tools manually if needed
-          if [ ! -f "linuxdeploy-x86_64.AppImage" ]; then
-            wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-            wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
-            wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          fi
           
-          # Make them executable
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage || \
+          wget -q https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-x86_64.AppImage
+          
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage || \
+          wget -q https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy-plugin-appimage/linuxdeploy-plugin-appimage-x86_64.AppImage
+          
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          
+          
           chmod +x *.AppImage
           
-          # Export paths for Tauri
+          
           export LINUXDEPLOY="/tmp/appimage-tools/linuxdeploy-x86_64.AppImage"
           export LINUXDEPLOY_PLUGIN_APPIMAGE="/tmp/appimage-tools/linuxdeploy-plugin-appimage-x86_64.AppImage"
           export APPIMAGETOOL="/tmp/appimage-tools/appimagetool-x86_64.AppImage"
           
-          # Go back to project root
+          
           cd "$GITHUB_WORKSPACE"
           
-          npm run tauri build -- --bundles appimage
+          
+          npm run tauri build -- --bundles appimage || \
+          TAURI_BUNDLER_TOOLS_LINUXDEPLOY=/tmp/appimage-tools/linuxdeploy-x86_64.AppImage npm run tauri build -- --bundles appimage
           
       - name: Upload AppImage
         if: always()

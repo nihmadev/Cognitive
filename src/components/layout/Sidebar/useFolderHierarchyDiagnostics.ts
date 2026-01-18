@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 
-// Проверить, есть ли ошибки/предупреждения в дочерних элементах папки
+
 export const useFolderHierarchyDiagnostics = (folderPath: string, isDir: boolean) => {
     const monacoDiagnostics = useDiagnosticsStore(state => state.monacoDiagnostics);
     
@@ -13,19 +13,19 @@ export const useFolderHierarchyDiagnostics = (folderPath: string, isDir: boolean
         
         const normalizedFolderPath = folderPath.replace(/\\/g, '/');
         
-        // Проверяем все файлы в текущей папке и всех вложенных папках
+        
         for (const [filePath, diagnostics] of Object.entries(monacoDiagnostics)) {
             const normalizedFilePath = filePath.replace(/\\/g, '/');
             if (normalizedFilePath.startsWith(normalizedFolderPath + '/')) {
                 for (const d of diagnostics) {
                     if (d.type === 'error') {
                         hasError = true;
-                        break; // Нашли ошибку - выходим из цикла диагностики
+                        break; 
                     } else if (d.type === 'warning') {
                         hasWarning = true;
                     }
                 }
-                if (hasError) break; // Нашли ошибку - выходим из цикла файлов
+                if (hasError) break; 
             }
         }
         
@@ -34,7 +34,7 @@ export const useFolderHierarchyDiagnostics = (folderPath: string, isDir: boolean
 };
 
 
-// Проверить, есть ли ошибки/предупреждения в любой дочерней папке (для родительских папок)
+
 export const useParentFolderDiagnostics = (folderPath: string, isDir: boolean) => {
     const monacoDiagnostics = useDiagnosticsStore(state => state.monacoDiagnostics);
     
@@ -46,19 +46,19 @@ export const useParentFolderDiagnostics = (folderPath: string, isDir: boolean) =
         
         const normalizedFolderPath = folderPath.replace(/\\/g, '/');
         
-        // Проверяем все файлы в текущей папке и всех вложенных папках
+        
         for (const [filePath, diagnostics] of Object.entries(monacoDiagnostics)) {
             const normalizedFilePath = filePath.replace(/\\/g, '/');
             if (normalizedFilePath.startsWith(normalizedFolderPath + '/')) {
                 for (const d of diagnostics) {
                     if (d.type === 'error') {
                         hasError = true;
-                        break; // Нашли ошибку - выходим из цикла диагностики
+                        break; 
                     } else if (d.type === 'warning') {
                         hasWarning = true;
                     }
                 }
-                if (hasError) break; // Нашли ошибку - выходим из цикла файлов
+                if (hasError) break; 
             }
         }
         

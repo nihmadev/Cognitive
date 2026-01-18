@@ -1,6 +1,6 @@
-/* Settings Pane - Form Controls */
 
-/* Search Box */
+
+
 .searchBox {
   display: flex;
   align-items: center;
@@ -27,11 +27,11 @@
 }
 
 .searchInput::placeholder {
-  color: #ffffff;
+  color: var(--theme-foreground-subtle);
 }
 
 .searchIcon {
-  color: #ffffff;
+  color: var(--theme-foreground-muted);
   flex-shrink: 0;
 }
 
@@ -40,16 +40,16 @@
   background-color: var(--theme-background-tertiary);
   border-radius: 3px;
   font-size: 10px;
-  color: #ffffff;
+  color: var(--theme-foreground);
   font-family: monospace;
 }
 
-/* Input */
+
 .input {
-  background-color: #3c3c3c;
-  border: 1px solid #3c3c3c;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
   padding: 4px 8px;
-  color: #cccccc;
+  color: var(--theme-foreground);
   font-size: 13px;
   min-width: 200px;
   outline: none;
@@ -57,17 +57,17 @@
 }
 
 .input:focus {
-  border-color: #007acc;
+  border-color: var(--theme-accent);
 }
 
 .input::placeholder {
-  color: #888;
+  color: var(--theme-foreground-subtle);
 }
 
-/* Textarea */
+
 .textarea {
   background-color: var(--theme-input-background);
-  border: 1px solid transparent;
+  border: 1px solid var(--theme-border);
   border-radius: 4px;
   padding: 10px 12px;
   color: var(--theme-foreground);
@@ -85,12 +85,12 @@
   border-color: var(--theme-accent);
 }
 
-/* Select */
+
 .select {
-  background-color: #3c3c3c;
-  border: 1px solid #3c3c3c;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
   padding: 3px 28px 3px 8px;
-  color: #cccccc;
+  color: var(--theme-foreground);
   font-size: 13px;
   min-width: 180px;
   cursor: pointer;
@@ -103,15 +103,15 @@
 }
 
 .select:focus {
-  border-color: #007acc;
+  border-color: var(--theme-accent);
 }
 
 .select option {
-  background-color: #3c3c3c;
-  color: #cccccc;
+  background-color: var(--theme-input-background);
+  color: var(--theme-foreground);
 }
 
-/* Custom Checkbox */
+
 .checkboxContainer {
   display: flex;
   align-items: flex-start;
@@ -125,8 +125,8 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background-color: #3c3c3c;
-  border: 1px solid #3c3c3c;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
   border-radius: 2px;
   cursor: pointer;
   position: relative;
@@ -136,8 +136,8 @@
 }
 
 .checkbox:checked {
-  background-color: #007acc;
-  border-color: #007acc;
+  background-color: var(--theme-accent);
+  border-color: var(--theme-accent);
 }
 
 .checkbox:checked::after {
@@ -153,16 +153,16 @@
 }
 
 .checkbox:focus {
-  border-color: #007acc;
+  border-color: var(--theme-accent);
 }
 
 .checkboxDescription {
   font-size: 13px;
-  color: #cccccc;
+  color: var(--theme-foreground);
   line-height: 1.4;
 }
 
-/* Slider */
+
 .sliderContainer {
   display: flex;
   align-items: center;
@@ -198,13 +198,13 @@
   min-width: 40px;
   text-align: center;
   font-size: 12px;
-  color: #ffffff;
+  color: var(--theme-foreground);
   font-family: monospace;
 }
 
-/* Button */
+
 .button {
-  background-color: #007acc;
+  background-color: var(--theme-accent);
   border: none;
   padding: 4px 12px;
   color: #ffffff;
@@ -218,13 +218,13 @@
 }
 
 .button:hover {
-  background-color: #0062a3;
+  background-color: var(--theme-accent-hover);
 }
 
 .addButton {
-  background-color: #3c3c3c;
-  border: 1px solid #3c3c3c;
-  color: #cccccc;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-foreground);
   padding: 2px 12px;
   font-size: 12px;
   cursor: pointer;
@@ -234,10 +234,10 @@
 }
 
 .addButton:hover {
-  background-color: #454545;
+  background-color: var(--theme-background-secondary);
 }
 
-/* Settings Table */
+
 .settingsTable {
   width: 100%;
   border-collapse: collapse;
@@ -248,16 +248,16 @@
 .settingsTable th {
   text-align: left;
   padding: 4px 8px;
-  color: #888;
+  color: var(--theme-foreground-subtle);
   font-weight: normal;
 }
 
 .settingsTable td {
   padding: 4px 8px;
-  color: #cccccc;
+  color: var(--theme-foreground);
 }
 
-/* Patterns List */
+
 .patternsList {
   display: flex;
   flex-direction: column;
@@ -268,10 +268,10 @@
 .patternItem {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #cccccc;
+  color: var(--theme-foreground);
 }
 
-/* API Key Input */
+
 .apiKeyInput {
   display: flex;
   gap: 8px;
@@ -284,7 +284,7 @@
   font-size: 12px;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .searchBox {
     width: 100%;

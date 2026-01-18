@@ -8,7 +8,7 @@ interface GitStatusIndicatorProps {
 }
 
 export const GitStatusIndicator = ({ status, onClassName }: GitStatusIndicatorProps) => {
-    // Use useEffect to call onClassName after render, not during render
+    
     useEffect(() => {
         if (!status.status) {
             onClassName?.('');

@@ -35,7 +35,7 @@ export const ProfilesPane = () => {
 
     const currentProfile = profiles.find(p => p.id === selectedProfile);
 
-    // Закрытие меню при клике вне
+    
     const handleClickOutside = useCallback((e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (!target.closest('[data-profile-menu]') && !target.closest('[data-menu-trigger]')) {

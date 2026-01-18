@@ -1,5 +1,5 @@
 import { ChevronRight, ChevronDown, Plus, Undo2 } from 'lucide-react';
-import { getFileIcon } from '../../../../utils/fileIcons';
+import { getFileIcon, getFolderIcon } from '../../../../utils/fileIcons';
 import { ChangesSectionProps } from '../types';
 import { getStatusLabel, getFileName, getFilePath } from '../utils';
 import styles from './ChangesSection.module.css';
@@ -11,17 +11,17 @@ const getStatusClass = (status: string): string => {
     return '';
 };
 
-export const ChangesSection = ({ 
-    files, 
-    changesOpen, 
-    onToggle, 
-    onFileClick, 
-    onStageFile, 
-    onStageAll, 
-    onDiscardChanges 
+export const ChangesSection = ({
+    files,
+    changesOpen,
+    onToggle,
+    onFileClick,
+    onStageFile,
+    onStageAll,
+    onDiscardChanges
 }: ChangesSectionProps) => {
     return (
-        <div className={styles.changesSection}>
+        <div className={`${styles.changesSection} ${changesOpen ? styles.open : ''}`}>
             <div className={styles.sectionHeader} onClick={onToggle}>
                 <div className={styles.sectionTitle}>
                     {changesOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -32,7 +32,7 @@ export const ChangesSection = ({
                 </div>
                 {files.length > 0 && (
                     <div className={styles.sectionActions}>
-                        <button 
+                        <button
                             className={styles.sectionBtn}
                             onClick={(e) => { e.stopPropagation(); onStageAll(); }}
                             title="Stage All"
@@ -42,20 +42,22 @@ export const ChangesSection = ({
                     </div>
                 )}
             </div>
-            
+
             {changesOpen && (
                 <div className={styles.filesList}>
                     {files.length === 0 ? (
                         <div className={styles.emptySection}>No changes</div>
                     ) : (
                         files.map((file) => (
-                            <div 
-                                key={file.path} 
+                            <div
+                                key={file.path}
                                 className={styles.fileItem}
                                 onClick={() => onFileClick(file)}
                             >
                                 <div className={styles.fileIcon}>
-                                    {getFileIcon(getFileName(file.path), file.path)}
+                                    {file.is_dir
+                                        ? getFolderIcon(getFileName(file.path), false, file.path)
+                                        : getFileIcon(getFileName(file.path), file.path)}
                                 </div>
                                 <span className={`${styles.fileName} ${file.status.includes('deleted') ? styles.deleted : ''}`}>
                                     {getFileName(file.path)}
@@ -67,14 +69,14 @@ export const ChangesSection = ({
                                     {getStatusLabel(file.status)}
                                 </span>
                                 <div className={styles.fileActions}>
-                                    <button 
+                                    <button
                                         className={styles.fileActionBtn}
                                         onClick={(e) => { e.stopPropagation(); onDiscardChanges(file.path); }}
                                         title="Discard Changes"
                                     >
                                         <Undo2 size={12} />
                                     </button>
-                                    <button 
+                                    <button
                                         className={styles.fileActionBtn}
                                         onClick={(e) => { e.stopPropagation(); onStageFile(file.path); }}
                                         title="Stage"

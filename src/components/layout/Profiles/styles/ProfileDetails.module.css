@@ -1,4 +1,4 @@
-/* Profile Details Styles */
+
 
 .content {
     flex: 1;
@@ -86,7 +86,7 @@
     background-color: var(--theme-scrollbar-thumb-hover);
 }
 
-/* Sections */
+
 .section {
     margin-bottom: 24px;
 }
@@ -109,7 +109,7 @@
     line-height: 1.4;
 }
 
-/* Checkbox */
+
 .checkbox {
     display: flex;
     align-items: center;
@@ -146,7 +146,7 @@
     font-size: 11px;
 }
 
-/* Contents List */
+
 .contentsList {
     background-color: var(--theme-background-tertiary);
     border-radius: 4px;
@@ -200,7 +200,7 @@
     width: 14px;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .contentBody {
         padding: 16px;

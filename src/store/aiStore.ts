@@ -52,7 +52,7 @@ interface AIState {
     isAssistantOpen: boolean;
     isLoadingModels: boolean;
     
-    // Actions
+    
     addMessage: (conversationId: string, message: Message) => void;
     appendMessageContent: (conversationId: string, content: string) => void;
     createConversation: () => string;
@@ -77,7 +77,7 @@ interface AIState {
     initializeApiKeys: () => Promise<void>;
     initializeModels: () => Promise<void>;
     
-    // Getters
+    
     getModelStatus: (modelId: string) => 'available' | 'no-api-key' | 'not-downloaded';
 }
 
@@ -110,7 +110,7 @@ export const useAIStore = create<AIState>()(
                 set((state) => { 
                     const newApiKeys = { ...state.apiKeys, ...keys };
                     
-                    // Call the backend to store API keys
+                    
                     Object.entries(keys).forEach(([provider, key]) => {
                         if (key !== undefined) {
                             invoke('set_api_key', { provider, key: key.trim() }).catch(error => {
@@ -122,17 +122,17 @@ export const useAIStore = create<AIState>()(
                     return { apiKeys: newApiKeys };
                 });
 
-                // Refresh OpenAI models if OpenAI API key was set
+                
                 if (keys.openai && keys.openai.trim()) {
                     const state = get();
-                    // Use setTimeout to avoid blocking the UI
+                    
                     setTimeout(() => {
                         state.refreshOpenAIModels();
                     }, 100);
                 }
             },
             
-            // Initialize API keys (AgentRouter removed)
+            
             initializeAgentRouter: async () => {
                 console.log('AgentRouter initialization removed');
             },
@@ -141,17 +141,17 @@ export const useAIStore = create<AIState>()(
                 const state = get();
                 
                 try {
-                    // Load models in specified order: OpenAI, xAI, Claude, GLM
+                    
                     await state.refreshOpenAIModels();
                     state.addXAIModels();
                     await state.refreshAnthropicModels();
                     await state.refreshGLMModels();
-                    await state.refreshGoogleModels(); // Google last
+                    await state.refreshGoogleModels(); 
                     await get().refreshOllamaModels();
                     
                 } catch (error) {
                     console.error('Failed to initialize models:', error);
-                    // Set empty models as fallback
+                    
                     set({ 
                         availableModels: [],
                         activeModelId: ''
@@ -163,8 +163,8 @@ export const useAIStore = create<AIState>()(
                 try {
                     const state = get();
                     
-                    // Sync API keys from frontend store to backend
-                    // This ensures backend has the keys that were persisted in localStorage
+                    
+                    
                     const syncPromises = Object.entries(state.apiKeys).map(async ([provider, key]) => {
                         if (key && key.trim()) {
                             try {
@@ -178,7 +178,7 @@ export const useAIStore = create<AIState>()(
                     
                     await Promise.all(syncPromises);
                     
-                    // AgentRouter configuration removed
+                    
                 } catch (error) {
                     console.error('Failed to initialize API keys:', error);
                 }
@@ -189,16 +189,16 @@ export const useAIStore = create<AIState>()(
                     const models = await invoke<OllamaLocalModel[]>('ollama_list_local_models');
                     set({ ollamaLocalModels: models });
                     
-                    // Update available models to include only downloaded local models
+                    
                     set((state) => {
-                        // Start with non-ollama models in desired order: OpenAI, xAI, Anthropic, GLM, Google
+                        
                         const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
                         const glmModels = state.availableModels.filter(m => m.provider === 'zhipu');
                         const googleModels = state.availableModels.filter(m => m.provider === 'google');
                         
-                        // Add only the downloaded local models
+                        
                         const localOllamaModels = models.map(localModel => ({
                             id: localModel.name,
                             name: `${localModel.name} (Local)`,
@@ -210,7 +210,7 @@ export const useAIStore = create<AIState>()(
                     });
                 } catch (error) {
                     console.error('Failed to refresh Ollama models:', error);
-                    // Don't add fallback models - just keep existing models
+                    
                 }
             },
             
@@ -220,7 +220,7 @@ export const useAIStore = create<AIState>()(
                 if (!model) return 'available';
                 
                 if (model.provider === 'ollama') {
-                    // For ollama models, check if they are in the local models list
+                    
                     const isDownloaded = state.ollamaLocalModels.some(localModel => 
                         localModel.name === modelId
                     );
@@ -261,7 +261,7 @@ export const useAIStore = create<AIState>()(
                 const id = crypto.randomUUID();
                 const newConv: Conversation = {
                     id,
-                    title: 'New Chat...', // Temporary title, will be updated by AI
+                    title: 'New Chat...', 
                     timestamp: Date.now(),
                     messages: [],
                     modelId: get().activeModelId,
@@ -304,17 +304,17 @@ export const useAIStore = create<AIState>()(
                 
                 set({ isLoadingModels: true });
                 try {
-                    // Import dynamically to avoid SSR issues
+                    
                     const { openAIModelsService } = await import('../components/ai/services/OpenAIModelsService');
                     
-                    // Clear cache to ensure fresh models
+                    
                     openAIModelsService.clearCache();
                     
-                    // Fetch models from OpenAI API without API key
+                    
                     console.log('Fetching OpenAI models from API...');
                     const openaiModels = await openAIModelsService.fetchAvailableModels();
                     
-                    // Transform OpenAI models to AIModel format
+                    
                     const transformedModels: AIModel[] = openaiModels.map(model => ({
                         id: model.id,
                         name: model.name,
@@ -322,7 +322,7 @@ export const useAIStore = create<AIState>()(
                     }));
 
                     set((state) => {
-                        // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                        
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
                         const glmModels = state.availableModels.filter(m => m.provider === 'zhipu');
@@ -331,7 +331,7 @@ export const useAIStore = create<AIState>()(
                         
                         const allModels = [...transformedModels, ...xaiModels, ...anthropicModels, ...glmModels, ...googleModels, ...ollamaModels];
                         
-                        // Set active model to first OpenAI model if none is selected
+                        
                         let newActiveModelId = state.activeModelId;
                         if (!state.activeModelId) {
                             newActiveModelId = transformedModels[0]?.id || '';
@@ -343,28 +343,28 @@ export const useAIStore = create<AIState>()(
                         };
                     });
 
-                    // Log model statistics
+                    
                     const stats = openAIModelsService.getModelStats(openaiModels);
                     console.log('OpenAI Models Statistics:', stats);
 
                 } catch (error) {
                     console.error('Failed to refresh OpenAI models:', error);
-                    // Don't use fallback - let user see the error
+                    
                 } finally {
                     set({ isLoadingModels: false });
                 }
             },
 
-            // Force refresh OpenAI models (clear cache)
+            
             forceRefreshOpenAIModels: async () => {
                 set({ isLoadingModels: true });
                 try {
                     const { openAIModelsService } = await import('../components/ai/services/OpenAIModelsService');
                     
-                    // Force refresh by clearing cache - WITHOUT API key
+                    
                     const openaiModels = await openAIModelsService.refreshModels();
                     
-                    // Transform OpenAI models to AIModel format
+                    
                     const transformedModels: AIModel[] = openaiModels.map(model => ({
                         id: model.id,
                         name: model.name,
@@ -372,7 +372,7 @@ export const useAIStore = create<AIState>()(
                     }));
 
                     set((state) => {
-                        // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                        
                         const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
@@ -398,14 +398,14 @@ export const useAIStore = create<AIState>()(
             refreshGoogleModels: async () => {
                 set({ isLoadingModels: true });
                 try {
-                    // Import dynamically to avoid SSR issues
+                    
                     const { googleModelsService } = await import('../components/ai/services/GoogleModelsService');
                     
-                    // Fetch models from Google Models Service
+                    
                     console.log('Fetching Google models from service...');
                     const googleModels = await googleModelsService.fetchAvailableModels();
                     
-                    // Transform Google models to AIModel format
+                    
                     const transformedModels: AIModel[] = googleModels.map(model => ({
                         id: model.id,
                         name: model.name,
@@ -413,7 +413,7 @@ export const useAIStore = create<AIState>()(
                     }));
 
                     set((state) => {
-                        // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                        
                         const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
@@ -427,7 +427,7 @@ export const useAIStore = create<AIState>()(
                         };
                     });
 
-                    // Log model statistics
+                    
                     const stats = googleModelsService.getModelStats(googleModels);
                     console.log('Google Models Statistics:', stats);
 
@@ -441,14 +441,14 @@ export const useAIStore = create<AIState>()(
             refreshAnthropicModels: async () => {
                 set({ isLoadingModels: true });
                 try {
-                    // Import dynamically to avoid SSR issues
+                    
                     const { anthropicModelsService } = await import('../components/ai/services/AnthropicModelsService');
                     
-                    // Fetch models from Anthropic Models Service
+                    
                     console.log('Fetching Anthropic models from service...');
                     const anthropicModels = await anthropicModelsService.fetchAvailableModels();
                     
-                    // Transform Anthropic models to AIModel format
+                    
                     const transformedModels: AIModel[] = anthropicModels.map(model => ({
                         id: model.id,
                         name: model.name,
@@ -456,7 +456,7 @@ export const useAIStore = create<AIState>()(
                     }));
 
                     set((state) => {
-                        // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                        
                         const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const glmModels = state.availableModels.filter(m => m.provider === 'zhipu');
@@ -470,7 +470,7 @@ export const useAIStore = create<AIState>()(
                         };
                     });
 
-                    // Log model statistics
+                    
                     const stats = anthropicModelsService.getModelStats(anthropicModels);
                     console.log('Anthropic Models Statistics:', stats);
 
@@ -484,14 +484,14 @@ export const useAIStore = create<AIState>()(
             refreshGLMModels: async () => {
                 set({ isLoadingModels: true });
                 try {
-                    // Import dynamically to avoid SSR issues
+                    
                     const { glmModelsService } = await import('../components/ai/services/GLMModelsService');
                     
-                    // Fetch models from GLM Models Service
+                    
                     console.log('Fetching GLM models from service...');
                     const glmModels = await glmModelsService.fetchAvailableModels();
                     
-                    // Transform GLM models to AIModel format
+                    
                     const transformedModels: AIModel[] = glmModels.map(model => ({
                         id: model.id,
                         name: model.name,
@@ -499,7 +499,7 @@ export const useAIStore = create<AIState>()(
                     }));
 
                     set((state) => {
-                        // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                        
                         const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                         const xaiModels = state.availableModels.filter(m => m.provider === 'xai');
                         const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
@@ -513,7 +513,7 @@ export const useAIStore = create<AIState>()(
                         };
                     });
 
-                    // Log model statistics
+                    
                     const stats = glmModelsService.getModelStats(glmModels);
                     console.log('GLM Models Statistics:', stats);
 
@@ -525,7 +525,7 @@ export const useAIStore = create<AIState>()(
             },
 
             addXAIModels: () => {
-                // Add xAI models statically with the specified grok models
+                
                 const xaiModels: AIModel[] = [
                     { id: 'grok-4-1-fast-reasoning', name: 'Grok 4.1 Fast Reasoning', provider: 'xai' },
                     { id: 'grok-4-1-fast-non-reasoning', name: 'Grok 4.1 Fast Non-Reasoning', provider: 'xai' },
@@ -534,7 +534,7 @@ export const useAIStore = create<AIState>()(
                 ];
                 
                 set((state) => {
-                    // Get models in desired order: OpenAI, xAI, Anthropic, GLM, Google, Ollama
+                    
                     const openaiModels = state.availableModels.filter(m => m.provider === 'openai');
                     const anthropicModels = state.availableModels.filter(m => m.provider === 'anthropic');
                     const glmModels = state.availableModels.filter(m => m.provider === 'zhipu');
@@ -548,15 +548,15 @@ export const useAIStore = create<AIState>()(
 
         }),
         {
-            name: 'ai-storage-v12', // Update version after removing providers and adding new models
+            name: 'ai-storage-v12', 
             version: 12,
             migrate: (persistedState: any, version: number) => {
-                // Clear old state and return fresh state - models will be loaded dynamically
+                
                 if (version < 12) {
                     return {
                         conversations: [],
                         activeConversationId: null,
-                        activeModelId: '', // Will be set dynamically when models load
+                        activeModelId: '', 
                         activeMode: 'responder',
                         apiKeys: {
                             openai: '',
@@ -565,7 +565,7 @@ export const useAIStore = create<AIState>()(
                             xai: '',
                             zhipu: '',
                         },
-                        availableModels: [], // Will be populated from static definitions
+                        availableModels: [], 
                         ollamaLocalModels: [],
                         isAssistantOpen: false,
                         isLoadingModels: false,

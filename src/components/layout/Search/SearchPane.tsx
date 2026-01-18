@@ -25,7 +25,7 @@ export const SearchPane = () => {
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_FILES);
     const resultsListRef = useRef<HTMLDivElement>(null);
 
-    // Reset visible count when results change
+    
     useEffect(() => {
         setVisibleCount(INITIAL_VISIBLE_FILES);
     }, [results]);
@@ -63,7 +63,7 @@ export const SearchPane = () => {
         }
     }, [activeFile, activeFileMatches]);
 
-    // Debounce search
+    
     const searchTimeoutRef = useRef<number | null>(null);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -105,7 +105,7 @@ export const SearchPane = () => {
             </div>
 
             <div className={styles.searchInputs}>
-                {/* Search Box */}
+                {}
                 <div className={styles.inputGroup}>
                     <div className={styles.inputWrapper}>
                         <div className={styles.replaceToggle} onClick={toggleReplace} style={{ marginRight: 6, cursor: 'pointer', color: replaceExpanded ? '#e4e4e7' : '#71717a' }}>
@@ -145,7 +145,7 @@ export const SearchPane = () => {
                     </div>
                 </div>
 
-                {/* Replace Box */}
+                {}
                 {replaceExpanded && (
                     <div className={styles.inputGroup}>
                         <div className={styles.inputWrapper}>
@@ -173,7 +173,7 @@ export const SearchPane = () => {
                     </div>
                 )}
 
-                {/* Details Toggle */}
+                {}
                 <div className={styles.detailsToggle} onClick={() => setShowDetails(!showDetails)}>
                     <MoreHorizontal size={14} />
                     <span>files to include/exclude</span>
@@ -234,19 +234,19 @@ const FileResult = ({ result, openFile }: { result: any, openFile: (path: string
     };
 
     const handleMatchClick = (match: any) => {
-        // Open file and ideally scroll to line
-        // We pass the path. The scrolling logic needs to happen in CodeEditor component
-        // Typically we would pass a state like "revealLine" to projectStore or Editor component.
-        // For now, just open file.
+        
+        
+        
+        
         openFile(result.file.path);
 
-        // Apply highlight decorations for all matches in this file
+        
         window.dispatchEvent(new CustomEvent('editor-apply-search-decorations', {
             detail: { path: result.file.path, matches: result.matches }
         }));
 
-        // Dispatch custom event to notify Editor to scroll
-        // This is a bit hacky but works for decoupling
+        
+        
         setTimeout(() => {
             window.dispatchEvent(new CustomEvent('editor-reveal-line', {
                 detail: { path: result.file.path, line: match.line, start: match.charStart, end: match.charEnd }
@@ -284,18 +284,18 @@ const FileResult = ({ result, openFile }: { result: any, openFile: (path: string
 };
 
 const HighlightText = ({ text, range }: { text: string, range: [number, number] }) => {
-    // Range is slightly tricky because lineText might be substringed or offset. 
-    // But assuming lineText corresponds to the line content:
-    // Actually charStart is relative to the *whole file*? 
-    // Wait, in my search utils: charStart matches regex.index on the LINE text if I scan line by line.
-    // Yes: regex.exec(lineText). So match.index is relative to lineText.
+    
+    
+    
+    
+    
 
-    // However, if I truncated the text in utils, indices might be off.
-    // In utils: `lineText.substring(0, 200)`.
-    // I should probably not truncate in utils if I want accurate highlighting, or handle it carefully.
-    // Let's assume utils doesn't truncate for now or we trust it.
+    
+    
+    
+    
 
-    // Simple slice for display
+    
     const start = range[0];
     const end = range[1];
 

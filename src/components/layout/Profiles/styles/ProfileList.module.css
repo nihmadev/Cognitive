@@ -1,4 +1,4 @@
-/* Profile List Styles */
+
 
 .sidebar {
     width: 240px;
@@ -96,7 +96,7 @@
     background-color: var(--theme-hover-overlay-strong);
 }
 
-/* Profile List */
+
 .profileList {
     flex: 1;
     overflow-y: auto;
@@ -229,7 +229,7 @@
     stroke-width: 4;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .sidebar {
         width: 200px;

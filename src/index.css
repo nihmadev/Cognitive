@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add padding to the top of the app content to prevent overlap */
+
 #root {
   height: 100vh;
   box-sizing: border-box;
@@ -82,11 +82,11 @@
     font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow: hidden;
-    /* Prevent scrolling on the main window */
+    
   }
 }
 
-/* Custom Scrollbar */
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -114,7 +114,7 @@
   border-radius: 3px;
 }
 
-/* Problem line highlight - shows when clicking on a problem */
+
 .problem-line-highlight {
   background-color: rgba(255, 200, 0, 0.15) !important;
   border-left: 3px solid var(--theme-warning, #f59e0b) !important;

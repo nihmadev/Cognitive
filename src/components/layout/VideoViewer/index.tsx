@@ -1,42 +1,48 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { tauriApi } from '../../lib/tauri-api';
+import { tauriApi } from '../../../lib/tauri-api';
 
-interface AudioViewerProps {
+interface VideoViewerProps {
     path: string;
 }
 
 const getMimeType = (path: string): string => {
     const ext = path.split('.').pop()?.toLowerCase() || '';
     switch (ext) {
-        case 'mp3':
-            return 'audio/mpeg';
-        case 'wav':
-            return 'audio/wav';
-        case 'm4a':
-            return 'audio/mp4';
-        case 'aac':
-            return 'audio/aac';
-        case 'flac':
-            return 'audio/flac';
+        case 'mp4':
+            return 'video/mp4';
+        case 'webm':
+            return 'video/webm';
         case 'ogg':
-        case 'oga':
-            return 'audio/ogg';
-        case 'opus':
-            return 'audio/opus';
-        case 'weba':
-            return 'audio/webm';
+        case 'ogv':
+            return 'video/ogg';
+        case 'mov':
+            return 'video/quicktime';
+        case 'avi':
+            return 'video/x-msvideo';
+        case 'wmv':
+            return 'video/x-ms-wmv';
+        case 'flv':
+            return 'video/x-flv';
+        case 'mkv':
+            return 'video/x-matroska';
+        case 'm4v':
+            return 'video/mp4';
+        case '3gp':
+            return 'video/3gpp';
+        case 'ts':
+            return 'video/mp2t';
         default:
-            return 'audio/*';
+            return 'video/*';
     }
 };
 
-class AudioStreamer {
+class VideoStreamer {
     private path: string;
     private mimeType: string;
     private mediaSource: MediaSource;
     private sourceBuffer: SourceBuffer | null = null;
     private isStreaming = false;
-    private chunkSize = 64 * 1024; // 64KB chunks
+    private chunkSize = 2 * 1024 * 1024; 
     private offset = 0;
 
     constructor(path: string, mimeType: string, mediaSource: MediaSource) {
@@ -55,13 +61,14 @@ class AudioStreamer {
             
             this.sourceBuffer.addEventListener('updateend', () => {
                 if (this.isStreaming && this.sourceBuffer) {
+                    
                     this.streamNextChunk();
                 }
             });
 
             await this.streamNextChunk();
         } catch (error) {
-            console.error('Failed to start streaming:', error);
+            console.error('Failed to start video streaming:', error);
             this.isStreaming = false;
             throw error;
         }
@@ -75,10 +82,19 @@ class AudioStreamer {
             
             if (chunk.length === 0) {
                 this.isStreaming = false;
+                
+                if (this.mediaSource.readyState === 'open') {
+                    try {
+                        this.mediaSource.endOfStream();
+                    } catch (e) {
+                        
+                    }
+                }
                 return;
             }
 
             const uint8Array = new Uint8Array(chunk);
+            
             
             if (this.sourceBuffer.updating) {
                 this.sourceBuffer.addEventListener('updateend', () => {
@@ -89,9 +105,22 @@ class AudioStreamer {
             }
 
             this.offset += chunk.length;
+            
+            
+            if (this.isStreaming) {
+                requestAnimationFrame(() => this.streamNextChunk());
+            }
         } catch (error) {
-            console.error('Streaming error:', error);
+            console.error('Video streaming error:', error);
             this.isStreaming = false;
+            
+            if (this.mediaSource.readyState === 'open') {
+                try {
+                    this.mediaSource.endOfStream('network');
+                } catch (e) {
+                    
+                }
+            }
         }
     }
 
@@ -100,7 +129,7 @@ class AudioStreamer {
             try {
                 this.sourceBuffer.appendBuffer(chunk.buffer as ArrayBuffer);
             } catch (error) {
-                console.error('Buffer append error:', error);
+                console.error('Video buffer append error:', error);
                 this.isStreaming = false;
             }
         }
@@ -111,14 +140,14 @@ class AudioStreamer {
     }
 }
 
-export const AudioViewer = ({ path }: AudioViewerProps) => {
+export const VideoViewer = ({ path }: VideoViewerProps) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [errorDetails, setErrorDetails] = useState<string | null>(null);
     const [srcUrl, setSrcUrl] = useState<string | null>(null);
     const [useStreaming, setUseStreaming] = useState(false);
     const objectUrlRef = useRef<string | null>(null);
-    const streamerRef = useRef<AudioStreamer | null>(null);
+    const streamerRef = useRef<VideoStreamer | null>(null);
     const mediaSourceRef = useRef<MediaSource | null>(null);
     const sourceTypeRef = useRef<'asset' | 'blob' | 'stream' | null>(null);
     const attemptedBlobFallbackRef = useRef<boolean>(false);
@@ -128,7 +157,7 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
 
     const startStreaming = async (isMountedRef: { current: boolean }) => {
         if (!MediaSource.isTypeSupported(mimeType)) {
-            console.warn('Streaming not supported for MIME type:', mimeType);
+            console.warn('Video streaming not supported for MIME type:', mimeType);
             return false;
         }
 
@@ -136,17 +165,17 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
             const mediaSource = new MediaSource();
             mediaSourceRef.current = mediaSource;
             
-            const streamer = new AudioStreamer(path, mimeType, mediaSource);
+            const streamer = new VideoStreamer(path, mimeType, mediaSource);
             streamerRef.current = streamer;
             
             const objectUrl = URL.createObjectURL(mediaSource);
             objectUrlRef.current = objectUrl;
             
-            // Set up sourceopen handler before setting the URL
+            
             return new Promise<boolean>((resolve) => {
                 const handleSourceOpen = async () => {
                     try {
-                        console.log('MediaSource opened, starting streaming');
+                        console.log('Video MediaSource opened, starting streaming');
                         await streamer.startStreaming();
                         if (isMountedRef.current) {
                             setSrcUrl(objectUrl);
@@ -156,7 +185,7 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                             resolve(true);
                         }
                     } catch (error) {
-                        console.error('Failed to start streaming:', error);
+                        console.error('Failed to start video streaming:', error);
                         mediaSource.removeEventListener('sourceopen', handleSourceOpen);
                         resolve(false);
                     }
@@ -164,32 +193,39 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
 
                 mediaSource.addEventListener('sourceopen', handleSourceOpen, { once: true });
                 
-                // Set a timeout in case sourceopen never fires
+                
                 setTimeout(() => {
                     if (mediaSource.readyState === 'closed') {
-                        console.warn('MediaSource timeout - sourceopen never fired');
+                        console.warn('Video MediaSource timeout - sourceopen never fired');
                         mediaSource.removeEventListener('sourceopen', handleSourceOpen);
                         resolve(false);
                     }
-                }, 3000);
+                }, 5000); 
             });
         } catch (error) {
-            console.error('Failed to initialize streaming:', error);
+            console.error('Failed to initialize video streaming:', error);
             return false;
         }
     };
 
     const fallbackToBlob = async () => {
         try {
-            // Try cache first
+            
             const cachedData = await tauriApi.getCachedAudio(path);
             let binaryData: number[];
             
             if (cachedData) {
                 binaryData = cachedData;
             } else {
+                
+                const fileSize = await tauriApi.getFileSize(path);
+                if (fileSize > 50 * 1024 * 1024) { 
+                    console.warn('Large video file detected, using streaming instead of blob');
+                    throw new Error('File too large for blob fallback');
+                }
+                
                 binaryData = await tauriApi.readFileBinary(path);
-                // Cache the data for future use
+                
                 await tauriApi.cacheAudio(path, binaryData);
             }
             
@@ -203,8 +239,8 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
             setLoading(false);
         } catch (e) {
             const details = e instanceof Error ? e.message : String(e);
-            setError('Failed to load audio file');
-            setErrorDetails(`Streaming failed and blob fallback also failed.\n${details}`);
+            setError('Failed to load video file');
+            setErrorDetails(`Video streaming failed and blob fallback also failed.\n${details}`);
             setSrcUrl(null);
             setLoading(false);
         }
@@ -230,7 +266,7 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
             mediaSourceRef.current = null;
         }
 
-        const loadAudio = async () => {
+        const loadVideo = async () => {
             setLoading(true);
             setError(null);
             setErrorDetails(null);
@@ -238,33 +274,50 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
             setUseStreaming(false);
 
             try {
-                // Skip asset URL attempt and go directly to streaming first
-                console.log('Attempting streaming for:', path);
+                
+                console.log('Attempting video streaming for:', path);
                 const streamingStarted = await startStreaming(isMountedRef);
                 
                 if (!streamingStarted && isMountedRef.current) {
-                    console.log('Streaming failed, falling back to blob');
+                    console.log('Video streaming failed, falling back to blob');
                     await fallbackToBlob();
                 }
             } catch (e) {
-                console.error('Audio loading failed completely:', e);
+                console.error('Video loading failed completely:', e);
                 const details = e instanceof Error ? e.message : String(e);
-                setError('Failed to load audio file');
-                setErrorDetails(`All loading methods failed.\n${details}`);
+                setError('Failed to load video file');
+                setErrorDetails(`All video loading methods failed.\n${details}`);
                 setLoading(false);
             }
         };
 
-        loadAudio();
+        loadVideo();
 
         return () => {
             isMountedRef.current = false;
+            
+            
+            if (streamerRef.current) {
+                streamerRef.current.stopStreaming();
+                streamerRef.current = null;
+            }
+            
+            
+            if (mediaSourceRef.current) {
+                try {
+                    if (mediaSourceRef.current.readyState === 'open') {
+                        mediaSourceRef.current.endOfStream();
+                    }
+                } catch (e) {
+                    
+                }
+                mediaSourceRef.current = null;
+            }
+            
+            
             if (objectUrlRef.current) {
                 URL.revokeObjectURL(objectUrlRef.current);
                 objectUrlRef.current = null;
-            }
-            if (streamerRef.current) {
-                streamerRef.current.stopStreaming();
             }
         };
     }, [path, mimeType]);
@@ -280,7 +333,7 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                 color: 'var(--theme-foreground-muted)',
                 padding: 16,
             }}>
-                Loading audio…
+                Loading video…
             </div>
         );
     }
@@ -298,7 +351,7 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                 textAlign: 'center',
             }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 720 }}>
-                    <div>{error || 'No audio source'}</div>
+                    <div>{error || 'No video source'}</div>
                     {errorDetails ? (
                         <pre style={{
                             margin: 0,
@@ -341,42 +394,67 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
             }} title={path}>
                 {fileName}
             </div>
-            <audio
-                key={srcUrl}
-                controls
-                style={{ width: '100%' }}
-                src={srcUrl}
-                onError={() => {
-                    const sourceType = sourceTypeRef.current;
-                    const alreadyTriedBlob = attemptedBlobFallbackRef.current;
+            <div style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: 0,
+            }}>
+                <video
+                    key={srcUrl}
+                    controls
+                    preload="auto"
+                    style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '100%',
+                        borderRadius: 8,
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                    src={srcUrl}
+                    onLoadedMetadata={() => {
+                        
+                        const video = document.querySelector('video') as HTMLVideoElement;
+                        if (video) {
+                            video.play().then(() => {
+                                video.pause(); 
+                            }).catch(() => {
+                                
+                            });
+                        }
+                    }}
+                    onError={() => {
+                        const sourceType = sourceTypeRef.current;
+                        const alreadyTriedBlob = attemptedBlobFallbackRef.current;
 
-                    if (sourceType === 'asset' && !alreadyTriedBlob && !useStreaming) {
-                        attemptedBlobFallbackRef.current = true;
-                        (async () => {
-                            try {
-                                if (objectUrlRef.current) {
-                                    URL.revokeObjectURL(objectUrlRef.current);
-                                    objectUrlRef.current = null;
+                        if (sourceType === 'asset' && !alreadyTriedBlob && !useStreaming) {
+                            attemptedBlobFallbackRef.current = true;
+                            (async () => {
+                                try {
+                                    if (objectUrlRef.current) {
+                                        URL.revokeObjectURL(objectUrlRef.current);
+                                        objectUrlRef.current = null;
+                                    }
+
+                                    const isMountedRef = { current: true };
+                                    const streamingStarted = await startStreaming(isMountedRef);
+                                    if (!streamingStarted) {
+                                        await fallbackToBlob();
+                                    }
+                                } catch (e) {
+                                    const details = e instanceof Error ? e.message : String(e);
+                                    setError('Video playback error');
+                                    setErrorDetails(`Failed to decode video asset URL, and all fallbacks failed.\n${details}`);
                                 }
+                            })();
+                            return;
+                        }
 
-                                const isMountedRef = { current: true };
-                                const streamingStarted = await startStreaming(isMountedRef);
-                                if (!streamingStarted) {
-                                    await fallbackToBlob();
-                                }
-                            } catch (e) {
-                                const details = e instanceof Error ? e.message : String(e);
-                                setError('Audio playback error');
-                                setErrorDetails(`Failed to decode asset URL, and all fallbacks failed.\n${details}`);
-                            }
-                        })();
-                        return;
-                    }
-
-                    setError('Audio playback error');
-                    setErrorDetails('The audio element failed to load or decode this source.');
-                }}
-            />
+                        setError('Video playback error');
+                        setErrorDetails('The video element failed to load or decode this source.');
+                    }}
+                />
+            </div>
         </div>
     );
 };

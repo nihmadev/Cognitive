@@ -204,12 +204,12 @@ jobs:
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           else
-            # Check if we're on auto-release (push to main/master)
+            
             if [ "${{ github.event_name }}" == "push" ]; then
-              # Get the latest tag to avoid duplicates
+              
               LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
               if [ -n "$LATEST_TAG" ]; then
-                # Increment the version number
+                
                 BASE_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//' | sed 's/\.[0-9]*$//')
                 PATCH_VERSION=$(echo "$LATEST_TAG" | sed 's/^.*\.\([0-9]*\)$/\1/')
                 NEW_PATCH=$((PATCH_VERSION + 1))

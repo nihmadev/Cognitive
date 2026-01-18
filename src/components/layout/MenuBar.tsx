@@ -4,7 +4,7 @@ import { useEditorStore } from '../../store/editorStore';
 import { useAutoSaveStore } from '../../store/autoSaveStore';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import CommandPalette from './CommandPalette';
-import GoToFileModal from './GoToFileModal';
+import GoToFileModal from './GoToFile';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { MenuLeft } from './MenuBar/MenuLeft';
 import { MenuRight } from './MenuBar/MenuRight';
@@ -117,7 +117,7 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
 
     const currentFileName = activeFile ? (activeFile.split(/[/\\]/).pop() ?? 'Untitled') : 'Untitled';
     
-    // Determine if navigation buttons should be disabled
+    
     const canGoBack = historyIndex > 0;
     const canGoForward = historyIndex < history.length - 1;
 
@@ -131,7 +131,7 @@ export const MenuBar = ({ onOpenSettings, onOpenKeyboardShortcuts, onOpenProfile
                     handleMenuClick={handleMenuClick}
                 />
 
-                {/* Центральная часть меню - область перетаскивания и поиска */}
+                {}
                 <div className={styles.center} data-tauri-drag-region>
                     <div className={styles.navGroup}>
                         <div className={styles.navButtons}>

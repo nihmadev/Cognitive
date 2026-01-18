@@ -17,7 +17,7 @@ export interface FileAgentTool {
 
 export class FileAgentService implements AIService {
   private isChatGPTModel(modelId: string): boolean {
-    // All models are now dynamic, so we check if it's an OpenAI-style model
+    
     return modelId.includes('gpt') || modelId.includes('chat');
   }
 
@@ -83,15 +83,15 @@ export class FileAgentService implements AIService {
     let unlisten: (() => void) | undefined;
     
     try {
-      // Check if already aborted
+      
       if (signal?.aborted) {
         return;
       }
 
-      // Check if using ChatGPT model
+      
       if (this.isChatGPTModel(modelId)) {
         console.log(`FileAgentService using ChatGPT model: ${modelId}`);
-        // For ChatGPT models, we can use OpenAI service with tools
+        
         unlisten = await listen<string>('openai-stream', (event) => {
           if (signal?.aborted) {
             if (unlisten) unlisten();
@@ -100,7 +100,7 @@ export class FileAgentService implements AIService {
           onStreamChunk(event.payload);
         });
 
-        // Setup abort handler
+        
         const abortHandler = () => {
           if (unlisten) {
             unlisten();
@@ -109,7 +109,7 @@ export class FileAgentService implements AIService {
         };
         signal?.addEventListener('abort', abortHandler);
         
-        // Convert tools to OpenAI format
+        
         const openAITools = this.tools.map(tool => ({
           type: "function" as const,
           function: {
@@ -124,7 +124,7 @@ export class FileAgentService implements AIService {
         return;
       }
 
-      // Setup listener for streaming events (AgentRouter fallback)
+      
       unlisten = await listen<string>('agentrouter-stream', (event) => {
         if (signal?.aborted) {
           if (unlisten) unlisten();
@@ -133,7 +133,7 @@ export class FileAgentService implements AIService {
         onStreamChunk(event.payload);
       });
 
-      // Setup abort handler
+      
       const abortHandler = () => {
         if (unlisten) {
           unlisten();
@@ -142,7 +142,7 @@ export class FileAgentService implements AIService {
       };
       signal?.addEventListener('abort', abortHandler);
       
-      // Convert tools to AgentRouter format
+      
       const agentRouterTools = this.tools.map(tool => ({
         type: "function" as const,
         function: {
@@ -152,7 +152,7 @@ export class FileAgentService implements AIService {
         }
       }));
       
-      // Call AgentRouter API with tools - fix toolChoice parameter
+      
       await tauriApi.agentrouterChatStream(
         modelId, 
         messages, 
@@ -179,7 +179,7 @@ export class FileAgentService implements AIService {
     assistantResponse: string
   ): Promise<string> {
     try {
-      // Check if using ChatGPT model
+      
       if (this.isChatGPTModel(modelId)) {
         console.log(`FileAgentService generating title with ChatGPT model: ${modelId}`);
         

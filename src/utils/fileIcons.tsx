@@ -1,9 +1,7 @@
 import React from 'react';
 import iconTheme from './symbol-icon-theme.json';
 
-/**
- * Local Icons path
- */
+
 const SYMBOLS_BASE_URL = '/icons/symbols';
 const FOLDER_URL = `${SYMBOLS_BASE_URL}/folders`;
 const FILE_URL = `${SYMBOLS_BASE_URL}/files`;
@@ -11,7 +9,7 @@ const FILE_URL = `${SYMBOLS_BASE_URL}/files`;
 const getIconKey = (name: string, isDir: boolean, path?: string): string => {
     const lowerName = name.toLowerCase();
 
-    // Noise reduction folders
+    
     const simplifiedNames = ['stderr', 'stdout', 'flycheck', 'capabilities', 'capabillitiies', '.vite-temp'];
     if (simplifiedNames.includes(lowerName)) {
         return 'folder';
@@ -25,45 +23,43 @@ const getIconKey = (name: string, isDir: boolean, path?: string): string => {
     }
 
     if (isDir) {
-        // @ts-ignore
-        return iconTheme.folderNames[lowerName] || 'folder';
+        
+        return (iconTheme.folderNames as Record<string, string>)[lowerName] || 'folder';
     }
 
-    // Check full filename match
-    // @ts-ignore
-    if (iconTheme.fileNames[lowerName]) {
-        // @ts-ignore
-        return iconTheme.fileNames[lowerName];
+    
+    
+    if ((iconTheme.fileNames as Record<string, string>)[lowerName]) {
+        
+        return (iconTheme.fileNames as Record<string, string>)[lowerName];
     }
 
-    // Check extension
+    
     const parts = lowerName.split('.');
 
-    // Check for multi-part extensions (e.g. .test.ts)
+    
     if (parts.length > 2) {
         const fullExt = parts.slice(-2).join('.');
-        // @ts-ignore
-        if (iconTheme.fileExtensions[fullExt]) {
-            // @ts-ignore
-            return iconTheme.fileExtensions[fullExt];
+        
+        if ((iconTheme.fileExtensions as Record<string, string>)[fullExt]) {
+            
+            return (iconTheme.fileExtensions as Record<string, string>)[fullExt];
         }
     }
 
     if (parts.length > 1) {
         const ext = parts[parts.length - 1];
-        // @ts-ignore
-        if (iconTheme.fileExtensions[ext]) {
-            // @ts-ignore
-            return iconTheme.fileExtensions[ext];
+        
+        if ((iconTheme.fileExtensions as Record<string, string>)[ext]) {
+            
+            return (iconTheme.fileExtensions as Record<string, string>)[ext];
         }
     }
 
     return 'document';
 };
 
-/**
- * Component to handle icon loading with better stability
- */
+
 const IconImage = ({ src, name, fallbackIcon }: { src: string; name: string; fallbackIcon?: React.ReactNode }) => {
     const [hasError, setHasError] = React.useState(false);
 
@@ -107,7 +103,7 @@ export const getFileIcon = (filename: string, path?: string) => {
 export const getFolderIcon = (foldername: string, isOpen: boolean = false, path?: string) => {
     let iconName = getIconKey(foldername, true, path);
 
-    // Symbols base folder has an open variant
+    
     if (isOpen && iconName === 'folder') {
         iconName = 'folder-open';
     }
@@ -129,7 +125,7 @@ export const DefaultFolderIcon = ({ isOpen }: { isOpen?: boolean }) => (
     <img src={`${FOLDER_URL}/folder${isOpen ? '-open' : ''}.svg`} width="16" height="16" alt="folder" />
 );
 
-// Keep these exports for compatibility but simplified
+
 export const getFolderDecoration = (_name: string) => null;
 export const getFolderStatus = (_: string) => null;
 

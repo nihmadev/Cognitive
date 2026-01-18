@@ -69,7 +69,7 @@ export const MenuLeft = ({
                 </div>
             ))}
 
-            {/* Always show at least File and Edit on smaller screens */}
+            {}
             {menuStructure.slice(0, 2).map((category) => (
                 <div key={category.label} className={clsx(styles.menuItemWrap, "lg:hidden")}>
                     <div

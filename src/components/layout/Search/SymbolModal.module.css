@@ -208,7 +208,7 @@
   color: var(--vscode-descriptionForeground);
 }
 
-/* Scrollbar styling */
+
 .resultsContainer::-webkit-scrollbar {
   width: 8px;
 }

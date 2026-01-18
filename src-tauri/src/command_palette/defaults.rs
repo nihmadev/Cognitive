@@ -1,6 +1,6 @@
 use crate::command_palette::types::{Command, CommandCategory, CommandSource};
 
-/// Get all default built-in commands
+
 pub fn get_default_commands() -> Vec<Command> {
     let mut commands = Vec::new();
     
@@ -226,7 +226,7 @@ fn help_commands() -> Vec<Command> {
     ]
 }
 
-/// Helper to create a command
+
 fn cmd(id: &str, label: &str, category: CommandCategory, when: Option<&str>) -> Command {
     Command {
         id: id.to_string(),

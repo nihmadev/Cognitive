@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { GitCompare, MoreVertical, Lock } from 'lucide-react';
-import { useProjectStore } from '../../store/projectStore';
-import styles from './TabActions.module.css';
+import { useProjectStore } from '../../../store/projectStore';
+import styles from './styles.module.css';
 
 export const TabActions = ({ hideButtons = false }: { hideButtons?: boolean }) => {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -16,14 +16,14 @@ export const TabActions = ({ hideButtons = false }: { hideButtons?: boolean }) =
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
-            // Handle Ctrl+Alt+W (Close All)
+            
             if (event.ctrlKey && event.altKey && event.key === 'w') {
                 event.preventDefault();
                 handleCloseAll();
                 return;
             }
 
-            // Handle Ctrl+Alt+U (Close Saved)
+            
             if (event.ctrlKey && event.altKey && event.key === 'u') {
                 event.preventDefault();
                 handleCloseAllSaved();
@@ -41,7 +41,7 @@ export const TabActions = ({ hideButtons = false }: { hideButtons?: boolean }) =
     }, []);
 
     const handleViewChanges = () => {
-        // Open git diff for the current file if available
+        
         if (activeFile) {
             const { openDiffTab } = useProjectStore.getState();
             openDiffTab(activeFile, false);

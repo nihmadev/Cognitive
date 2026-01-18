@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// UI Settings - theme, fonts, layout
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UISettings {
@@ -16,7 +16,7 @@ pub struct UISettings {
     pub zoom_level: f32,
 }
 
-/// Editor Settings
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct EditorSettings {
@@ -30,7 +30,7 @@ pub struct EditorSettings {
     pub cursor_style: String,
 }
 
-/// AI Settings
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct AISettings {
@@ -41,7 +41,7 @@ pub struct AISettings {
     pub temperature: f32,
 }
 
-/// Workspace Settings (per-project)
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceSettings {
@@ -50,7 +50,7 @@ pub struct WorkspaceSettings {
     pub file_associations: std::collections::HashMap<String, String>,
 }
 
-/// All application settings combined
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
@@ -61,7 +61,7 @@ pub struct AppSettings {
     pub workspace: Option<WorkspaceSettings>,
 }
 
-/// Settings change event for IPC broadcast
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SettingsChangeEvent {
@@ -71,7 +71,7 @@ pub struct SettingsChangeEvent {
     pub source: SettingsSource,
 }
 
-/// Source of settings change
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum SettingsSource {
@@ -81,7 +81,7 @@ pub enum SettingsSource {
     FileWatch,
 }
 
-/// Result of settings validation
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ValidationResult {
     pub valid: bool,

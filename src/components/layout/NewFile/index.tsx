@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Search, FileText, Code } from 'lucide-react';
-import { getFileIcon } from '../../utils/fileIcons';
-import styles from './NewFileModal.module.css';
+import { getFileIcon } from '../../../utils/fileIcons';
+import styles from './styles.module.css';
 
 interface NewFileModalProps {
     isOpen: boolean;
@@ -17,12 +17,12 @@ export const NewFileModal = ({ isOpen, onClose, onSelectFileType }: NewFileModal
 
     const handleFileSelect = () => {
         if (searchQuery.trim()) {
-            // User entered a file name - create file with that name
+            
             const fileName = searchQuery.trim();
             onSelectFileType('text', fileName);
             onClose();
         } else if (filteredTypes[selectedIndex]) {
-            // User selected a predefined type
+            
             const selected = filteredTypes[selectedIndex];
             onSelectFileType(selected.type, selected.extension);
             onClose();

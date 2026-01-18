@@ -50,8 +50,8 @@ export const CodeEditor = () => {
         openTimelineDiffTabs,
     } = useProjectStore();
 
-    // Debug: log on every render (using error to ensure visibility)
-    // console.error('=== CodeEditor RENDER ===', { activeSettingsTab, openSettingsTabs, activeFile });
+    
+    
 
     const { insertMode, theme, fontSettings, availableFonts, minimapEnabled, lineNumbersEnabled, tabSize } = useUIStore();
     const { setEditorInstance, setMonacoInstance } = useEditorStore();
@@ -74,7 +74,7 @@ export const CodeEditor = () => {
         monacoRef,
     });
 
-    // Update cursor style based on insert mode
+    
     useEffect(() => {
         if (editorRef.current) {
             editorRef.current.updateOptions({
@@ -83,7 +83,7 @@ export const CodeEditor = () => {
         }
     }, [insertMode]);
 
-    // Update font settings when they change
+    
     useEffect(() => {
         if (editorRef.current && availableFonts && availableFonts.length > 0) {
             const font = availableFonts.find((f: { id: string; name: string; stack: string }) => f.id === fontSettings.fontFamily);
@@ -97,7 +97,7 @@ export const CodeEditor = () => {
         }
     }, [fontSettings, availableFonts]);
 
-    // Update tab size when it changes
+    
     useEffect(() => {
         if (editorRef.current) {
             editorRef.current.updateOptions({
@@ -107,23 +107,23 @@ export const CodeEditor = () => {
         }
     }, [tabSize]);
 
-    // Update Monaco theme when app theme changes
+    
     useEffect(() => {
         if (monacoRef.current && themesRegisteredRef.current) {
             monacoRef.current.editor.setTheme(getMonacoThemeName(theme));
         }
     }, [theme]);
 
-    // Find active tabs
+    
     const activeDiff = activeDiffTab ? openDiffTabs.find(t => t.id === activeDiffTab) : null;
     const activeSettings = activeSettingsTab ? openSettingsTabs.find(t => t.id === activeSettingsTab) : null;
     const activeProfiles = activeProfilesTab ? openProfilesTabs.find(t => t.id === activeProfilesTab) : null;
     const activeTimelineDiff = activeTimelineDiffTab ? openTimelineDiffTabs.find(t => t.id === activeTimelineDiffTab) : null;
 
-    // Debug: log settings state
-    // console.log('Editor render - activeSettingsTab:', activeSettingsTab, 'openSettingsTabs:', openSettingsTabs, 'activeSettings:', activeSettings);
+    
+    
 
-    // Load file content
+    
     useEffect(() => {
         const loadFile = async () => {
             if (!activeFile) {
@@ -149,25 +149,25 @@ export const CodeEditor = () => {
             const isAud = isAudioFile(activeFile);
             const isVid = isVideoFile(activeFile);
 
-            // Debug all states for mp4 files
-            // if (activeFile && activeFile.includes('.mp4')) {
-            //     console.log('MP4 file debug - isImg:', isImg, 'isAud:', isAud, 'isVid:', isVid);
-            // }
+            
+            
+            
+            
 
             if (isImg) {
-                // console.log('Returning early for image file:', activeFile);
+                
                 setIsBinary(false);
                 return;
             }
 
             if (isVid) {
-                // console.log('Returning early for video file:', activeFile);
+                
                 setIsBinary(false);
                 return;
             }
 
             if (isAud) {
-                // console.log('Returning early for audio file:', activeFile);
+                
                 setIsBinary(false);
                 return;
             }
@@ -178,8 +178,8 @@ export const CodeEditor = () => {
             }
 
             try {
-                // console.log('About to read file as text - this should not happen for media files:', activeFile);
-                // Double-check before reading as text
+                
+                
                 if (isVideoFile(activeFile) || isAudioFile(activeFile) || isImageFile(activeFile)) {
                     console.error('Attempting to read media file as text:', activeFile);
                     setIsBinary(false);
@@ -218,7 +218,7 @@ export const CodeEditor = () => {
         loadFile();
     }, [activeFile, setFileContent, deletedFiles]);
 
-    // Show profiles pane
+    
     if (activeProfiles) {
         return (
             <div className={styles.root}>
@@ -229,7 +229,7 @@ export const CodeEditor = () => {
         );
     }
 
-    // Show settings pane
+    
     if (activeSettings) {
         return (
             <div className={styles.root}>
@@ -240,7 +240,7 @@ export const CodeEditor = () => {
         );
     }
 
-    // Show diff editor
+    
     if (activeDiff && currentWorkspace) {
         return (
             <div className={styles.root}>
@@ -255,7 +255,7 @@ export const CodeEditor = () => {
         );
     }
 
-    // Show timeline diff editor
+    
     if (activeTimelineDiff) {
         return (
             <div className={styles.root}>
@@ -271,33 +271,33 @@ export const CodeEditor = () => {
         );
     }
 
-    // Show welcome screen
+    
     if (!activeFile) {
         return <EditorWelcome />;
     }
 
-    // Show image viewer
+    
     if (isImageFile(activeFile || '')) {
         return <ImageViewer path={activeFile} />;
     }
 
-    // Show video viewer (priority over audio for overlapping extensions)
+    
     if (isVideoFile(activeFile || '')) {
         return <VideoViewer path={activeFile} />;
     }
 
-    // Show audio viewer
+    
     if (isAudioFile(activeFile || '')) {
         return <AudioViewer path={activeFile} />;
     }
 
-    // Show binary warning
+    
     if (isBinary) {
         const fileName = activeFile.split(/[\\/]/).pop() || activeFile;
         return <BinaryWarning fileName={fileName} />;
     }
 
-    // Render editor with split view support
+    
     const editorContent = (
         <MonacoEditor
             key={`${activeFile}-${editorVersion}-${fontSettings.fontFamily}-${fontSettings.fontSize}-${fontSettings.lineHeight}`}
@@ -317,7 +317,7 @@ export const CodeEditor = () => {
                     setCode(value);
                     setFileContent(activeFile, value);
 
-                    // Schedule AutoSave if enabled and there are unsaved changes
+                    
                     if (autoSaveEnabled && unsavedChanges[activeFile]) {
                         scheduleAutoSave(activeFile);
                     }
@@ -327,7 +327,7 @@ export const CodeEditor = () => {
                 editorRef.current = editor;
                 monacoRef.current = monaco;
 
-                // Store instances globally for Outline access
+                
                 setEditorInstance(editor);
                 setMonacoInstance(monaco);
 
@@ -336,14 +336,14 @@ export const CodeEditor = () => {
                     monacoConfiguredRef.current = true;
                 }
 
-                // Fix line highlight border color - override after theme is applied
+                
                 const currentThemeName = getMonacoThemeName(theme);
                 const themeData = (monaco.editor as any)._themeService?._theme?.themeData;
                 if (themeData) {
                     themeData.colors = themeData.colors || {};
                     themeData.colors['editor.lineHighlightBorder'] = '#00000000';
                 }
-                // Re-apply theme to ensure changes take effect
+                
                 monaco.editor.setTheme(currentThemeName);
 
                 const disposable = editor.onDidChangeCursorPosition((e: any) => {
@@ -367,13 +367,13 @@ export const CodeEditor = () => {
                 }
                 diagnosticsListenerRef.current = monaco.editor.onDidChangeMarkers(() => {
                     collectDiagnostics();
-                    // Also update outline on marker changes (indicates parsing complete)
+                    
                     updateOutlineDebounced();
                 });
 
-                // Initial diagnostics and outline collection
+                
                 setTimeout(collectDiagnostics, 300);
-                // Trigger outline collection immediately on mount
+                
                 updateOutlineDebounced();
 
                 return () => {

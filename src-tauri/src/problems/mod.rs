@@ -7,14 +7,14 @@ use std::process::Command;
 pub struct Problem {
     pub id: u32,
     #[serde(rename = "type")]
-    pub problem_type: String, // "error" | "warning"
+    pub problem_type: String, 
     pub file: String,
     pub path: String,
     pub line: u32,
     pub column: u32,
     pub message: String,
     pub code: Option<String>,
-    pub source: String, // "ts" | "eslint"
+    pub source: String, 
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -44,12 +44,12 @@ pub async fn get_problems(project_path: String) -> Result<ProblemsResult, String
     let mut all_problems: Vec<Problem> = Vec::new();
     let mut id_counter: u32 = 1;
 
-    // Try TypeScript first
+    
     if let Ok(ts_problems) = get_typescript_problems(&project_path, &mut id_counter) {
         all_problems.extend(ts_problems);
     }
 
-    // Group problems by file
+    
     let mut files_map: HashMap<String, Vec<Problem>> = HashMap::new();
     
     for problem in all_problems {
@@ -79,7 +79,7 @@ pub async fn get_problems(project_path: String) -> Result<ProblemsResult, String
         })
         .collect();
 
-    // Sort files by path
+    
     files.sort_by(|a, b| a.path.cmp(&b.path));
 
     let total_errors = files.iter().map(|f| f.error_count).sum();
@@ -95,13 +95,13 @@ pub async fn get_problems(project_path: String) -> Result<ProblemsResult, String
 fn get_typescript_problems(project_path: &str, id_counter: &mut u32) -> Result<Vec<Problem>, String> {
     let mut problems: Vec<Problem> = Vec::new();
 
-    // Check if tsconfig.json exists
+    
     let tsconfig_path = Path::new(project_path).join("tsconfig.json");
     if !tsconfig_path.exists() {
         return Ok(problems);
     }
 
-    // Try npx tsc first, then tsc directly
+    
     let output = Command::new("npx")
         .args(["tsc", "--noEmit", "--pretty", "false"])
         .current_dir(project_path)
@@ -118,8 +118,8 @@ fn get_typescript_problems(project_path: &str, id_counter: &mut u32) -> Result<V
     let stderr = String::from_utf8_lossy(&output.stderr);
     let combined = format!("{}{}", stdout, stderr);
 
-    // Parse TypeScript output
-    // Format: src/file.ts(10,5): error TS2304: Cannot find name 'x'.
+    
+    
     for line in combined.lines() {
         if let Some(problem) = parse_typescript_line(line, project_path, id_counter) {
             problems.push(problem);
@@ -130,15 +130,15 @@ fn get_typescript_problems(project_path: &str, id_counter: &mut u32) -> Result<V
 }
 
 fn parse_typescript_line(line: &str, project_path: &str, id_counter: &mut u32) -> Option<Problem> {
-    // Format: path/file.ts(line,col): error TSxxxx: message
-    // or: path/file.ts(line,col): warning TSxxxx: message
+    
+    
     
     let line = line.trim();
     if line.is_empty() {
         return None;
     }
 
-    // Find the position info (line,col)
+    
     let paren_start = line.find('(')?;
     let paren_end = line.find(')')?;
     
@@ -150,7 +150,7 @@ fn parse_typescript_line(line: &str, project_path: &str, id_counter: &mut u32) -
     let position = &line[paren_start + 1..paren_end];
     let rest = &line[paren_end + 1..];
 
-    // Parse line and column
+    
     let pos_parts: Vec<&str> = position.split(',').collect();
     if pos_parts.len() < 2 {
         return None;
@@ -159,7 +159,7 @@ fn parse_typescript_line(line: &str, project_path: &str, id_counter: &mut u32) -
     let line_num = pos_parts[0].trim().parse::<u32>().ok()?;
     let col_num = pos_parts[1].trim().parse::<u32>().ok()?;
 
-    // Parse error/warning and code
+    
     let rest = rest.trim_start_matches(':').trim();
     
     let (problem_type, code, message) = if rest.starts_with("error") {
@@ -174,7 +174,7 @@ fn parse_typescript_line(line: &str, project_path: &str, id_counter: &mut u32) -
         return None;
     };
 
-    // Normalize file path
+    
     let normalized_path = normalize_path(file_path, project_path);
     let file_name = Path::new(&normalized_path)
         .file_name()
@@ -198,7 +198,7 @@ fn parse_typescript_line(line: &str, project_path: &str, id_counter: &mut u32) -
 }
 
 fn parse_ts_code_and_message(s: &str) -> (Option<String>, String) {
-    // Format: TS2304: Cannot find name 'x'.
+    
     if let Some(colon_pos) = s.find(':') {
         let code_part = s[..colon_pos].trim();
         let message = s[colon_pos + 1..].trim().to_string();
@@ -214,7 +214,7 @@ fn normalize_path(file_path: &str, project_path: &str) -> String {
     let file_path = file_path.replace('\\', "/");
     let project_path = project_path.replace('\\', "/");
     
-    // If path is absolute and starts with project path, make it relative
+    
     if file_path.starts_with(&project_path) {
         file_path
             .strip_prefix(&project_path)
@@ -227,7 +227,7 @@ fn normalize_path(file_path: &str, project_path: &str) -> String {
 }
 
 
-// Cache for problems
+
 use std::sync::Mutex;
 use std::collections::HashMap as StdHashMap;
 
@@ -251,6 +251,6 @@ pub fn get_problems_cache_stats() -> Result<serde_json::Value, String> {
 
 #[tauri::command]
 pub async fn check_files(project_path: String, _files: Vec<String>) -> Result<ProblemsResult, String> {
-    // For now, just run full check - could be optimized to check specific files
+    
     get_problems(project_path).await
 }

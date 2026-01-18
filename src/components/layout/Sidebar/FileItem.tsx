@@ -26,10 +26,10 @@ interface FileItemProps {
     fileSystemVersion?: number;
 }
 
-export const FileItem = memo(({ 
-    entry, 
-    depth = 0, 
-    expandedFolders, 
+export const FileItem = memo(({
+    entry,
+    depth = 0,
+    expandedFolders,
     onToggleExpand,
     onCreateNew,
     creatingNew,
@@ -40,87 +40,98 @@ export const FileItem = memo(({
 }: FileItemProps) => {
     const [children, setChildren] = useState<any[]>(entry.children || []);
     const { openFile, activeFile, refreshWorkspace, updateFilePath } = useProjectStore();
-    
-    // Получаем статус диагностики для папок
+
+
     const folderDiagnostics = useFolderHierarchyDiagnostics(entry.path, entry.is_dir);
-    
-    // Получаем статус диагностики для файлов
+
+
     const fileDiagnostics = useFileDiagnosticStatus(entry.path, entry.is_dir);
-    
-    // Получаем Git статус для файла/папки
+
+
     const gitStatus = useFileGitStatus(entry.path, entry.is_dir);
-    
-    // Используем соответствующий статус в зависимости от типа
+
+
     const { hasError, hasWarning } = entry.is_dir ? folderDiagnostics : fileDiagnostics;
 
     const [isRenaming, setIsRenaming] = useState(false);
     const [newName, setNewName] = useState(entry.name);
     const [gitStatusClassName, setGitStatusClassName] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
-    
+
     const isOpen = expandedFolders.has(entry.path);
     const isActive = activeFile === entry.path;
     const isSelected = selectedPath === entry.path;
     const isCreatingHere = creatingNew?.parentPath === entry.path;
     const insertIndex = creatingNew?.insertIndex;
 
-    const loadChildren = useCallback(async () => {
-        if (entry.is_dir && children.length === 0 && isOpen) {
-            try {
-                const files = await tauriApi.readDir(entry.path);
-                setChildren(files);
-            } catch (e) {
-                console.error("Failed to read dir", e);
+    const loadChildren = useCallback(async (force: boolean = false) => {
+        if (entry.is_dir && isOpen) {
+
+            if (force || children.length === 0) {
+                try {
+                    const files = await tauriApi.readDir(entry.path);
+                    setChildren(files);
+                } catch (e) {
+                    console.error("Failed to read dir", e);
+                }
             }
         }
     }, [entry.is_dir, entry.path, children.length, isOpen]);
 
     useEffect(() => {
         if (isOpen && entry.is_dir) {
-            loadChildren();
+            loadChildren(false);
         }
     }, [isOpen, loadChildren, entry.is_dir]);
 
+
+    useEffect(() => {
+        if (isOpen && entry.is_dir) {
+            loadChildren(true);
+        }
+    }, [fileSystemVersion, isOpen, entry.is_dir, loadChildren]);
+
     const handleToggle = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        onSelect(entry.path);
         if (isRenaming) return;
-        
+
         if (entry.is_dir) {
+            // Сначала переключаем состояние папки, потом выделяем
             onToggleExpand?.(entry.path, !isOpen);
+            onSelect(entry.path);
         } else {
-            // Normal mode, open in main editor
+            onSelect(entry.path);
             openFile(entry.path);
         }
     };
-    
+
     const handleStartRename = useCallback(() => {
         if (isSelected && !isRenaming) {
             setIsRenaming(true);
             setNewName(entry.name);
         }
     }, [isSelected, isRenaming, entry.name]);
-    
+
     const handleRename = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newName.trim() || newName === entry.name) {
             setIsRenaming(false);
             return;
         }
-        
+
         try {
             const parentDir = entry.path.split('/').slice(0, -1).join('/');
             const newPath = `${parentDir}/${newName}`;
-            
-            // Use the new Rust function that returns rename result
+
+
             const renameResult = await tauriApi.renameFileWithResult(entry.path, newPath);
-            
-            // Update file paths in store if this was a file
+
+
             if (renameResult.was_file) {
                 updateFilePath(renameResult.old_path, renameResult.new_path);
             }
-            
-            // Refresh the workspace to show the renamed file/folder
+
+
             await refreshWorkspace();
         } catch (error) {
             console.error('Failed to rename:', error);
@@ -128,8 +139,8 @@ export const FileItem = memo(({
             setIsRenaming(false);
         }
     };
-    
-    // Handle F2 key press for renaming
+
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (isSelected && e.key === 'F2') {
@@ -140,24 +151,24 @@ export const FileItem = memo(({
                 setNewName(entry.name);
             }
         };
-        
+
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isSelected, isRenaming, handleStartRename, entry.name]);
-    
-    // Handle global rename event (triggered from F2 key in useEditorEvents)
+
+
     useEffect(() => {
         const handleGlobalRename = () => {
             if (isSelected) {
                 handleStartRename();
             }
         };
-        
+
         window.addEventListener('start-rename', handleGlobalRename);
         return () => window.removeEventListener('start-rename', handleGlobalRename);
     }, [isSelected, handleStartRename]);
-    
-    // Focus the input when renaming starts
+
+
     useEffect(() => {
         if (isRenaming && inputRef.current) {
             inputRef.current.focus();
@@ -168,7 +179,7 @@ export const FileItem = memo(({
     const handleCreationComplete = async (name: string | null) => {
         onCreationComplete();
         if (name) {
-            // Refresh children
+
             try {
                 const files = await tauriApi.readDir(entry.path);
                 setChildren(files);
@@ -181,9 +192,9 @@ export const FileItem = memo(({
 
     return (
         <div className={styles.fileItemWrap}>
-            {/* Indentation line only for expanded folders */}
+            { }
             {depth > 0 && entry.is_dir && isOpen && (
-                <div 
+                <div
                     className={styles.indentationLine}
                     style={{ ['--depth' as any]: depth }}
                 />
@@ -243,9 +254,9 @@ export const FileItem = memo(({
                         )}>
                             {entry.name}
                         </span>
-                        {/* Git Status Indicator */}
-                        <GitStatusIndicator 
-                            status={gitStatus} 
+                        { }
+                        <GitStatusIndicator
+                            status={gitStatus}
                             onClassName={setGitStatusClassName}
                         />
                     </>
@@ -255,21 +266,22 @@ export const FileItem = memo(({
             <AnimatePresence>
                 {isOpen && entry.is_dir && (
                     <motion.div
+                        key="children"
                         initial={{ height: 0 }}
                         animate={{ height: "auto" }}
                         exit={{ height: 0 }}
-                        transition={{ 
-                            duration: 0.15, 
-                            ease: [0.4, 0.0, 0.2, 1] 
+                        transition={{
+                            duration: 0.15,
+                            ease: [0.4, 0.0, 0.2, 1]
                         }}
                         className={styles.childrenWrap}
                     >
-                        {/* Render children with insert position support */}
+                        { }
                         {(() => {
                             const elements: ReactElement[] = [];
-                            
+
                             children.forEach((child: any, index: number) => {
-                                // Insert NewItemInput at the correct position if creating in this folder
+
                                 if (isCreatingHere && insertIndex === index) {
                                     elements.push(
                                         <NewItemInput
@@ -282,12 +294,12 @@ export const FileItem = memo(({
                                         />
                                     );
                                 }
-                                
-                                // Add the regular file item
+
+
                                 elements.push(
-                                    <FileItem 
-                                        key={`${child.path}-${fileSystemVersion}`} 
-                                        entry={child} 
+                                    <FileItem
+                                        key={child.path}
+                                        entry={child}
                                         depth={depth + 1}
                                         expandedFolders={expandedFolders}
                                         onToggleExpand={onToggleExpand}
@@ -296,12 +308,11 @@ export const FileItem = memo(({
                                         onCreationComplete={onCreationComplete}
                                         selectedPath={selectedPath}
                                         onSelect={onSelect}
-                                        fileSystemVersion={fileSystemVersion}
                                     />
                                 );
                             });
-                            
-                            // If insert index is at the end or no insert index specified, add at the end
+
+
                             if (isCreatingHere && (insertIndex === undefined || insertIndex >= children.length)) {
                                 elements.push(
                                     <NewItemInput
@@ -314,7 +325,7 @@ export const FileItem = memo(({
                                     />
                                 );
                             }
-                            
+
                             return elements;
                         })()}
                     </motion.div>
@@ -323,17 +334,37 @@ export const FileItem = memo(({
         </div>
     );
 }, (prevProps, nextProps) => {
-    // Custom comparison function for React.memo
-    return (
-        prevProps.entry.path === nextProps.entry.path &&
-        prevProps.entry.name === nextProps.entry.name &&
-        prevProps.entry.is_dir === nextProps.entry.is_dir &&
-        prevProps.depth === nextProps.depth &&
-        prevProps.expandedFolders.has(nextProps.entry.path) === nextProps.expandedFolders.has(nextProps.entry.path) &&
-        prevProps.selectedPath === nextProps.selectedPath &&
-        prevProps.fileSystemVersion === nextProps.fileSystemVersion &&
-        prevProps.creatingNew?.parentPath === nextProps.creatingNew?.parentPath &&
-        prevProps.creatingNew?.type === nextProps.creatingNew?.type &&
-        prevProps.creatingNew?.insertIndex === nextProps.creatingNew?.insertIndex
-    );
+    // If key props changed, update
+    if (prevProps.entry.path !== nextProps.entry.path ||
+        prevProps.entry.name !== nextProps.entry.name ||
+        prevProps.entry.is_dir !== nextProps.entry.is_dir ||
+        prevProps.depth !== nextProps.depth ||
+        prevProps.selectedPath !== nextProps.selectedPath ||
+        prevProps.fileSystemVersion !== nextProps.fileSystemVersion) {
+        return false;
+    }
+
+    // Creating new matches?
+    if (prevProps.creatingNew?.parentPath !== nextProps.creatingNew?.parentPath ||
+        prevProps.creatingNew?.type !== nextProps.creatingNew?.type ||
+        prevProps.creatingNew?.insertIndex !== nextProps.creatingNew?.insertIndex) {
+        return false;
+    }
+
+    // Expanded state logic
+    const wasExpanded = prevProps.expandedFolders.has(prevProps.entry.path);
+    const isExpanded = nextProps.expandedFolders.has(nextProps.entry.path);
+
+    // If expansion status for THIS folder changed, update
+    if (wasExpanded !== isExpanded) return false;
+
+    // If currently expanded, we MUST update if the Set object changed diffrently to propagate to children
+    // We compare reference because Set is always recreated on change in Sidebar
+    if (isExpanded && prevProps.expandedFolders !== nextProps.expandedFolders) {
+        return false;
+    }
+
+    // Otherwise, it is collapsed and status didn't change, so we can safely skip re-render
+    // (Children are not rendered, so they don't need the new Set)
+    return true;
 });

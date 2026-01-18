@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && tauri build",
     "preview": "vite preview",
     "tauri": "tauri",
     "build:exe": "tauri build --target x86_64-pc-windows-msvc --bundles nsis",
@@ -31,6 +31,8 @@
     "@tauri-apps/plugin-opener": "^2",
     "@types/react-file-icon": "^1.0.4",
     "@vscode/codicons": "^0.0.44",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "axios": "^1.13.2",
     "clsx": "^2.1.0",
     "file-icons-js": "^1.1.0",
@@ -46,6 +48,7 @@
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.0.0",
     "tailwindcss-animate": "^1.0.7",
+    "tauri-pty": "^0.2.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

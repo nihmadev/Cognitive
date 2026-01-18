@@ -7,27 +7,25 @@ export interface ToolResult {
   formatted?: string;
 }
 
-// Security constants
+
 const BLOCKED_PATH_PATTERNS = [
-  /\.\./, // Path traversal
-  /^\/etc\//i,
-  /^\/var\//i,
-  /^\/root\//i,
-  /^\/proc\//i,
-  /^\/sys\//i,
-  /^\/dev\//i,
-  /^\/boot\//i,
-  /^\/bin\//i,
-  /^\/sbin\//i,
-  /^\/lib\//i,
-  /^~\/\.\w+/i, // Hidden config files in home
+  /\.\./, 
+  /^\/etc\//,
+  /^\/var\//,
+  /^\/root\//,
+  /^\/proc\//,
+  /^\/sys\//,
+  /^\/dev\//,
+  /^\/boot\//,
+  /^\/bin\//,
+  /^\/sbin\//,
+  /^\/lib\//,
+  /^~\/\.\w+/i, 
 ];
 
 const ALLOWED_ABSOLUTE_PREFIXES = ['/home', '/usr', '/tmp', '/Users'];
 
-/**
- * Sanitize and validate file path to prevent path traversal attacks
- */
+
 function sanitizePath(filePath: string, workspace: string): { valid: boolean; path: string; error?: string } {
   if (!filePath || typeof filePath !== 'string') {
     return { valid: false, path: '', error: 'Invalid path: path must be a non-empty string' };
@@ -35,17 +33,17 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
 
   let cleanPath = filePath.trim();
 
-  // Check for blocked patterns
+  
   for (const pattern of BLOCKED_PATH_PATTERNS) {
     if (pattern.test(cleanPath)) {
       return { valid: false, path: '', error: `Access denied: path contains blocked pattern` };
     }
   }
 
-  // Normalize the path - remove redundant slashes
+  
   cleanPath = cleanPath.replace(/\/+/g, '/');
 
-  // If path starts with / but is not an allowed absolute path, treat as relative
+  
   if (cleanPath.startsWith('/')) {
     const isAllowedAbsolute = ALLOWED_ABSOLUTE_PREFIXES.some(prefix => cleanPath.startsWith(prefix));
     if (!isAllowedAbsolute) {
@@ -53,13 +51,13 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
     }
   }
 
-  // Build full path
+  
   const fullPath = cleanPath.startsWith('/') ? cleanPath : `${workspace}/${cleanPath}`;
 
-  // Normalize and verify the path stays within allowed boundaries
+  
   const normalizedPath = normalizePath(fullPath);
 
-  // Verify the normalized path is within workspace or allowed directories
+  
   const isWithinWorkspace = normalizedPath.startsWith(workspace);
   const isAllowedAbsolute = ALLOWED_ABSOLUTE_PREFIXES.some(prefix => normalizedPath.startsWith(prefix));
 
@@ -70,9 +68,7 @@ function sanitizePath(filePath: string, workspace: string): { valid: boolean; pa
   return { valid: true, path: normalizedPath };
 }
 
-/**
- * Normalize path by resolving . and .. segments
- */
+
 function normalizePath(path: string): string {
   const parts = path.split('/');
   const normalized: string[] = [];
@@ -120,10 +116,7 @@ export interface ListDirOptions {
 
 type ToolHandler = (args: Record<string, any>) => Promise<ToolResult>;
 
-/**
- * Powerful tool executor for AI model
- * Provides grep, find, list_dir and other file system operations
- */
+
 export class ToolExecutor {
   private workspace: string;
   private toolHandlers: Map<string, ToolHandler>;
@@ -133,50 +126,41 @@ export class ToolExecutor {
     this.toolHandlers = this.createToolHandlers();
   }
 
-  /**
-   * Create tool handlers registry
-   * To add a new tool, simply add it to this map
-   */
+  
   private createToolHandlers(): Map<string, ToolHandler> {
     const handlers = new Map<string, ToolHandler>();
 
-    // Search tools
+    
     handlers.set('grep', (args) => this.grep(args as GrepOptions));
     handlers.set('search', (args) => this.grep(args as GrepOptions));
     handlers.set('grep_search', (args) => this.grep(args as GrepOptions));
 
-    // Find tools
+    
     handlers.set('find', (args) => this.findByName(args as FindOptions));
     handlers.set('find_by_name', (args) => this.findByName(args as FindOptions));
 
-    // Directory tools
+    
     handlers.set('list_dir', (args) => this.listDir(args as ListDirOptions));
     handlers.set('ls', (args) => this.listDir(args as ListDirOptions));
 
-    // File tools
+    
     handlers.set('read_file', (args) => this.readFile(args.path || args.file_path || args.FilePath));
     handlers.set('file_info', (args) => this.getFileInfo(args.path || args.file_path || args.FilePath));
 
     return handlers;
   }
 
-  /**
-   * Register a custom tool handler
-   */
+  
   registerTool(name: string, handler: ToolHandler): void {
     this.toolHandlers.set(name.toLowerCase(), handler);
   }
 
-  /**
-   * Get all available tool names
-   */
+  
   getAvailableTools(): string[] {
     return Array.from(this.toolHandlers.keys());
   }
 
-  /**
-   * Execute a tool by name with given arguments
-   */
+  
   async execute(toolName: string, args: Record<string, any>): Promise<ToolResult> {
     try {
       const handler = this.toolHandlers.get(toolName.toLowerCase());
@@ -194,14 +178,10 @@ export class ToolExecutor {
     }
   }
 
-  /**
-   * Powerful grep search with context
-   */
-  /**
-   * Powerful grep search with context
-   */
+  
+  
   async grep(options: GrepOptions): Promise<ToolResult> {
-    // Extract values without defaults first to allow checking aliases
+    
     const {
       query: _query,
       path: _path,
@@ -213,7 +193,7 @@ export class ToolExecutor {
       maxResults: _maxResults
     } = options;
 
-    // Resolve arguments with aliases
+    
     const query = _query || (options as any).Query || '';
     const path = _path || (options as any).Path || (options as any).SearchPath || this.workspace;
     const caseSensitive = _caseSensitive ?? (options as any).CaseSensitive ?? false;
@@ -227,7 +207,7 @@ export class ToolExecutor {
       return { success: false, error: 'Query is required' };
     }
 
-    // Sanitize and validate path
+    
     const sanitized = sanitizePath(path, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
@@ -247,7 +227,7 @@ export class ToolExecutor {
 
     const results = await tauriApi.searchInFiles(rootPath, searchOptions);
 
-    // Limit results
+    
     let totalMatches = 0;
     const limitedResults: SearchResult[] = [];
 
@@ -266,7 +246,7 @@ export class ToolExecutor {
       }
     }
 
-    // Format results for AI
+    
     const formatted = this.formatGrepResults(limitedResults, query, rootPath);
 
     return {
@@ -281,9 +261,7 @@ export class ToolExecutor {
     };
   }
 
-  /**
-   * Find files by name pattern
-   */
+  
   async findByName(options: FindOptions): Promise<ToolResult> {
     const {
       pattern: _pattern,
@@ -303,7 +281,7 @@ export class ToolExecutor {
       return { success: false, error: 'Pattern is required' };
     }
 
-    // Sanitize and validate path
+    
     const sanitized = sanitizePath(path, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
@@ -311,14 +289,14 @@ export class ToolExecutor {
 
     const rootPath = sanitized.path;
 
-    // Get all files
+    
     const allFiles = await tauriApi.getAllFiles(rootPath);
 
-    // Convert pattern to regex
+    
     const regexPattern = this.patternToRegex(pattern);
     const regex = new RegExp(regexPattern, 'i');
 
-    // Filter files
+    
     const matches: Array<{ name: string; path: string; isDir: boolean; depth: number }> = [];
 
     const processEntry = (entry: any, depth: number) => {
@@ -328,11 +306,11 @@ export class ToolExecutor {
       const entryPath = entry.path || '';
       const isDir = entry.is_dir || false;
 
-      // Check type filter
+      
       if (type === 'file' && isDir) return;
       if (type === 'dir' && !isDir) return;
 
-      // Check pattern match
+      
       if (regex.test(name)) {
         matches.push({
           name,
@@ -342,7 +320,7 @@ export class ToolExecutor {
         });
       }
 
-      // Process children
+      
       if (entry.children && Array.isArray(entry.children)) {
         for (const child of entry.children) {
           if (matches.length >= maxResults) break;
@@ -356,7 +334,7 @@ export class ToolExecutor {
       processEntry(entry, 0);
     }
 
-    // Format results
+    
     const formatted = this.formatFindResults(matches, pattern, rootPath);
 
     return {
@@ -370,9 +348,7 @@ export class ToolExecutor {
     };
   }
 
-  /**
-   * List directory contents
-   */
+  
   async listDir(options: ListDirOptions): Promise<ToolResult> {
     const {
       path: _path,
@@ -383,7 +359,7 @@ export class ToolExecutor {
 
     const path = _path || (options as any).DirectoryPath || (options as any).Path || this.workspace;
 
-    // Sanitize and validate path
+    
     const sanitized = sanitizePath(path, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
@@ -393,7 +369,7 @@ export class ToolExecutor {
 
     const entries = await tauriApi.readDir(fullPath);
 
-    // Filter and process entries
+    
     const processedEntries = this.processDirectoryEntries(
       entries,
       recursive,
@@ -402,7 +378,7 @@ export class ToolExecutor {
       0
     );
 
-    // Format results
+    
     const formatted = this.formatListDirResults(processedEntries, path);
 
     return {
@@ -416,11 +392,9 @@ export class ToolExecutor {
     };
   }
 
-  /**
-   * Read file content
-   */
+  
   async readFile(filePath: string): Promise<ToolResult> {
-    // Sanitize and validate path
+    
     const sanitized = sanitizePath(filePath, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
@@ -432,7 +406,7 @@ export class ToolExecutor {
       const content = await tauriApi.readFile(fullPath);
       const lines = content.split('\n');
 
-      // Return the clean relative path for display
+      
       const displayPath = fullPath.replace(this.workspace + '/', '');
 
       return {
@@ -453,11 +427,9 @@ export class ToolExecutor {
     }
   }
 
-  /**
-   * Get file info
-   */
+  
   async getFileInfo(filePath: string): Promise<ToolResult> {
-    // Sanitize and validate path
+    
     const sanitized = sanitizePath(filePath, this.workspace);
     if (!sanitized.valid) {
       return { success: false, error: sanitized.error };
@@ -487,7 +459,7 @@ export class ToolExecutor {
     }
   }
 
-  // Helper methods
+  
 
   private formatGrepResults(results: SearchResult[], query?: string, searchPath?: string): string {
     const totalMatches = results.reduce((sum, r) => sum + r.matches.length, 0);
@@ -592,7 +564,7 @@ export class ToolExecutor {
     const files = flattenEntries(entries);
 
     return JSON.stringify({
-      type: 'find-results', // Use same type for consistent rendering
+      type: 'find-results', 
       pattern: '*',
       path: displayPath,
       totalFiles: files.length,
@@ -629,7 +601,7 @@ export class ToolExecutor {
         return processed;
       })
       .sort((a, b) => {
-        // Directories first, then alphabetically
+        
         if (a.is_dir && !b.is_dir) return -1;
         if (!a.is_dir && b.is_dir) return 1;
         return a.name.localeCompare(b.name);
@@ -647,7 +619,7 @@ export class ToolExecutor {
   }
 
   private patternToRegex(pattern: string): string {
-    // Convert glob pattern to regex
+    
     return pattern
       .replace(/[.+^${}()|[\]\\]/g, '\\$&')
       .replace(/\*/g, '.*')

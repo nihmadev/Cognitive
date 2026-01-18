@@ -16,7 +16,7 @@ interface SearchState {
 
     isSearching: boolean;
     results: SearchResult[];
-    searchVersion: number; // Track search version for cancellation
+    searchVersion: number; 
 
     setQuery: (q: string) => void;
     setReplaceQuery: (q: string) => void;
@@ -65,7 +65,7 @@ export const useSearchStore = create<SearchState>((set, get) => ({
 
         if (!query.trim()) return;
 
-        // Increment version to invalidate any in-flight searches
+        
         const currentVersion = get().searchVersion + 1;
         set({ isSearching: true, results: [], searchVersion: currentVersion });
 
@@ -80,14 +80,14 @@ export const useSearchStore = create<SearchState>((set, get) => ({
                 filterPattern
             });
             
-            // Only update if this is still the latest search
+            
             if (get().searchVersion === currentVersion) {
                 set({ results });
             }
         } catch (e) {
             console.error("Search failed", e);
         } finally {
-            // Only clear isSearching if this is still the latest search
+            
             if (get().searchVersion === currentVersion) {
                 set({ isSearching: false });
             }

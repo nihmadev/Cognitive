@@ -1,13 +1,13 @@
 import React, { useRef } from 'react';
-import { useProjectStore } from '../../store/projectStore';
+import { useProjectStore } from '../../../store/projectStore';
 import { X, GitCompare, Settings, User, History } from 'lucide-react';
-import { getFileIcon } from '../../utils/fileIcons';
-import { TabActions } from './TabActions';
-import { useFileGitStatus } from './Sidebar/useFileGitStatus';
+import { getFileIcon } from '../../../utils/fileIcons';
+import { TabActions } from '../TabActions';
+import { useFileGitStatus } from '../Sidebar/useFileGitStatus';
 import clsx from 'clsx';
-import styles from './Tabs.module.css';
+import styles from './styles.module.css';
 
-// Separate component for file tabs to ensure hooks are called consistently
+
 const FileTab = ({ 
     path, 
     isActive, 
@@ -26,7 +26,7 @@ const FileTab = ({
     const gitStatus = useFileGitStatus(path);
     const name = path.split(/[\\/]/).pop() || path;
     
-    // Debug log
+    
     if (isDeleted) {
         console.log('[FileTab] Rendering deleted file:', path, 'isDeleted:', isDeleted);
     }
@@ -72,7 +72,7 @@ const FileTab = ({
 
     const gitStatusInfo = getGitStatusInfo();
     
-    // Show "D" badge for deleted files (file system deletion, not git)
+    
     const showDeletedBadge = isDeleted && !gitStatusInfo;
 
     return (
@@ -148,7 +148,7 @@ export const TabBar = () => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const handleTabClick = (path: string) => {
-        // Normal mode, open in main editor
+        
         openFile(path);
     };
 
@@ -170,13 +170,13 @@ export const TabBar = () => {
                 onWheel={handleWheel}
                 ref={scrollContainerRef}
             >
-                {/* Regular file tabs */}
+                {}
                 {openFiles.map((path) => {
                     const isActive = activeFile === path && !activeDiffTab && !activeSettingsTab;
                     const hasUnsavedChanges = unsavedChanges[path];
                     const isDeleted = !!deletedFiles[path];
                     
-                    // Debug log for deleted files
+                    
                     if (isDeleted) {
                         console.log('[TabBar] Rendering tab for deleted file:', path, 'deletedFiles:', deletedFiles);
                     }
@@ -194,7 +194,7 @@ export const TabBar = () => {
                     );
                 })}
                 
-                {/* Diff tabs */}
+                {}
                 {openDiffTabs.map((diffTab) => {
                     const isActive = activeDiffTab === diffTab.id && !activeSettingsTab;
 
@@ -234,7 +234,7 @@ export const TabBar = () => {
                     );
                 })}
 
-                {/* Settings tabs */}
+                {}
                 {openSettingsTabs.map((settingsTab) => {
                     const isActive = activeSettingsTab === settingsTab.id && !activeProfilesTab;
 
@@ -274,7 +274,7 @@ export const TabBar = () => {
                     );
                 })}
 
-                {/* Profiles tabs */}
+                {}
                 {openProfilesTabs.map((profilesTab) => {
                     const isActive = activeProfilesTab === profilesTab.id;
 
@@ -314,7 +314,7 @@ export const TabBar = () => {
                     );
                 })}
 
-                {/* Timeline diff tabs */}
+                {}
                 {openTimelineDiffTabs.map((timelineTab) => {
                     const isActive = activeTimelineDiffTab === timelineTab.id;
 
@@ -355,7 +355,7 @@ export const TabBar = () => {
                 })}
             </div>
             
-            {/* Tab Actions */}
+            {}
             <TabActions />
         </div>
     );

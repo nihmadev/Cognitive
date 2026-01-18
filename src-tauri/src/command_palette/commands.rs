@@ -10,7 +10,7 @@ use crate::command_palette::types::{
 };
 use crate::keybindings::KeybindingsState;
 
-/// State wrapper for command registry
+
 pub struct CommandPaletteState(Mutex<CommandRegistry>);
 
 impl CommandPaletteState {
@@ -39,7 +39,7 @@ pub fn command_palette_init(state: State<'_, CommandPaletteState>) -> Result<usi
     Ok(count)
 }
 
-/// Search commands with fuzzy matching
+
 #[tauri::command]
 pub fn command_palette_search(
     query: String,
@@ -50,7 +50,7 @@ pub fn command_palette_search(
     let registry = state.lock()?;
     let kb_store = keybindings_state.lock().map_err(|e| e.to_string())?;
     
-    // Build keybinding map for display
+    
     let keybindings: HashMap<String, String> = kb_store
         .get_all()
         .into_iter()
@@ -65,7 +65,7 @@ pub fn command_palette_search(
     Ok(registry.search(&query, opts, &keybindings))
 }
 
-/// Get all commands (optionally filtered)
+
 #[tauri::command]
 pub fn command_palette_get_all(
     category: Option<CommandCategory>,
@@ -99,7 +99,7 @@ pub fn command_palette_get_all(
         .collect())
 }
 
-/// Get a single command by ID
+
 #[tauri::command]
 pub fn command_palette_get(
     id: String,
@@ -123,7 +123,7 @@ pub fn command_palette_get(
     }
 }
 
-/// Register a custom command (from plugin or user)
+
 #[tauri::command]
 pub fn command_palette_register(
     command: Command,
@@ -145,7 +145,7 @@ pub fn command_palette_register_many(
     Ok(count)
 }
 
-/// Unregister a command
+
 #[tauri::command]
 pub fn command_palette_unregister(
     id: String,
@@ -165,7 +165,7 @@ pub fn command_palette_unregister_source(
     registry.unregister_by_source(source)
 }
 
-/// Enable or disable a command
+
 #[tauri::command]
 pub fn command_palette_set_enabled(
     id: String,
@@ -188,7 +188,7 @@ pub fn command_palette_update(
     registry.update(&id, label, description)
 }
 
-/// Get command count
+
 #[tauri::command]
 pub fn command_palette_count(state: State<'_, CommandPaletteState>) -> Result<usize, String> {
     let registry = state.lock()?;
@@ -227,7 +227,7 @@ pub fn command_palette_categories(
         .collect())
 }
 
-/// Format keybinding for display
+
 fn format_keybinding(binding: &crate::keybindings::types::Keybinding) -> String {
     use crate::keybindings::types::Modifier;
     

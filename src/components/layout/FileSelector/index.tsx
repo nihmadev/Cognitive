@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useProjectStore } from '../../store/projectStore';
+import { useProjectStore } from '../../../store/projectStore';
 import { X, File } from 'lucide-react';
-import { getFileIcon } from '../../utils/fileIcons';
-import styles from './FileSelector.module.css';
+import { getFileIcon } from '../../../utils/fileIcons';
+import styles from './styles.module.css';
 
 export const FileSelector = () => {
     const { openFiles, activeFile } = useProjectStore();
     const [isOpen, setIsOpen] = useState(false);
     
-    // Split view is not currently implemented in UIStore
+    
     const splitViewSecondFile: string | null = null;
     const setSplitViewSecondFile = (_file: string | null) => {
         console.warn('Split view is not currently implemented');

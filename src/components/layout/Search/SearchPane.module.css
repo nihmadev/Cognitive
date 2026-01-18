@@ -3,9 +3,9 @@
     flex-direction: column;
     height: 100%;
     width: 280px;
-    /* Adjust as needed or take full width of container */
+    
     background-color: var(--theme-sidebar-background);
-    /* dark bg, monitor actual token */
+    
     color: var(--theme-foreground);
     border-right: 1px solid var(--theme-border);
     font-size: 13px;
@@ -44,9 +44,9 @@
     width: 100%;
     min-height: 32px;
     padding: 6px 36px 6px 8px;
-    /* space for icon toggles on right */
+    
     background-color: var(--theme-input-background);
-    /* darker input bg */
+    
     border: 1px solid transparent;
     border-radius: 4px;
     color: var(--theme-foreground);
@@ -58,7 +58,7 @@
 
 .textArea:focus-within {
     border-color: var(--theme-accent);
-    /* accent color */
+    
 }
 
 .inputActions {
@@ -89,7 +89,7 @@
 
 .actionBtn.active {
     background-color: var(--theme-accent-muted);
-    /* active background */
+    
     color: var(--theme-accent);
 }
 
@@ -201,7 +201,7 @@
 
 .highlight {
     background-color: var(--theme-selection);
-    /* Match highlight color */
+    
     color: var(--theme-accent);
     font-weight: bold;
 }

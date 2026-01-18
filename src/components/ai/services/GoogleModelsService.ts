@@ -18,7 +18,7 @@ export class GoogleModelsService {
   }
 
   private async getFallbackModels(): Promise<GoogleModel[]> {
-    // Return the specified Gemini models
+    
     return [
       {
         id: 'gemini-3.0-pro',
@@ -68,7 +68,7 @@ export class GoogleModelsService {
     ];
   }
 
-  // Get model details by ID
+  
   async getModelDetails(_apiKey: string, modelId: string): Promise<GoogleModel | null> {
     try {
       const models = await this.fetchAvailableModels();
@@ -79,7 +79,7 @@ export class GoogleModelsService {
     }
   }
 
-  // Get models by capability
+  
   async getModelsByCapability(_apiKey: string, capability: string): Promise<GoogleModel[]> {
     try {
       const models = await this.fetchAvailableModels();
@@ -90,7 +90,7 @@ export class GoogleModelsService {
     }
   }
 
-  // Get recommended model for specific use case
+  
   getRecommendedModel(models: GoogleModel[], useCase: 'coding' | 'analysis' | 'general' | 'cost-effective'): string {
     const availableModels = models.filter(model => 
       model.capabilities.includes('text')
@@ -122,22 +122,22 @@ export class GoogleModelsService {
     }
   }
 
-  // Clear cache manually (no-op since we don't use cache anymore)
+  
   clearCache(): void {
     console.log('GoogleModelsService: Cache cleared (no-op)');
   }
 
-  // Get cache status (no-op since we don't use cache anymore)
+  
   getCacheStatus(): { size: number; keys: string[] } {
     return { size: 0, keys: [] };
   }
 
-  // Force refresh models
+  
   async refreshModels(_apiKey?: string): Promise<GoogleModel[]> {
     return this.fetchAvailableModels();
   }
 
-  // Get models by category
+  
   getModelsByCategory(models: GoogleModel[], category: 'reasoning' | 'multimodal' | 'cost-effective' | 'general'): GoogleModel[] {
     switch (category) {
       case 'reasoning':
@@ -152,7 +152,7 @@ export class GoogleModelsService {
     }
   }
 
-  // Get model statistics
+  
   getModelStats(models: GoogleModel[]): {
     total: number;
     withVision: number;
@@ -168,5 +168,5 @@ export class GoogleModelsService {
   }
 }
 
-// Export singleton instance
+
 export const googleModelsService = new GoogleModelsService();

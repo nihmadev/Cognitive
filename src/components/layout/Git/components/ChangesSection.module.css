@@ -1,10 +1,12 @@
-/* Changes Section */
 .changesSection {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    flex: 1;
     min-height: 0;
+}
+
+.changesSection.open {
+    flex: 1;
 }
 
 .sectionHeader {
@@ -71,7 +73,7 @@
 
 .filesList {
     overflow-y: auto;
-    max-height: 300px;
+    flex: 1;
 }
 
 .fileItem {

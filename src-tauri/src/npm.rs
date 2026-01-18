@@ -35,15 +35,15 @@ impl Default for RunningScriptsState {
 pub async fn npm_get_scripts(workspace: String) -> Result<Vec<NpmScript>, String> {
     let package_json_path = format!("{}/package.json", workspace);
     
-    // Read package.json
+    
     let content = std::fs::read_to_string(&package_json_path)
         .map_err(|e| format!("Failed to read package.json: {}", e))?;
     
-    // Parse JSON
+    
     let package_json: serde_json::Value = serde_json::from_str(&content)
         .map_err(|e| format!("Failed to parse package.json: {}", e))?;
     
-    // Extract scripts
+    
     let scripts_obj = package_json.get("scripts")
         .and_then(|s| s.as_object())
         .ok_or("No scripts found in package.json")?;
@@ -55,12 +55,12 @@ pub async fn npm_get_scripts(workspace: String) -> Result<Vec<NpmScript>, String
             scripts.push(NpmScript {
                 name: name.clone(),
                 command: command_str.to_string(),
-                description: None, // Could be enhanced to extract from other fields
+                description: None, 
             });
         }
     }
     
-    // Sort scripts alphabetically
+    
     scripts.sort_by(|a, b| a.name.cmp(&b.name));
     
     Ok(scripts)
@@ -145,10 +145,10 @@ pub async fn npm_stop_script(
     let mut scripts = state.scripts.lock().unwrap();
     
     if let Some(mut child) = scripts.remove(&script_name) {
-        // Try to kill the process gracefully first
+        
         match child.kill() {
             Ok(_) => {
-                // Wait for the process to actually terminate
+                
                 match child.wait() {
                     Ok(status) => {
                         Ok(format!("Stopped script '{}'. Exit status: {}", script_name, status))
@@ -159,7 +159,7 @@ pub async fn npm_stop_script(
                 }
             }
             Err(e) => {
-                // If killing failed, put it back in the map
+                
                 scripts.insert(script_name.clone(), child);
                 Err(format!("Failed to stop script '{}': {}", script_name, e))
             }
@@ -237,7 +237,7 @@ pub async fn npm_run_script_in_terminal(
     
     #[cfg(target_os = "linux")]
     {
-        // For Linux, try common terminals with proper arguments
+        
         let terminals = vec![
             ("gnome-terminal", vec!["--", "bash", "-c"]),
             ("konsole", vec!["-e", "bash", "-c"]),
@@ -248,12 +248,12 @@ pub async fn npm_run_script_in_terminal(
         let command = format!("cd \"{}\" && npm run {}; echo ''; echo 'Script completed. Press Enter to exit...'; read", workspace, script_name);
         
         for (terminal, args) in terminals {
-            // Check if terminal exists and can be executed
+            
             if let Ok(which_output) = Command::new("which").arg(terminal).output() {
                 if which_output.status.success() {
                     let terminal_path = String::from_utf8_lossy(&which_output.stdout).trim().to_string();
                     
-                    // Build command with terminal-specific arguments
+                    
                     let mut cmd_args = args.clone();
                     cmd_args.push(&command);
                     
@@ -270,7 +270,7 @@ pub async fn npm_run_script_in_terminal(
             }
         }
         
-        // Fallback: try to run in background without terminal
+        
         match Command::new("npm")
             .args(&["run", &script_name])
             .current_dir(&workspace)

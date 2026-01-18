@@ -20,6 +20,7 @@ pub struct GitFileStatus {
     pub path: String,
     pub status: String,
     pub is_staged: bool,
+    pub is_dir: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -107,10 +108,13 @@ pub fn git_status(path: String) -> Result<Vec<GitFileStatus>, String> {
         };
 
         if let Some(file_path) = entry.path() {
+            let full_path = Path::new(&path).join(file_path);
+            let is_dir = full_path.is_dir();
             statuses.push(GitFileStatus {
                 path: file_path.to_string(),
                 status: status_str.to_string(),
                 is_staged,
+                is_dir,
             });
         }
     }
@@ -441,23 +445,23 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
     let mut revwalk = repo.revwalk().map_err(|e| e.to_string())?;
     revwalk.push_head().map_err(|e| e.to_string())?;
     
-    // Get current HEAD commit OID
+    
     let head_oid = repo.head()
         .ok()
         .and_then(|head| head.target());
     
-    // Get remote URL for avatar generation
+    
     let github_username = repo.find_remote("origin")
         .ok()
         .and_then(|remote| remote.url().map(|s| s.to_string()))
         .and_then(|url| extract_github_username(&url));
     
-    // Get local user config
+    
     let config = repo.config().ok();
     let local_email = config.as_ref().and_then(|c| c.get_string("user.email").ok());
     let _local_name = config.as_ref().and_then(|c| c.get_string("user.name").ok());
     
-    // Build commit to branches mapping
+    
     let mut commit_branches: HashMap<git2::Oid, Vec<String>> = HashMap::new();
     if let Ok(branches) = repo.branches(None) {
         for branch_result in branches {
@@ -489,19 +493,19 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
                 let author_name = author.name().unwrap_or("Unknown").to_string();
                 let author_email = author.email().unwrap_or("").to_string();
                 
-                // Check if this is HEAD
+                
                 let is_head = head_oid.map(|h| h == oid).unwrap_or(false);
                 
-                // Get branches for this commit
+                
                 let branches = commit_branches.get(&oid)
                     .cloned()
                     .unwrap_or_default();
                 
-                // Get commit time
+                
                 let commit_time = commit.time();
                 let timestamp = commit_time.seconds();
                 
-                // Format date
+                
                 let date = {
                     use std::time::{UNIX_EPOCH, Duration};
                     let dt = UNIX_EPOCH + Duration::from_secs(timestamp as u64);
@@ -509,11 +513,11 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
                     datetime.format("%Y-%m-%d %H:%M:%S").to_string()
                 };
                 
-                // Get avatar URL
+                
                 let is_local = local_email.as_ref().map(|le| le == &author_email).unwrap_or(false);
                 let author_avatar = get_avatar_url(&author_email, &author_name, is_local, github_username.as_deref());
                 
-                // Calculate stats (files changed, insertions, deletions)
+                
                 let (files_changed, insertions, deletions) = {
                     let mut files = 0;
                     let mut insertions = 0;
@@ -536,7 +540,7 @@ pub fn git_log(repo_path: String, max_count: Option<usize>) -> Result<Vec<GitCom
                             }
                         }
                     } else {
-                        // First commit - all files are new
+                        
                         if let Ok(tree) = commit.tree() {
                             files = tree.len();
                             if let Ok(diff) = repo.diff_tree_to_tree(None, Some(&tree), None) {
@@ -674,7 +678,7 @@ fn get_avatar_url(email: &str, name: &str, is_local: bool, github_username: Opti
 
 #[tauri::command]
 pub fn git_github_auth_status() -> Result<bool, String> {
-    // Check if GitHub CLI is authenticated
+    
     let output = std::process::Command::new("gh")
         .args(&["auth", "status"])
         .output();
@@ -687,7 +691,7 @@ pub fn git_github_auth_status() -> Result<bool, String> {
 
 #[tauri::command]
 pub fn git_github_auth_login() -> Result<(), String> {
-    // Try to authenticate via GitHub CLI
+    
     let output = std::process::Command::new("gh")
         .args(&["auth", "login"])
         .status();

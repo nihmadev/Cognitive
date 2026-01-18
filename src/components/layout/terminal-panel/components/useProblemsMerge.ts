@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { type FileProblems } from '../../../../lib/tauri-api';
 import { type FileDiagnostics, type MonacoDiagnostic } from '../../../../store/diagnosticsStore';
 
-// Unified problem type for display
+
 export interface UnifiedProblem {
     id: string;
     type: 'error' | 'warning' | 'info' | 'hint';
@@ -17,8 +17,8 @@ export interface UnifiedProblem {
 
 export interface UnifiedFileProblems {
     file: string;
-    path: string;           // Full path for file opening
-    displayPath: string;    // Relative path for display
+    path: string;           
+    displayPath: string;    
     problems: UnifiedProblem[];
     errorCount: number;
     warningCount: number;
@@ -31,7 +31,7 @@ interface UseProblemsMergeParams {
 }
 
 export function useProblemsMerge({ oxcProblems, monacoDiagnostics, currentWorkspace }: UseProblemsMergeParams) {
-    // Compute FileDiagnostics from raw data
+    
     const monacoFiles = useMemo((): FileDiagnostics[] => {
         const result: FileDiagnostics[] = [];
         for (const [fullPath, diagnostics] of Object.entries(monacoDiagnostics)) {
@@ -44,18 +44,18 @@ export function useProblemsMerge({ oxcProblems, monacoDiagnostics, currentWorksp
         return result.sort((a, b) => a.path.localeCompare(b.path));
     }, [monacoDiagnostics]);
 
-    // Helper to get relative path from full path
+    
     const getRelativePath = useCallback((fullPath: string): string => {
         if (!currentWorkspace) return fullPath;
         const normalized = fullPath.replace(/\\/g, '/');
         const workspaceNormalized = currentWorkspace.replace(/\\/g, '/');
         if (normalized.startsWith(workspaceNormalized)) {
-            return normalized.slice(workspaceNormalized.length).replace(/^\//, '');
+            return normalized.slice(workspaceNormalized.length).replace(/^\/+/, '');
         }
         return fullPath;
     }, [currentWorkspace]);
 
-    // Helper to get full path from relative path
+    
     const getFullPath = useCallback((relativePath: string): string => {
         if (!currentWorkspace) return relativePath;
         if (relativePath.startsWith('/') || /^[a-zA-Z]:/.test(relativePath)) {
@@ -64,11 +64,11 @@ export function useProblemsMerge({ oxcProblems, monacoDiagnostics, currentWorksp
         return `${currentWorkspace}/${relativePath}`.replace(/\\/g, '/').replace(/\/+/g, '/');
     }, [currentWorkspace]);
 
-    // Merge OXC and Monaco diagnostics
+    
     const mergedProblems = useMemo((): UnifiedFileProblems[] => {
         const fileMap = new Map<string, { problems: UnifiedProblem[], fullPath: string }>();
 
-        // Add OXC problems (they have relative paths)
+        
         for (const file of oxcProblems) {
             const relPath = file.path;
             const fullPath = getFullPath(relPath);
@@ -91,7 +91,7 @@ export function useProblemsMerge({ oxcProblems, monacoDiagnostics, currentWorksp
             }
         }
 
-        // Add Monaco diagnostics
+        
         for (const file of monacoFiles) {
             const fullPath = file.path;
             const relPath = getRelativePath(fullPath);
@@ -124,7 +124,7 @@ export function useProblemsMerge({ oxcProblems, monacoDiagnostics, currentWorksp
             }
         }
 
-        // Convert to array and calculate counts
+        
         const result: UnifiedFileProblems[] = [];
         for (const [relPath, { problems, fullPath }] of fileMap) {
             if (problems.length === 0) continue;

@@ -9,7 +9,6 @@
   flex-direction: column;
   color: var(--theme-foreground);
   overflow: hidden;
-  contain: layout;
   flex-shrink: 0;
   position: relative;
   isolation: isolate;

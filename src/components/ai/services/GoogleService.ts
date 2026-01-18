@@ -13,12 +13,10 @@ export class GoogleService extends BaseAIService {
     };
   }
 
-  /**
-   * Transform standard ChatMessage format to Google's format with parts
-   */
+  
   private transformToGoogleFormat(messages: ChatMessage[]): any[] {
     return messages
-      .filter(msg => msg.role !== 'system') // Gemini doesn't support system messages
+      .filter(msg => msg.role !== 'system') 
       .map(msg => ({
         role: msg.role === 'assistant' ? 'model' : msg.role,
         parts: [{ text: msg.content }]

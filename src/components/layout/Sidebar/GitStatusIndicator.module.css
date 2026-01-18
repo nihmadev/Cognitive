@@ -32,7 +32,7 @@
     color: #73c991;
 }
 
-/* Dark theme support */
+
 @media (prefers-color-scheme: dark) {
     .conflicted {
         color: #f85149;

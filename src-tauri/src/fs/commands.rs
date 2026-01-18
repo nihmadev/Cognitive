@@ -130,7 +130,7 @@ pub fn open_terminal() -> Result<(), String> {
 const MAX_TOTAL_MATCHES: usize = 10000;
 const MAX_MATCHES_PER_FILE: usize = 1000;
 
-// Sink for grep-searcher that collects matches
+
 struct MatchSink<'a, M: Matcher> {
     matches: Vec<SearchMatch>,
     max_matches: usize,
@@ -579,7 +579,7 @@ struct FileChangeEvent {
     
     println!("[FileWatcher] Starting file watcher for path: {}", path);
     
-    // Check if watcher already exists for this path
+    
     {
         let watchers = state.watchers.lock().unwrap();
         if watchers.contains_key(&path) {
@@ -592,7 +592,7 @@ struct FileChangeEvent {
     let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
         match res {
             Ok(event) => {
-                // Filter out noise events
+                
                 let should_emit = match &event.kind {
                     EventKind::Create(_) | EventKind::Remove(_) | EventKind::Modify(_) => true,
                     _ => false,
@@ -648,7 +648,7 @@ pub fn add_watch_path(
     Ok(())
 }
 
-// Audio cache
+
 use std::time::{Duration, Instant};
 
 pub struct AudioCacheEntry {
@@ -688,7 +688,7 @@ pub fn get_cached_audio(key: String, state: tauri::State<'_, AudioCache>) -> Res
 pub fn cache_audio(key: String, data: Vec<u8>, state: tauri::State<'_, AudioCache>) -> Result<(), String> {
     let mut cache = state.cache.lock().unwrap();
     
-    // Clean up expired entries if at capacity
+    
     if cache.len() >= state.max_entries {
         let ttl = Duration::from_secs(state.ttl_hours * 3600);
         cache.retain(|_, v| v.created_at.elapsed() < ttl);

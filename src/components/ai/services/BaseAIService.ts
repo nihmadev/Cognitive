@@ -1,32 +1,25 @@
 import { AIService, ChatMessage } from './types';
 import { listen } from '@tauri-apps/api/event';
 
-/**
- * Configuration for provider-specific stream handling
- */
+
 export interface StreamConfig {
-  /** Event name to listen for (e.g., 'openai-stream', 'anthropic-stream') */
+  
   eventName: string;
-  /** Function to call the provider's streaming API */
+  
   streamFn: (modelId: string, messages: any[]) => Promise<string>;
-  /** Function to call the provider's completion API for title generation */
+  
   completeFn: (modelId: string, messages: any[]) => Promise<string>;
-  /** Optional message transformer for providers with different formats (e.g., Google) */
+  
   transformMessages?: (messages: ChatMessage[]) => any[];
-  /** Provider name for logging */
+  
   providerName: string;
 }
 
-/**
- * Base class for AI services that handles common streaming logic.
- * Eliminates code duplication across OpenAI, Anthropic, Google, xAI, and Ollama services.
- */
+
 export abstract class BaseAIService implements AIService {
   protected abstract getStreamConfig(): StreamConfig;
 
-  /**
-   * Optional model validation - override in subclasses if needed
-   */
+  
   protected validateModel(modelId: string): boolean {
     return Boolean(modelId && modelId.trim().length > 0);
   }
@@ -41,17 +34,17 @@ export abstract class BaseAIService implements AIService {
     let unlisten: (() => void) | undefined;
 
     try {
-      // Validate model if needed
+      
       if (!this.validateModel(modelId)) {
         throw new Error(`Invalid model ID: ${modelId}`);
       }
 
-      // Check if already aborted
+      
       if (signal?.aborted) {
         return;
       }
 
-      // Setup listener for streaming events
+      
       unlisten = await listen<string>(config.eventName, (event) => {
         if (signal?.aborted) {
           if (unlisten) unlisten();
@@ -60,7 +53,7 @@ export abstract class BaseAIService implements AIService {
         onStreamChunk(event.payload);
       });
 
-      // Setup abort handler
+      
       const abortHandler = () => {
         if (unlisten) {
           unlisten();
@@ -69,22 +62,22 @@ export abstract class BaseAIService implements AIService {
       };
       signal?.addEventListener('abort', abortHandler);
 
-      // Log model usage
+      
       console.log(`${config.providerName} using model: ${modelId}`);
 
-      // Transform messages if needed (e.g., for Google's format)
+      
       const transformedMessages = config.transformMessages 
         ? config.transformMessages(messages)
         : messages;
 
-      // Call provider's streaming API
+      
       await config.streamFn(modelId, transformedMessages);
 
-      // Cleanup abort handler
+      
       signal?.removeEventListener('abort', abortHandler);
     } catch (error) {
       if (signal?.aborted) {
-        return; // Silently return if aborted
+        return; 
       }
       console.error(`${config.providerName} API error:`, error);
       onStreamChunk(`[Error: ${error instanceof Error ? error.message : String(error)}]`);
@@ -101,7 +94,7 @@ export abstract class BaseAIService implements AIService {
     const config = this.getStreamConfig();
 
     try {
-      // Validate model if needed
+      
       if (!this.validateModel(modelId)) {
         throw new Error(`Invalid model ID: ${modelId}`);
       }
@@ -123,7 +116,7 @@ Title:`;
         { role: 'user', content: titlePrompt }
       ];
 
-      // Transform messages if needed
+      
       const transformedMessages = config.transformMessages 
         ? config.transformMessages(messages)
         : messages;

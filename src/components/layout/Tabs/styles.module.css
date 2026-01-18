@@ -1,4 +1,4 @@
-/* VS Code-style Tab Bar Container */
+
 .tabsContainer {
   display: flex;
   flex-direction: row;
@@ -11,7 +11,7 @@
   transition: background-color 0.05s ease;
 }
 
-/* Tab Bar - Scrollable Container */
+
 .tabBar {
   display: flex;
   height: 35px;
@@ -24,12 +24,12 @@
   position: relative;
   flex-shrink: 1;
   flex: 1;
-  /* Firefox - thin scrollbar */
+  
   scrollbar-width: thin;
   scrollbar-color: var(--theme-scrollbar-thumb) var(--theme-tab-inactive-background);
 }
 
-/* Webkit scrollbar styling (Chrome, Safari, Opera, Edge) */
+
 .tabBar::-webkit-scrollbar {
   height: 6px;
 }
@@ -43,11 +43,11 @@
   height: 6px;
   width: 6px;
   border-radius: 4px;
-  /* Use an inner box-shadow to simulate a border without affecting layout sizing */
+  
   box-shadow: inset 0 0 0 1px var(--theme-tab-inactive-background);
 }
 
-/* Ensure scrollbar thumb size doesn't enlarge on hover (_tabs) */
+
 .tabBar::-webkit-scrollbar-thumb:hover {
   transform: none;
   height: 3px;
@@ -55,7 +55,7 @@
 }
 
 
-/* Individual Tab */
+
 .tab {
   display: flex;
   align-items: stretch;
@@ -78,14 +78,14 @@
   overflow: hidden;
 }
 
-/* Active Tab */
+
 .tabActive {
   background-color: var(--theme-tab-active-background);
   color: var(--theme-foreground);
   border-top: 2px solid var(--theme-accent);
 }
 
-/* Second Editor Tab (in split view) */
+
 .tabSecondEditor {
   background-color: var(--theme-background-tertiary);
   color: var(--theme-foreground);
@@ -97,7 +97,7 @@
   color: var(--theme-foreground);
 }
 
-/* Inactive Tab */
+
 .tabInactive {
   background-color: var(--theme-tab-inactive-background);
   color: var(--theme-foreground-muted);
@@ -108,7 +108,7 @@
   color: var(--theme-foreground);
 }
 
-/* Tab Icon */
+
 .tabIcon {
   display: flex;
   align-items: center;
@@ -124,7 +124,7 @@
   opacity: 1;
 }
 
-/* Tab Label */
+
 .tabLabel {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -136,7 +136,7 @@
   min-width: 0;
 }
 
-/* Tab Pane Indicator */
+
 .tabPaneIndicator {
   display: inline-flex;
   align-items: center;
@@ -154,7 +154,7 @@
   line-height: 1;
 }
 
-/* Deleted file tab */
+
 .tabDeleted {
   color: var(--theme-error);
 }
@@ -164,7 +164,7 @@
   text-decoration-thickness: 1px;
 }
 
-/* Close Button */
+
 .closeButton {
   display: flex;
   align-items: center;
@@ -200,7 +200,7 @@
   background-color: var(--theme-hover-overlay-strong);
 }
 
-/* Close Icon */
+
 .closeIcon {
   width: 14px;
   height: 14px;
@@ -213,7 +213,7 @@
   opacity: 1;
 }
 
-/* Unsaved Changes Indicator */
+
 .closeButtonUnsaved {
   opacity: 1 !important;
 }
@@ -239,7 +239,7 @@
   opacity: 1;
 }
 
-/* Unsaved Close Icon - hidden by default, shown on hover */
+
 .unsavedCloseIcon {
   position: absolute;
   opacity: 0;
@@ -255,7 +255,7 @@
 }
 
 
-/* Diff Label */
+
 .diffLabel {
   font-size: 11px;
   color: var(--theme-foreground-subtle);
@@ -267,7 +267,7 @@
   color: var(--theme-foreground-muted);
 }
 
-/* Git Status Text - inline text without box border */
+
 .gitStatusText {
   font-size: 12px;
   font-weight: 600;
@@ -280,7 +280,7 @@
   flex-shrink: 0;
 }
 
-/* Git Status Colors for filename and status text */
+
 .gitConflicted {
   color: var(--theme-git-deleted, #f85149) !important;
 }

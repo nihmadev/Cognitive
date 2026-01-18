@@ -34,6 +34,7 @@ export interface ChangesSectionProps {
         path: string;
         status: string;
         is_staged: boolean;
+        is_dir: boolean;
     }>;
     changesOpen: boolean;
     onToggle: () => void;

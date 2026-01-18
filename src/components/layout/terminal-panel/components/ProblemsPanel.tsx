@@ -20,10 +20,10 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
     const currentWorkspace = useProjectStore((state) => state.currentWorkspace);
     const openFile = useProjectStore((state) => state.openFile);
     
-    // Monaco diagnostics from store
+    
     const monacoDiagnostics = useDiagnosticsStore((state) => state.monacoDiagnostics);
     
-    // Use merged problems hook
+    
     const { mergedProblems } = useProblemsMerge({
         oxcProblems,
         monacoDiagnostics,
@@ -58,12 +58,12 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
     useEffect(() => {
         fetchProblems();
         
-        // Refresh OXC problems every 10 seconds
+        
         const interval = setInterval(fetchProblems, 10000);
         return () => clearInterval(interval);
     }, [fetchProblems]);
 
-    // Auto-expand files with problems
+    
     useEffect(() => {
         const allPaths = new Set(mergedProblems.map(f => f.path));
         setExpandedFiles(allPaths);
@@ -84,14 +84,14 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
     const handleProblemClick = async (problem: UnifiedProblem, filePath: string) => {
         let fullPath = filePath.replace(/\\/g, '/');
         
-        // Ensure we have an absolute path
+        
         if (!fullPath.startsWith('/') && !/^[a-zA-Z]:/.test(fullPath)) {
             fullPath = currentWorkspace 
                 ? `${currentWorkspace}/${fullPath}`.replace(/\/+/g, '/')
                 : fullPath;
         }
         
-        // Validate path before opening
+        
         if (!fullPath || fullPath === '/' || fullPath === currentWorkspace) {
             console.error('Invalid file path:', fullPath);
             return;
@@ -100,7 +100,7 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
         try {
             openFile(fullPath);
             
-            // Navigate to line/column after a small delay to ensure file is loaded
+            
             const column = Math.max(1, problem.column);
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent('editor-reveal-line', {

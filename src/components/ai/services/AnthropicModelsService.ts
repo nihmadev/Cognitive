@@ -18,7 +18,7 @@ export class AnthropicModelsService {
   }
 
   private async getFallbackModels(): Promise<AnthropicModel[]> {
-    // Return the specified Claude models
+    
     return [
       {
         id: 'claude-3-haiku',
@@ -104,7 +104,7 @@ export class AnthropicModelsService {
     ];
   }
 
-  // Get model details by ID
+  
   async getModelDetails(_apiKey: string, modelId: string): Promise<AnthropicModel | null> {
     try {
       const models = await this.fetchAvailableModels();
@@ -115,7 +115,7 @@ export class AnthropicModelsService {
     }
   }
 
-  // Get models by capability
+  
   async getModelsByCapability(_apiKey: string, capability: string): Promise<AnthropicModel[]> {
     try {
       const models = await this.fetchAvailableModels();
@@ -126,7 +126,7 @@ export class AnthropicModelsService {
     }
   }
 
-  // Get recommended model for specific use case
+  
   getRecommendedModel(models: AnthropicModel[], useCase: 'coding' | 'analysis' | 'general' | 'cost-effective'): string {
     const availableModels = models.filter(model => 
       model.capabilities.includes('text')
@@ -161,22 +161,22 @@ export class AnthropicModelsService {
     }
   }
 
-  // Clear cache manually (no-op since we don't use cache anymore)
+  
   clearCache(): void {
     console.log('AnthropicModelsService: Cache cleared (no-op)');
   }
 
-  // Get cache status (no-op since we don't use cache anymore)
+  
   getCacheStatus(): { size: number; keys: string[] } {
     return { size: 0, keys: [] };
   }
 
-  // Force refresh models
+  
   async refreshModels(_apiKey?: string): Promise<AnthropicModel[]> {
     return this.fetchAvailableModels();
   }
 
-  // Get models by category
+  
   getModelsByCategory(models: AnthropicModel[], category: 'reasoning' | 'multimodal' | 'cost-effective' | 'general'): AnthropicModel[] {
     switch (category) {
       case 'reasoning':
@@ -191,7 +191,7 @@ export class AnthropicModelsService {
     }
   }
 
-  // Get model statistics
+  
   getModelStats(models: AnthropicModel[]): {
     total: number;
     withVision: number;
@@ -207,5 +207,5 @@ export class AnthropicModelsService {
   }
 }
 
-// Export singleton instance
+
 export const anthropicModelsService = new AnthropicModelsService();

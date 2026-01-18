@@ -77,7 +77,7 @@ pub fn get_outline(file_path: String) -> Result<Vec<OutlineSymbol>, String> {
     }
 }
 
-/// Parse outline from content string (for unsaved files)
+
 #[tauri::command]
 pub fn get_outline_from_content(file_path: String, content: String) -> Result<Vec<OutlineSymbol>, String> {
     let path = Path::new(&file_path);

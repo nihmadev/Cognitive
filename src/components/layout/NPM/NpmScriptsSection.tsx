@@ -69,7 +69,7 @@ const ScriptItem = ({ script, isRunning, onRun, onStop }: ScriptItemProps) => {
 };
 
 interface NpmScriptsSectionProps {
-    // No props needed - uses global store
+    
 }
 
 export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
