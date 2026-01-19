@@ -139,6 +139,7 @@ impl SettingsWatcher {
     }
 
     
+    #[allow(dead_code)]
     pub fn stop(&mut self) {
         self.watcher = None;
         self.watched_paths.clear();

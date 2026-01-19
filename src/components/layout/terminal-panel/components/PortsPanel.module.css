@@ -37,7 +37,7 @@
 
 .table td {
     padding: 6px 12px;
-    color: var(--theme-foreground-muted);
+    color: var(--theme-foreground);
     border-bottom: 1px solid var(--theme-border);
     vertical-align: middle;
 }
@@ -141,8 +141,8 @@
 
 .retryButton {
     padding: 6px 12px;
-    background: var(--theme-button-background);
-    color: #ffffff;
+    background: var(--theme-accent);
+    color: var(--theme-background);
     border: none;
     border-radius: 2px;
     font-size: 13px;
@@ -152,5 +152,5 @@
 }
 
 .retryButton:hover {
-    background: var(--theme-button-hover-background);
+    background: var(--theme-accent-hover);
 }

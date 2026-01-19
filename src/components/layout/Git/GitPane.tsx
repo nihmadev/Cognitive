@@ -14,8 +14,9 @@ export const GitPane = () => {
         isAuthModalOpen,
         repositoriesVisible, changesVisible, graphVisible,
         setCommitMessage, setGraphOpen, refresh, refreshCommits, stageFile,
-        stageAll, commit, discardChanges, clearPushResult, setAuthModalOpen, push,
-        toggleRepositories, toggleChanges, toggleGraph
+        stageAll, commit, commitAmend, discardChanges, clearPushResult, setAuthModalOpen, push,
+        toggleRepositories, toggleChanges, toggleGraph,
+        pull, fetch, commitAndPush, commitAndSync
     } = useGitStore();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,6 +41,29 @@ export const GitPane = () => {
             await stageAll(currentWorkspace);
             await commit(currentWorkspace);
             await refreshCommits(currentWorkspace);
+        }
+    };
+
+    const handleCommitPush = async () => {
+        if (currentWorkspace && commitMessage.trim() && files.length > 0) {
+            await stageAll(currentWorkspace);
+            await commitAndPush(currentWorkspace);
+            await refreshCommits(currentWorkspace);
+        }
+    };
+
+    const handleCommitSync = async () => {
+        if (currentWorkspace && commitMessage.trim() && files.length > 0) {
+            await stageAll(currentWorkspace);
+            await commitAndSync(currentWorkspace);
+            await refreshCommits(currentWorkspace);
+        }
+    };
+
+    const handleCommitAmend = async () => {
+        if (currentWorkspace && commitMessage.trim()) {
+            await stageAll(currentWorkspace);
+            await commitAmend(currentWorkspace);
         }
     };
 
@@ -92,7 +116,6 @@ export const GitPane = () => {
             await tauriApi.gitGithubAuthLogin();
             setAuthModalOpen(false);
         } catch (e) {
-            console.warn('GitHub auth login failed:', e);
         }
     };
 
@@ -211,15 +234,8 @@ export const GitPane = () => {
                     }}
                     onCommit={handleCommit}
                     onPush={() => push(currentWorkspace)}
-                />
-            )}
-
-            {changesVisible && changesOpen && (
-                <CommitSection
-                    commitMessage={commitMessage}
-                    filesCount={files.length}
-                    onCommitMessageChange={setCommitMessage}
-                    onCommit={handleCommit}
+                    onPull={() => pull(currentWorkspace)}
+                    onFetch={() => fetch(currentWorkspace)}
                 />
             )}
 
@@ -232,6 +248,18 @@ export const GitPane = () => {
                     onStageFile={(path) => stageFile(currentWorkspace, path)}
                     onStageAll={() => stageAll(currentWorkspace)}
                     onDiscardChanges={(path) => discardChanges(currentWorkspace, path)}
+                />
+            )}
+
+            {changesVisible && changesOpen && (
+                <CommitSection
+                    commitMessage={commitMessage}
+                    filesCount={files.length}
+                    onCommitMessageChange={setCommitMessage}
+                    onCommit={handleCommit}
+                    onCommitPush={handleCommitPush}
+                    onCommitSync={handleCommitSync}
+                    onCommitAmend={handleCommitAmend}
                 />
             )}
 

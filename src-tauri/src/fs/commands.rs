@@ -1,11 +1,12 @@
 use std::fs;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::path::Path;
 
 use grep_matcher::Matcher;
 use grep_regex::RegexMatcherBuilder;
 use grep_searcher::{Searcher, SearcherBuilder, Sink, SinkMatch};
-use ignore::WalkBuilder;
+use ignore::{WalkBuilder, gitignore::GitignoreBuilder};
 use tauri::Window;
 use tauri_plugin_dialog::DialogExt;
 
@@ -545,6 +546,46 @@ pub fn open_new_window(workspace_path: Option<String>) -> Result<(), String> {
     Ok(())
 }
 
+// Check if path is ignored by gitignore
+#[tauri::command]
+pub fn is_path_ignored(workspace_path: String, file_path: String) -> Result<bool, String> {
+    let workspace = Path::new(&workspace_path);
+    let file = Path::new(&file_path);
+    
+    // Make path relative to workspace if it's absolute
+    let relative_path = if file.is_absolute() {
+        file.strip_prefix(workspace)
+            .unwrap_or(file)
+    } else {
+        file
+    };
+    
+    // Build gitignore matcher
+    let mut builder = GitignoreBuilder::new(workspace);
+    
+    // Add .gitignore file if it exists
+    let gitignore_path = workspace.join(".gitignore");
+    if gitignore_path.exists() {
+        let _ = builder.add(&gitignore_path);
+    }
+    
+    // Add global gitignore if it exists
+    if let Some(home) = dirs::home_dir() {
+        let global_gitignore = home.join(".gitignore_global");
+        if global_gitignore.exists() {
+            let _ = builder.add(&global_gitignore);
+        }
+    }
+    
+    let gitignore = builder.build().map_err(|e| e.to_string())?;
+    
+    // Check if path is ignored
+    let is_dir = workspace.join(relative_path).is_dir();
+    let matched = gitignore.matched(relative_path, is_dir);
+    
+    Ok(matched.is_ignore())
+}
+
 // File watcher state
 use std::sync::Mutex;
 use std::collections::HashMap;
@@ -577,13 +618,11 @@ struct FileChangeEvent {
     paths: Vec<String>,
 }
     
-    println!("[FileWatcher] Starting file watcher for path: {}", path);
     
     
     {
         let watchers = state.watchers.lock().unwrap();
         if watchers.contains_key(&path) {
-            println!("[FileWatcher] Watcher already exists for path: {}", path);
             return Ok(());
         }
     }
@@ -599,20 +638,16 @@ struct FileChangeEvent {
                 };
                 
                 if should_emit && !event.paths.is_empty() {
-                    println!("[FileWatcher] Event detected: {:?} for paths: {:?}", event.kind, event.paths);
                     let file_event = FileChangeEvent {
                         kind: format!("{:?}", event.kind),
                         paths: event.paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
                     };
                     if let Err(e) = window_clone.emit("file-change", &file_event) {
-                        eprintln!("[FileWatcher] Failed to emit file-change event: {}", e);
                     } else {
-                        println!("[FileWatcher] Emitted file-change event successfully");
                     }
                 }
             }
             Err(e) => {
-                eprintln!("[FileWatcher] Watcher error: {}", e);
             }
         }
     }).map_err(|e| e.to_string())?;
@@ -620,9 +655,7 @@ struct FileChangeEvent {
     watcher.watch(std::path::Path::new(&path), RecursiveMode::Recursive)
         .map_err(|e| e.to_string())?;
     
-    println!("[FileWatcher] Watcher created and watching path: {}", path);
     state.watchers.lock().unwrap().insert(path, watcher);
-    println!("[FileWatcher] Watcher stored in state");
     Ok(())
 }
 

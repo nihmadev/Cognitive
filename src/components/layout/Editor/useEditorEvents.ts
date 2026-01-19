@@ -66,16 +66,22 @@ export const useEditorEvents = ({
         if (!model) return;
 
         try {
+            // Skip diagnostics for in-memory models
+            if (model.uri.scheme === 'inmemory') {
+                return;
+            }
+            
             const markers = monaco.editor.getModelMarkers({ resource: model.uri });
             const fileName = activeFile.split(/[\\/]/).pop() || activeFile;
 
-
+            // Нормализуем activeFile для сопоставления с Monaco URI (всегда прямые слэши)
+            const normalizedActiveFile = activeFile.replace(/\\/g, '/');
             const modelPath = model.uri.path;
             const normalizedPath = modelPath.startsWith('/') ? modelPath.slice(1) : modelPath;
 
             const relativePath = currentWorkspace
-                ? normalizedPath.includes(currentWorkspace)
-                    ? normalizedPath.replace(currentWorkspace, '').replace(/^[\\/]/, '')
+                ? normalizedPath.includes(currentWorkspace.replace(/\\/g, '/'))
+                    ? normalizedPath.replace(currentWorkspace.replace(/\\/g, '/'), '').replace(/^[\\/]/, '')
                     : normalizedPath
                 : normalizedPath;
 
@@ -110,8 +116,9 @@ export const useEditorEvents = ({
                 };
             });
 
-
-            const diagnosticsKey = normalizedPath;
+            // Используем полный путь с прямыми слэшами как ключ для диагностики
+            const diagnosticsKey = normalizedActiveFile;
+            console.log('[collectDiagnostics] Saving diagnostics with key:', diagnosticsKey, 'count:', diagnostics.length);
             setFileDiagnostics(diagnosticsKey, diagnostics);
         } catch (error: any) {
             console.warn('Error collecting diagnostics:', error);
@@ -138,6 +145,13 @@ export const useEditorEvents = ({
 
             const model = editorRef.current?.getModel();
             if (model && unsavedChanges[activeFile]) {
+                // Skip outline for in-memory models
+                if (model.uri.scheme === 'inmemory') {
+                    setLoading(false);
+                    clearSymbols();
+                    return;
+                }
+                
                 const content = model.getValue();
                 symbols = await invoke<OutlineSymbol[]>('get_outline_from_content', {
                     filePath: activeFile,

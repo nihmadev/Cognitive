@@ -17,6 +17,7 @@ mod google;
 mod xai;
 mod api_keys;
 mod proxy_config;
+mod lsp;
 
 use tauri::Manager;
 use std::sync::Mutex;
@@ -84,6 +85,7 @@ pub fn run() {
         .manage(settings::SettingsState::new())
         .manage(session::SessionState::new())
         .manage(command_palette::CommandPaletteState::new())
+        .manage(lsp::LspState::new())
         .manage(Mutex::new(AppState { 
             initial_state,
         }))
@@ -119,6 +121,7 @@ pub fn run() {
             fs::start_file_watcher,
             fs::stop_file_watcher,
             fs::add_watch_path,
+            fs::is_path_ignored,
             git::git_status,
             git::git_info,
             git::git_clone,
@@ -127,6 +130,7 @@ pub fn run() {
             git::git_stage_all,
             git::git_unstage_all,
             git::git_commit,
+            git::git_commit_amend,
             git::push::git_push,
             git::push::git_push_with_force,
             git::push::git_list_remotes,
@@ -136,19 +140,37 @@ pub fn run() {
             git::git_contributors,
             git::git_log,
             git::git_list_branches,
-            git::git_github_auth_status,
-            git::git_github_auth_login,
             git::git_create_branch,
             git::git_checkout_branch,
             git::git_delete_branch,
+            git::git_github_auth_status,
+            git::git_github_auth_login,
+            git::git_pull,
+            git::git_fetch,
+            git::git_stash_save,
+            git::git_stash_pop,
+            git::git_stash_list,
+            git::git_stash_drop,
+            git::git_add_remote,
+            git::git_remove_remote,
+            git::git_rename_remote,
+            git::git_create_tag,
+            git::git_delete_tag,
+            git::git_list_tags,
+            git::git_merge_branch,
+            git::git_rebase,
+            git::git_reset_hard,
+            git::git_reset_soft,
             npm::npm_get_scripts,
             npm::npm_run_script,
             npm::npm_stop_script,
             npm::npm_get_running_scripts,
             npm::npm_run_script_in_terminal,
             ports::get_listening_ports,
+            ports::get_port_changes,
             problems::get_problems,
             problems::clear_problems_cache,
+            problems::invalidate_problems_cache,
             problems::get_problems_cache_stats,
             problems::check_files,
             outline::get_outline,
@@ -164,6 +186,8 @@ pub fn run() {
             fs::cache_audio,
             fs::clear_audio_cache,
             fs::get_audio_cache_stats,
+            fs::get_audio_cover_art,
+            fs::get_audio_metadata,
             ollama::ollama_chat,
             ollama::ollama_chat_stream,
             ollama::ollama_list_models,
@@ -238,7 +262,10 @@ pub fn run() {
             command_palette::command_palette_set_enabled,
             command_palette::command_palette_update,
             command_palette::command_palette_count,
-            command_palette::command_palette_categories
+            command_palette::command_palette_categories,
+            lsp::lsp_initialize,
+            lsp::lsp_did_open,
+            lsp::lsp_did_change
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

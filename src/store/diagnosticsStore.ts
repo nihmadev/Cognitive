@@ -23,25 +23,39 @@ export interface FileDiagnostics {
 }
 
 interface DiagnosticsState {
-    
+    // Monaco diagnostics (from built-in TypeScript worker)
     monacoDiagnostics: Record<string, MonacoDiagnostic[]>;
+    // LSP diagnostics (from external Language Server)
+    lspDiagnostics: Record<string, MonacoDiagnostic[]>;
     
     setFileDiagnostics: (filePath: string, diagnostics: MonacoDiagnostic[]) => void;
-    
+    setLspDiagnostics: (filePath: string, diagnostics: MonacoDiagnostic[]) => void;
     clearFileDiagnostics: (filePath: string) => void;
-    
+    clearLspDiagnostics: (filePath: string) => void;
     getAllDiagnostics: () => FileDiagnostics[];
-    
     getTotalCounts: () => { errors: number; warnings: number };
+    getErrorCount: () => number;
+    getWarningCount: () => number;
+    getFileDiagnosticsCounts: (filePath: string) => { errors: number; warnings: number };
 }
 
 export const useDiagnosticsStore = create<DiagnosticsState>((set, get) => ({
     monacoDiagnostics: {},
+    lspDiagnostics: {},
 
     setFileDiagnostics: (filePath: string, diagnostics: MonacoDiagnostic[]) => {
         set((state) => ({
             monacoDiagnostics: {
                 ...state.monacoDiagnostics,
+                [filePath]: diagnostics,
+            },
+        }));
+    },
+
+    setLspDiagnostics: (filePath: string, diagnostics: MonacoDiagnostic[]) => {
+        set((state) => ({
+            lspDiagnostics: {
+                ...state.lspDiagnostics,
                 [filePath]: diagnostics,
             },
         }));
@@ -55,11 +69,38 @@ export const useDiagnosticsStore = create<DiagnosticsState>((set, get) => ({
         });
     },
 
-    getAllDiagnostics: () => {
-        const { monacoDiagnostics } = get();
-        const result: FileDiagnostics[] = [];
+    clearLspDiagnostics: (filePath: string) => {
+        set((state) => {
+            const newDiagnostics = { ...state.lspDiagnostics };
+            delete newDiagnostics[filePath];
+            return { lspDiagnostics: newDiagnostics };
+        });
+    },
 
+    getAllDiagnostics: () => {
+        const { monacoDiagnostics, lspDiagnostics } = get();
+        const result: FileDiagnostics[] = [];
+        const filesMap = new Map<string, MonacoDiagnostic[]>();
+
+        // Merge Monaco and LSP diagnostics
         for (const [path, diagnostics] of Object.entries(monacoDiagnostics)) {
+            filesMap.set(path, [...diagnostics]);
+        }
+
+        for (const [path, diagnostics] of Object.entries(lspDiagnostics)) {
+            const existing = filesMap.get(path) || [];
+            // Avoid duplicates by checking message and line
+            const filtered = diagnostics.filter(d => 
+                !existing.some(e => 
+                    e.message === d.message && 
+                    e.line === d.line && 
+                    e.column === d.column
+                )
+            );
+            filesMap.set(path, [...existing, ...filtered]);
+        }
+
+        for (const [path, diagnostics] of filesMap.entries()) {
             if (diagnostics.length === 0) continue;
             
             const fileName = path.split(/[\\/]/).pop() || path;
@@ -79,15 +120,79 @@ export const useDiagnosticsStore = create<DiagnosticsState>((set, get) => ({
     },
 
     getTotalCounts: () => {
-        const { monacoDiagnostics } = get();
+        const { monacoDiagnostics, lspDiagnostics } = get();
         let errors = 0;
         let warnings = 0;
 
-        for (const diagnostics of Object.values(monacoDiagnostics)) {
+        const countDiagnostics = (diagnostics: Record<string, MonacoDiagnostic[]>) => {
+            for (const diags of Object.values(diagnostics)) {
+                for (const d of diags) {
+                    if (d.type === 'error') errors++;
+                    else if (d.type === 'warning') warnings++;
+                }
+            }
+        };
+
+        countDiagnostics(monacoDiagnostics);
+        countDiagnostics(lspDiagnostics);
+
+        return { errors, warnings };
+    },
+
+    getErrorCount: () => {
+        const { monacoDiagnostics, lspDiagnostics } = get();
+        let errors = 0;
+
+        const countErrors = (diagnostics: Record<string, MonacoDiagnostic[]>) => {
+            for (const diags of Object.values(diagnostics)) {
+                for (const d of diags) {
+                    if (d.type === 'error') errors++;
+                }
+            }
+        };
+
+        countErrors(monacoDiagnostics);
+        countErrors(lspDiagnostics);
+
+        return errors;
+    },
+
+    getWarningCount: () => {
+        const { monacoDiagnostics, lspDiagnostics } = get();
+        let warnings = 0;
+
+        const countWarnings = (diagnostics: Record<string, MonacoDiagnostic[]>) => {
+            for (const diags of Object.values(diagnostics)) {
+                for (const d of diags) {
+                    if (d.type === 'warning') warnings++;
+                }
+            }
+        };
+
+        countWarnings(monacoDiagnostics);
+        countWarnings(lspDiagnostics);
+
+        return warnings;
+    },
+
+    getFileDiagnosticsCounts: (filePath: string) => {
+        const { monacoDiagnostics, lspDiagnostics } = get();
+        let errors = 0;
+        let warnings = 0;
+
+        const countDiagnostics = (diagnostics: MonacoDiagnostic[]) => {
             for (const d of diagnostics) {
                 if (d.type === 'error') errors++;
                 else if (d.type === 'warning') warnings++;
             }
+        };
+
+        if (monacoDiagnostics[filePath]) {
+            countDiagnostics(monacoDiagnostics[filePath]);
+        }
+
+        if (lspDiagnostics[filePath]) {
+            countDiagnostics(lspDiagnostics[filePath]);
         }
 
         return { errors, warnings };

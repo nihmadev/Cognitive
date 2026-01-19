@@ -18,6 +18,9 @@ export interface CommitSectionProps {
     filesCount: number;
     onCommitMessageChange: (message: string) => void;
     onCommit: () => void;
+    onCommitPush?: () => void;
+    onCommitSync?: () => void;
+    onCommitAmend?: () => void;
 }
 
 export interface GraphSectionProps {
@@ -27,6 +30,10 @@ export interface GraphSectionProps {
     onToggle: () => void;
     onCommitHover: (commit: GitCommit, e: React.MouseEvent) => void;
     onCommitLeave: () => void;
+    onPull?: () => void;
+    onPush?: () => void;
+    onFetch?: () => void;
+    onRefresh?: () => void;
 }
 
 export interface ChangesSectionProps {

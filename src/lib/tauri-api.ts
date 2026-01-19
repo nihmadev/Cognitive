@@ -319,6 +319,7 @@ export const tauriApi = {
     getAllFiles: (root_path: string) => invoke<any[]>('get_all_files', { rootPath: root_path }),
 
     getListeningPorts: () => invoke<PortInfo[]>('get_listening_ports'),
+    getPortChanges: () => invoke<PortInfo[]>('get_port_changes'),
 
     getProblems: (projectPath: string) => invoke<ProblemsResult>('get_problems', { projectPath }),
     clearProblemsCache: () => invoke<void>('clear_problems_cache'),

@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useProjectStore } from '../../../store/projectStore';
+import { useState, useEffect } from 'react';
+import React from 'react';
 import { useUIStore } from '../../../store/uiStore';
-import { tauriApi } from '../../../lib/tauri-api';
+import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 import styles from './TerminalPanel.module.css';
 import { TerminalView } from './TerminalView';
 import { useTerminalStore } from '../../../store/terminalStore';
+import clsx from 'clsx';
 import {
     TerminalHeader,
     ProblemsPanel,
@@ -14,69 +15,46 @@ import {
 
 type TabId = 'problems' | 'output' | 'debug' | 'ports' | 'terminal';
 
-export const TerminalPanel = () => {
-    const currentWorkspace = useProjectStore((state) => state.currentWorkspace);
-    const { bottomPanelTab, setBottomPanelTab } = useUIStore();
+const TerminalPanelComponent = () => {
+    const { bottomPanelTab, setBottomPanelTab, isTerminalMaximized } = useUIStore();
     const { terminals, activeTerminalId, addTerminal } = useTerminalStore();
-
-    const [activeTab, setActiveTab] = useState<TabId>(bottomPanelTab);
-    const [problemsCount, setProblemsCount] = useState(0);
+    
+    // Используем диагностику из Monaco вместо медленного tsc
+    const errors = useDiagnosticsStore((state) => state.getErrorCount());
+    const warnings = useDiagnosticsStore((state) => state.getWarningCount());
+    const problemsCount = errors + warnings;
 
     // Sidebar state - mimicking VS Code, often persistent if you have terminals
-    const [showTerminalSidebar, setShowTerminalSidebar] = useState(true);
-
-    useEffect(() => {
-        setActiveTab(bottomPanelTab);
-    }, [bottomPanelTab]);
+    const [, setShowTerminalSidebar] = useState(true);
 
     const handleTabChange = (tab: TabId) => {
-        setActiveTab(tab);
         setBottomPanelTab(tab);
     };
 
-    const fetchProblemsCount = useCallback(async () => {
-        if (!currentWorkspace) {
-            setProblemsCount(0);
-            return;
-        }
-        try {
-            const result = await tauriApi.getProblems(currentWorkspace);
-            setProblemsCount(result.total_errors + result.total_warnings);
-        } catch {
-            // ignore
-        }
-    }, [currentWorkspace]);
-
-    useEffect(() => {
-        fetchProblemsCount();
-        const interval = setInterval(fetchProblemsCount, 10000);
-        return () => clearInterval(interval);
-    }, [fetchProblemsCount]);
-
     return (
-        <div className={styles.panel}>
+        <div className={clsx(styles.panel, isTerminalMaximized && styles.panelMaximized)}>
             <TerminalHeader
-                activeTab={activeTab}
+                activeTab={bottomPanelTab}
                 setActiveTab={handleTabChange}
                 problemsCount={problemsCount}
             />
 
             <div className={styles.mainContent}>
-                {activeTab === 'problems' && <ProblemsPanel />}
+                {bottomPanelTab === 'problems' && <ProblemsPanel />}
 
-                {activeTab === 'output' && (
+                {bottomPanelTab === 'output' && (
                     <div className={styles.placeholderContent}>
                         <div className={styles.placeholderText}>Output panel</div>
                     </div>
                 )}
-                {activeTab === 'debug' && (
+                {bottomPanelTab === 'debug' && (
                     <div className={styles.placeholderContent}>
                         <div className={styles.placeholderText}>Debug Console panel</div>
                     </div>
                 )}
-                {activeTab === 'ports' && <PortsPanel />}
+                {bottomPanelTab === 'ports' && <PortsPanel />}
 
-                {activeTab === 'terminal' && (
+                {bottomPanelTab === 'terminal' && (
                     <div className={styles.terminalContainer}>
                         <div className={styles.terminalsWrapper}>
                             {terminals.map((t) => (
@@ -111,3 +89,5 @@ export const TerminalPanel = () => {
         </div>
     );
 };
+
+export const TerminalPanel = React.memo(TerminalPanelComponent);

@@ -9,7 +9,7 @@ interface TerminalSidebarProps {
 }
 
 export const TerminalSidebar = ({
-    setShowTerminalSidebar,
+
     setSelectedTerminalId,
 }: TerminalSidebarProps) => {
     const {

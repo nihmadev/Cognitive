@@ -111,7 +111,6 @@ pub async fn npm_run_script(
                         Ok(Some(status)) => {
                             // Process finished, remove from running scripts
                             scripts.remove(&script_name_clone);
-                            println!("Script '{}' finished with status: {}", script_name_clone, status);
                             break;
                         }
                         Ok(None) => {
@@ -120,7 +119,6 @@ pub async fn npm_run_script(
                         Err(e) => {
                             // Error checking process status, remove it
                             scripts.remove(&script_name_clone);
-                            println!("Error checking script '{}': {}", script_name_clone, e);
                             break;
                         }
                     }
@@ -262,7 +260,6 @@ pub async fn npm_run_script_in_terminal(
                             return Ok(format!("Started script '{}' in {} with PID: {}", script_name, terminal, child.id()));
                         }
                         Err(e) => {
-                            eprintln!("Failed to start {}: {}", terminal, e);
                             continue;
                         }
                     }

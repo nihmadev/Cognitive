@@ -29,7 +29,7 @@ import styles from './App.module.css'
 function App() {
   const [activeActivity, setActiveActivity] = useState<ActivityId>('files');
   const [isNewFileModalOpen, setIsNewFileModalOpen] = useState(false);
-  const { showTerminal, openPorts, setTerminalOpen, showSidebar, zoomLevel, zoomIn, zoomOut, resetZoom, aiPanelWidth, setAIPanelWidth } = useUIStore();
+  const { showTerminal, openPorts, setTerminalOpen, showSidebar, zoomLevel, zoomIn, zoomOut, resetZoom, aiPanelWidth, setAIPanelWidth, isTerminalMaximized } = useUIStore();
   const uiStore = useUIStore();
   const { activeFile, closeFile, openSettingsTab, openProfilesTab, setWorkspace, currentWorkspace, openFileDialog, newFile, newTextFile, newFileWithExtension, createCustomFile, navigateHistory } = useProjectStore();
   const { toggleAssistant, isAssistantOpen, initializeAgentRouter, initializeModels, initializeApiKeys } = useAIStore();
@@ -463,9 +463,9 @@ function App() {
 
         { }
         <div className={styles.content}>
-          <TabBar />
+          {!isTerminalMaximized && <TabBar />}
           { }
-          <CodeEditor />
+          {!isTerminalMaximized && <CodeEditor />}
           {showTerminal && <TerminalPanel />}
         </div>
 

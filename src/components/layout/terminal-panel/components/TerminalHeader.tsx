@@ -5,6 +5,7 @@ import {
     SplitSquareHorizontal,
     MoreHorizontal,
     Maximize2,
+    Minimize2,
     X
 } from 'lucide-react';
 import styles from '../TerminalPanel.module.css';
@@ -30,7 +31,13 @@ export const TerminalHeader = ({
     setActiveTab,
     problemsCount = 0,
 }: TerminalHeaderProps) => {
-    const { setTerminalOpen } = useUIStore();
+    const { 
+        setTerminalOpen, 
+        isTerminalMaximized, 
+        toggleTerminalMaximized, 
+        showTerminal, 
+        setTerminalMaximized
+    } = useUIStore();
     const { addTerminal } = useTerminalStore();
 
     const tabs: Tab[] = [
@@ -40,6 +47,13 @@ export const TerminalHeader = ({
         { id: 'terminal', label: 'TERMINAL' },
         { id: 'ports', label: 'PORTS' },
     ];
+
+    const handleToggleMaximize = () => {
+        if (!showTerminal) {
+            setTerminalOpen(true);
+        }
+        toggleTerminalMaximized();
+    };
 
     return (
         <div className={styles.header}>
@@ -79,13 +93,20 @@ export const TerminalHeader = ({
                         </button>
                     </>
                 )}
-                <button className={styles.actionButton} title="Maximize">
-                    <Maximize2 size={16} />
+                <button 
+                    className={styles.actionButton} 
+                    title={isTerminalMaximized ? "Restore" : "Maximize"}
+                    onClick={handleToggleMaximize}
+                >
+                    {isTerminalMaximized ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                 </button>
                 <button
                     className={styles.actionButton}
                     title="Close"
-                    onClick={() => setTerminalOpen(false)}
+                    onClick={() => {
+                        setTerminalOpen(false);
+                        setTerminalMaximized(false);
+                    }}
                 >
                     <X size={16} />
                 </button>

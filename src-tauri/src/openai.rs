@@ -24,40 +24,52 @@ struct OpenAIRequest {
 #[derive(Debug, Deserialize)]
 struct OpenAIResponse {
     choices: Vec<OpenAIChoice>,
+    #[allow(dead_code)]
     usage: OpenAIUsage,
 }
 
 #[derive(Debug, Deserialize)]
 struct OpenAIChoice {
     message: OpenAIMessage,
+    #[allow(dead_code)]
     finish_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct OpenAIUsage {
+    #[allow(dead_code)]
     prompt_tokens: u32,
+    #[allow(dead_code)]
     completion_tokens: u32,
+    #[allow(dead_code)]
     total_tokens: u32,
 }
 
 #[derive(Debug, Deserialize)]
 struct OpenAIStreamChunk {
+    #[allow(dead_code)]
     id: String,
+    #[allow(dead_code)]
     object: String,
+    #[allow(dead_code)]
     created: u64,
+    #[allow(dead_code)]
     model: String,
     choices: Vec<OpenAIStreamChoice>,
 }
 
 #[derive(Debug, Deserialize)]
 struct OpenAIStreamChoice {
+    #[allow(dead_code)]
     index: u32,
     delta: OpenAIStreamDelta,
+    #[allow(dead_code)]
     finish_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct OpenAIStreamDelta {
+    #[allow(dead_code)]
     role: Option<String>,
     content: Option<String>,
 }

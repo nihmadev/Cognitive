@@ -399,6 +399,18 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             }
 
             try {
+                // Check if this is an in-memory model
+                if (model.uri.scheme === 'inmemory') {
+                    console.warn('In-memory model detected, skipping TypeScript worker');
+                    return [];
+                }
+                
+                // Проверяем что это TypeScript/JavaScript файл по расширению
+                const uriPath = model.uri.path;
+                const ext = uriPath.split('.').pop()?.toLowerCase();
+                if (!ext || !['ts', 'tsx', 'js', 'jsx', 'mts', 'cts', 'mjs', 'cjs'].includes(ext)) {
+                    return [];
+                }
                 
                 const worker = await monacoInstance.languages.typescript.getTypeScriptWorker();
                 const client = await worker(model.uri);

@@ -33,6 +33,9 @@ interface UIState {
     showTerminal: boolean;
     toggleTerminal: () => void;
     setTerminalOpen: (open: boolean) => void;
+    isTerminalMaximized: boolean;
+    toggleTerminalMaximized: () => void;
+    setTerminalMaximized: (maximized: boolean) => void;
     sidebarWidth: number;
     setSidebarWidth: (width: number) => void;
     aiPanelWidth: number;
@@ -169,6 +172,9 @@ export const useUIStore = create<UIState>()(
             showTerminal: false,
             toggleTerminal: () => set((state) => ({ showTerminal: !state.showTerminal })),
             setTerminalOpen: (open) => set({ showTerminal: open }),
+            isTerminalMaximized: false,
+            toggleTerminalMaximized: () => set((state) => ({ isTerminalMaximized: !state.isTerminalMaximized })),
+            setTerminalMaximized: (maximized) => set({ isTerminalMaximized: maximized }),
             bottomPanelTab: 'ports',
             setBottomPanelTab: (tab) => set({ bottomPanelTab: tab }),
             openPorts: () => set({ showTerminal: true, bottomPanelTab: 'ports' }),

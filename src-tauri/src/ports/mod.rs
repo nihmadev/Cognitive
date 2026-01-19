@@ -1,6 +1,8 @@
 use serde::Serialize;
 use std::collections::HashSet;
 use std::process::Command;
+use std::sync::Mutex;
+use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PortInfo {
@@ -12,21 +14,181 @@ pub struct PortInfo {
     pub state: String,
 }
 
+struct PortCache {
+    data: Vec<PortInfo>,
+    timestamp: Instant,
+    process_cache: std::collections::HashMap<u32, String>,
+    process_cache_timestamp: Instant,
+}
+
+impl PortCache {
+    fn new() -> Self {
+        Self {
+            data: Vec::new(),
+            timestamp: Instant::now() - Duration::from_secs(10),
+            process_cache: std::collections::HashMap::new(),
+            process_cache_timestamp: Instant::now() - Duration::from_secs(30),
+        }
+    }
+}
+
+lazy_static::lazy_static! {
+    static ref PORT_CACHE: Mutex<PortCache> = Mutex::new(PortCache::new());
+}
+
 #[tauri::command]
 pub async fn get_listening_ports() -> Result<Vec<PortInfo>, String> {
+    println!("[Ports] get_listening_ports called");
+    let mut cache = PORT_CACHE.lock().unwrap();
+    
+    // Return cached data if less than 2 seconds old
+    if cache.timestamp.elapsed() < Duration::from_secs(2) && !cache.data.is_empty() {
+        println!("[Ports] Returning cached data ({} ports)", cache.data.len());
+        return Ok(cache.data.clone());
+    }
+
+    println!("[Ports] Cache expired or empty, fetching fresh data");
+
     #[cfg(target_os = "windows")]
     {
-        get_ports_windows()
+        match get_ports_windows_cached(&mut cache) {
+            Ok(ports) => {
+                println!("[Ports] Successfully fetched {} ports on Windows", ports.len());
+                cache.data = ports.clone();
+                cache.timestamp = Instant::now();
+                Ok(ports)
+            }
+            Err(e) => {
+                println!("[Ports] Error fetching ports on Windows: {}", e);
+                Err(e)
+            }
+        }
     }
 
     #[cfg(target_os = "linux")]
     {
-        get_ports_linux()
+        match get_ports_linux() {
+            Ok(ports) => {
+                cache.data = ports.clone();
+                cache.timestamp = Instant::now();
+                Ok(ports)
+            }
+            Err(e) => Err(e),
+        }
     }
 
     #[cfg(target_os = "macos")]
     {
-        get_ports_macos()
+        match get_ports_macos() {
+            Ok(ports) => {
+                cache.data = ports.clone();
+                cache.timestamp = Instant::now();
+                Ok(ports)
+            }
+            Err(e) => Err(e),
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn get_port_changes() -> Result<Vec<PortInfo>, String> {
+    let mut cache = PORT_CACHE.lock().unwrap();
+    
+    // Get current ports using platform-specific logic
+    #[cfg(target_os = "windows")]
+    {
+        let current_ports = match get_ports_windows_cached(&mut cache) {
+            Ok(ports) => ports,
+            Err(e) => return Err(e),
+        };
+        
+        // Compare with cached data
+        let changes = if cache.data.is_empty() {
+            current_ports.clone() // First time, return all
+        } else {
+            // Find differences
+            let old_set: std::collections::HashSet<(u16, String)> = cache.data.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            let new_set: std::collections::HashSet<(u16, String)> = current_ports.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            
+            // Return ports that are new or changed
+            current_ports.clone().into_iter()
+                .filter(|p| !old_set.contains(&(p.port, p.protocol.clone())))
+                .collect()
+        };
+        
+        // Update cache
+        cache.data = current_ports;
+        cache.timestamp = Instant::now();
+        
+        Ok(changes)
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let current_ports = match get_ports_linux() {
+            Ok(ports) => ports,
+            Err(e) => return Err(e),
+        };
+        
+        // Compare with cached data
+        let changes = if cache.data.is_empty() {
+            current_ports.clone() // First time, return all
+        } else {
+            // Find differences
+            let old_set: std::collections::HashSet<(u16, String)> = cache.data.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            let new_set: std::collections::HashSet<(u16, String)> = current_ports.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            
+            // Return ports that are new or changed
+            current_ports.clone().into_iter()
+                .filter(|p| !old_set.contains(&(p.port, p.protocol.clone())))
+                .collect()
+        };
+        
+        // Update cache
+        cache.data = current_ports;
+        cache.timestamp = Instant::now();
+        
+        Ok(changes)
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let current_ports = match get_ports_macos() {
+            Ok(ports) => ports,
+            Err(e) => return Err(e),
+        };
+        
+        // Compare with cached data
+        let changes = if cache.data.is_empty() {
+            current_ports.clone() // First time, return all
+        } else {
+            // Find differences
+            let old_set: std::collections::HashSet<(u16, String)> = cache.data.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            let new_set: std::collections::HashSet<(u16, String)> = current_ports.iter()
+                .map(|p| (p.port, p.protocol.clone()))
+                .collect();
+            
+            // Return ports that are new or changed
+            current_ports.clone().into_iter()
+                .filter(|p| !old_set.contains(&(p.port, p.protocol.clone())))
+                .collect()
+        };
+        
+        // Update cache
+        cache.data = current_ports;
+        cache.timestamp = Instant::now();
+        
+        Ok(changes)
     }
 }
 
@@ -35,24 +197,39 @@ pub async fn get_listening_ports() -> Result<Vec<PortInfo>, String> {
 
 
 #[cfg(target_os = "windows")]
-fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
+fn get_ports_windows_cached(cache: &mut PortCache) -> Result<Vec<PortInfo>, String> {
+    println!("[Ports] Executing netstat command...");
     let output = Command::new("netstat")
         .args(["-ano"])
         .output()
-        .map_err(|e| format!("Failed to execute netstat: {}", e))?;
+        .map_err(|e| {
+            let err_msg = format!("Failed to execute netstat: {}", e);
+            println!("[Ports] {}", err_msg);
+            err_msg
+        })?;
 
     if !output.status.success() {
-        return Err("netstat command failed".to_string());
+        let err_msg = "netstat command failed".to_string();
+        println!("[Ports] {}", err_msg);
+        return Err(err_msg);
     }
 
+    println!("[Ports] netstat command succeeded, parsing output...");
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut ports: Vec<PortInfo> = Vec::new();
     let mut seen_ports: HashSet<(u16, String)> = HashSet::new();
 
-    
-    let process_cache = build_process_cache_windows();
+    // Use cached process data if less than 30 seconds old
+    if cache.process_cache_timestamp.elapsed() > Duration::from_secs(30) {
+        println!("[Ports] Rebuilding process cache...");
+        cache.process_cache = build_process_cache_windows();
+        cache.process_cache_timestamp = Instant::now();
+        println!("[Ports] Process cache rebuilt with {} entries", cache.process_cache.len());
+    }
 
+    let mut line_count = 0;
     for line in stdout.lines().skip(4) {
+        line_count += 1;
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() < 4 {
             continue;
@@ -93,7 +270,7 @@ fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
 
         
         let pid = parts.last().and_then(|s| s.parse::<u32>().ok());
-        let process_name = pid.and_then(|p| process_cache.get(&p).cloned());
+        let process_name = pid.and_then(|p| cache.process_cache.get(&p).cloned());
 
         ports.push(PortInfo {
             port,
@@ -105,6 +282,7 @@ fn get_ports_windows() -> Result<Vec<PortInfo>, String> {
         });
     }
 
+    println!("[Ports] Parsed {} lines, found {} unique listening ports", line_count, ports.len());
     ports.sort_by_key(|p| p.port);
     Ok(ports)
 }

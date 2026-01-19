@@ -265,6 +265,7 @@ impl SessionStore {
     }
 
     
+    #[allow(dead_code)]
     pub fn get_active_workspace_session(&self) -> Option<WorkspaceSession> {
         let active = self.active_workspace.read().unwrap().clone()?;
         self.get_workspace_session(&active)

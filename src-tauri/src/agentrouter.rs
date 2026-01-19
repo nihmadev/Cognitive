@@ -17,6 +17,7 @@ pub enum AgentRouterError {
     #[error("API error: {0}")]
     ApiError(String),
     #[error("Stream error: {0}")]
+    #[allow(dead_code)]
     StreamError(String),
     #[error("Missing API key")]
     MissingApiKey,
@@ -116,15 +117,20 @@ pub struct AgentRouterUsage {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct AgentRouterStreamResponse {
+    #[allow(dead_code)]
     pub id: String,
+    #[allow(dead_code)]
     pub object: String,
+    #[allow(dead_code)]
     pub created: u64,
+    #[allow(dead_code)]
     pub model: String,
     pub choices: Vec<AgentRouterStreamChoice>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct AgentRouterStreamChoice {
+    #[allow(dead_code)]
     pub index: u32,
     pub delta: AgentRouterStreamDelta,
     pub finish_reason: Option<String>,
@@ -133,6 +139,7 @@ pub struct AgentRouterStreamChoice {
 #[derive(Debug, Clone, Deserialize)]
 pub struct AgentRouterStreamDelta {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[allow(dead_code)]
     pub role: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<String>,
@@ -379,7 +386,6 @@ pub async fn agentrouter_chat_stream(
                                 if !content.is_empty() {
                                     // Emit the chunk content to the frontend
                                     if let Err(e) = window.emit("agentrouter-stream", content) {
-                                        println!("Failed to emit event: {}", e);
                                     }
                                     full_response.push_str(content);
                                 }
@@ -441,7 +447,6 @@ pub async fn agentrouter_chat_stream(
                                             
                                             // Emit tool call as a special event
                                             if let Err(e) = window.emit("agentrouter-tool-call", tool_call_json.to_string()) {
-                                                println!("Failed to emit tool call event: {}", e);
                                             }
                                         }
                                     }
@@ -450,7 +455,6 @@ pub async fn agentrouter_chat_stream(
                         }
                     },
                     Err(e) => {
-                        println!("Failed to parse stream line: {} - Error: {}", json_str, e);
                     }
                 }
             }
@@ -479,7 +483,6 @@ pub async fn agentrouter_chat_stream(
                         
                         
                         if let Err(e) = window.emit("agentrouter-tool-call", tool_call_json.to_string()) {
-                            println!("Failed to emit tool call event: {}", e);
                         }
                     }
                 }

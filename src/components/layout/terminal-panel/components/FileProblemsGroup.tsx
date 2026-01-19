@@ -12,7 +12,9 @@ interface FileProblemsGroupProps {
 }
 
 export const FileProblemsGroup = ({ fileProblems, isExpanded, onToggle, onProblemClick }: FileProblemsGroupProps) => {
-    const totalCount = fileProblems.errorCount + fileProblems.warningCount;
+    const errorCount = fileProblems.errorCount;
+    const warningCount = fileProblems.warningCount;
+    const totalCount = errorCount + warningCount;
 
     return (
         <div className={styles.fileGroup}>
@@ -24,8 +26,16 @@ export const FileProblemsGroup = ({ fileProblems, isExpanded, onToggle, onProble
                     {getFileIcon(fileProblems.file, fileProblems.displayPath)}
                 </span>
                 <span className={styles.fileName}>{fileProblems.file}</span>
+                {/* Количество ошибок рядом с именем файла */}
+                {totalCount > 0 && (
+                    <span className={clsx(
+                        styles.problemCountInline,
+                        errorCount > 0 ? styles.errorCount : styles.warningCount
+                    )}>
+                        {totalCount}
+                    </span>
+                )}
                 <span className={styles.filePath}>{fileProblems.displayPath}</span>
-                <span className={styles.problemCount}>{totalCount}</span>
             </button>
             
             {isExpanded && (
@@ -34,7 +44,7 @@ export const FileProblemsGroup = ({ fileProblems, isExpanded, onToggle, onProble
                         <ProblemItem 
                             key={problem.id} 
                             problem={problem} 
-                            onClick={() => onProblemClick(problem, fileProblems.path)}
+                            onClick={() => onProblemClick(problem, fileProblems.fullPath)}
                         />
                     ))}
                 </div>

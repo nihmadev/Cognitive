@@ -50,8 +50,6 @@ export const DiffEditor = ({ filePath, isStaged, workspacePath }: DiffEditorProp
     const targetScrollTopRef = useRef<number>(0);
     const currentScrollTopRef = useRef<number>(0);
     const themesRegisteredRef = useRef<boolean>(false);
-    const monacoRef = useRef<any>(null);
-    const navigatorRef = useRef<any>(null);
 
     const { theme } = useUIStore();
 
@@ -138,40 +136,79 @@ export const DiffEditor = ({ filePath, isStaged, workspacePath }: DiffEditorProp
             if (scrollAnimationRef.current !== null) {
                 cancelAnimationFrame(scrollAnimationRef.current);
             }
-            // Clean up navigator and editor references
-            if (navigatorRef.current) {
-                navigatorRef.current = null;
-            }
             if (diffEditorRef.current) {
                 diffEditorRef.current = null;
             }
         };
     }, [handleWheel]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (scrollAnimationRef.current !== null) {
                 cancelAnimationFrame(scrollAnimationRef.current);
             }
-            navigatorRef.current = null;
             diffEditorRef.current = null;
-            monacoRef.current = null;
         };
     }, []);
 
     const intervalRef = useRef<any>(null);
 
-    const handleMouseDown = (direction: 'next' | 'prev') => {
-        const navigate = () => {
-            if (navigatorRef.current) {
-                if (direction === 'next') navigatorRef.current.next();
-                else navigatorRef.current.previous();
-            }
-        };
+    const navigateToChange = useCallback((direction: 'next' | 'prev') => {
+        const editor = diffEditorRef.current;
+        if (!editor) return;
 
-        navigate();
-        intervalRef.current = setInterval(navigate, 250);
+        const lineChanges = editor.getLineChanges();
+        if (!lineChanges || lineChanges.length === 0) return;
+
+        const modifiedEditor = editor.getModifiedEditor();
+        const currentPosition = modifiedEditor.getPosition();
+        const currentLine = currentPosition?.lineNumber || 1;
+
+        if (direction === 'next') {
+            const nextChange = lineChanges.find((change: any) => 
+                change.modifiedStartLineNumber > currentLine
+            );
+            
+            if (nextChange) {
+                modifiedEditor.setPosition({
+                    lineNumber: nextChange.modifiedStartLineNumber,
+                    column: 1
+                });
+                modifiedEditor.revealLineInCenter(nextChange.modifiedStartLineNumber);
+            } else {
+                const firstChange = lineChanges[0];
+                modifiedEditor.setPosition({
+                    lineNumber: firstChange.modifiedStartLineNumber,
+                    column: 1
+                });
+                modifiedEditor.revealLineInCenter(firstChange.modifiedStartLineNumber);
+            }
+        } else {
+            const previousChanges = lineChanges.filter((change: any) => 
+                change.modifiedStartLineNumber < currentLine
+            );
+            const previousChange = previousChanges[previousChanges.length - 1];
+            
+            if (previousChange) {
+                modifiedEditor.setPosition({
+                    lineNumber: previousChange.modifiedStartLineNumber,
+                    column: 1
+                });
+                modifiedEditor.revealLineInCenter(previousChange.modifiedStartLineNumber);
+            } else {
+                const lastChange = lineChanges[lineChanges.length - 1];
+                modifiedEditor.setPosition({
+                    lineNumber: lastChange.modifiedStartLineNumber,
+                    column: 1
+                });
+                modifiedEditor.revealLineInCenter(lastChange.modifiedStartLineNumber);
+            }
+        }
+    }, []);
+
+    const handleMouseDown = (direction: 'next' | 'prev') => {
+        navigateToChange(direction);
+        intervalRef.current = setInterval(() => navigateToChange(direction), 250);
     };
 
     const handleMouseUp = () => {
@@ -242,29 +279,8 @@ export const DiffEditor = ({ filePath, isStaged, workspacePath }: DiffEditorProp
                         themesRegisteredRef.current = true;
                     }
                 }}
-                onMount={(editor, monaco) => {
+                onMount={(editor) => {
                     diffEditorRef.current = editor;
-                    monacoRef.current = monaco;
-
-                    // Use the correct API for diff navigation
-                    try {
-                        navigatorRef.current = monaco.editor.createDiffNavigator(editor, {
-                            followsCaret: true,
-                            ignoreCharChanges: true,
-                            alwaysRevealFirst: false
-                        });
-                    } catch (error) {
-                        console.warn('DiffNavigator fallback');
-                        navigatorRef.current = {
-                            next: () => {
-                                editor.getModifiedEditor().getAction('editor.action.diffReview.next')?.run();
-                            },
-                            previous: () => {
-                                editor.getModifiedEditor().getAction('editor.action.diffReview.prev')?.run();
-                            }
-                        };
-                    }
-
                     const modifiedEditor = editor.getModifiedEditor();
                     currentScrollTopRef.current = modifiedEditor.getScrollTop();
                     targetScrollTopRef.current = currentScrollTopRef.current;

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import React from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { spawn } from 'tauri-pty';
@@ -12,7 +13,7 @@ interface TerminalViewProps {
     isActive: boolean;
 }
 
-export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
+const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
     const terminalRef = useRef<HTMLDivElement>(null);
     const xtermRef = useRef<Terminal | null>(null);
     const ptyRef = useRef<any>(null);
@@ -29,7 +30,6 @@ export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
     useEffect(() => {
         if (!terminalRef.current || xtermRef.current) return;
 
-        console.log('Initializing terminal:', terminalId);
 
         // Получаем цвета из текущей темы
         const themeColors = themes[currentTheme].colors;
@@ -87,7 +87,7 @@ export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
                 const shell = isWindows ? 'powershell.exe' : 'bash';
                 const args = isWindows ? ['-NoLogo'] : [];
 
-                console.log('Spawning PTY with shell:', shell);
+                console.log('[Terminal] Spawning PTY:', shell, args, 'cwd:', workspaceRef.current);
 
                 // Spawn PTY process используя tauri-pty API
                 const pty = spawn(shell, args, {
@@ -97,50 +97,46 @@ export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
                 });
 
                 ptyRef.current = pty;
-                console.log('PTY spawning...');
 
                 // Listen for PTY output
                 pty.onData((data: any) => {
-                    console.log('Received PTY data, type:', typeof data, 'isArray:', Array.isArray(data));
-                    
                     try {
                         let text: string;
                         
                         if (typeof data === 'string') {
-                            // Данные уже строка
                             text = data;
                         } else if (data instanceof Uint8Array) {
-                            // Uint8Array
                             text = new TextDecoder().decode(data);
                         } else if (Array.isArray(data)) {
-                            // Массив чисел
                             const uint8Array = new Uint8Array(data);
                             text = new TextDecoder().decode(uint8Array);
                         } else if (data && typeof data === 'object' && data.buffer) {
-                            // ArrayBuffer или похожий объект
                             text = new TextDecoder().decode(new Uint8Array(data.buffer || data));
                         } else {
-                            console.warn('Unknown data format:', data);
+                            console.warn('[Terminal] Unknown data type:', typeof data);
                             return;
                         }
                         
                         term.write(text);
                     } catch (err) {
-                        console.error('Failed to decode PTY data:', err, data);
+                        console.error('[Terminal] Error writing to terminal:', err);
                     }
                 });
 
                 // Handle terminal input
                 term.onData((data) => {
-                    console.log('Writing to PTY:', data);
-                    pty.write(data);
+                    try {
+                        pty.write(data);
+                    } catch (err) {
+                        console.error('[Terminal] Error writing to PTY:', err);
+                    }
                 });
 
-                term.write('\x1b[32mTerminal ready\x1b[0m\r\n');
-
+                console.log('[Terminal] PTY initialized successfully');
             } catch (err) {
+                console.error('[Terminal] Failed to spawn PTY:', err);
                 term.write(`\r\n\x1b[31mFailed to spawn PTY: ${err}\x1b[0m\r\n`);
-                console.error('PTY spawn error:', err);
+                term.write(`\r\nPlease check that PowerShell is installed and accessible.\r\n`);
             }
         };
 
@@ -204,29 +200,54 @@ export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
     useEffect(() => {
         const handleResize = () => {
             if (fitAddonRef.current && xtermRef.current && ptyRef.current) {
-                fitAddonRef.current.fit();
-                const { cols, rows } = xtermRef.current;
-                ptyRef.current.resize(cols, rows);
+                try {
+                    fitAddonRef.current.fit();
+                    const { cols, rows } = xtermRef.current;
+                    ptyRef.current.resize(cols, rows);
+                } catch (err) {
+                    console.error('[Terminal] Resize error:', err);
+                }
             }
         };
 
-        window.addEventListener('resize', handleResize);
+        // Debounce resize to avoid too many calls
+        let resizeTimeout: number | null = null;
+        const debouncedResize = () => {
+            if (resizeTimeout !== null) {
+                window.clearTimeout(resizeTimeout);
+            }
+            resizeTimeout = window.setTimeout(handleResize, 100);
+        };
+
+        window.addEventListener('resize', debouncedResize);
 
         // Initial fit after a short delay to ensure container is rendered
         const timeout = setTimeout(handleResize, 100);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('resize', debouncedResize);
             clearTimeout(timeout);
+            if (resizeTimeout !== null) {
+                window.clearTimeout(resizeTimeout);
+            }
         };
     }, []);
 
-    // Also fit when isActive changes (e.g. tab switch)
+    // Also fit when isActive changes (e.g. tab switch) or when terminal panel is resized
     useEffect(() => {
         if (isActive && fitAddonRef.current && xtermRef.current && ptyRef.current) {
-            fitAddonRef.current.fit();
-            const { cols, rows } = xtermRef.current;
-            ptyRef.current.resize(cols, rows);
+            // Small delay to ensure layout is complete
+            const timeout = setTimeout(() => {
+                try {
+                    fitAddonRef.current?.fit();
+                    const { cols, rows } = xtermRef.current!;
+                    ptyRef.current?.resize(cols, rows);
+                } catch (err) {
+                    console.error('[Terminal] Active resize error:', err);
+                }
+            }, 50);
+
+            return () => clearTimeout(timeout);
         }
     }, [isActive]);
 
@@ -246,3 +267,5 @@ export const TerminalView = ({ terminalId, isActive }: TerminalViewProps) => {
         </div>
     );
 };
+
+export const TerminalView = React.memo(TerminalViewComponent);

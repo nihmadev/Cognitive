@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { tauriApi } from '../lib/tauri-api';
+
 
 export type TerminalType = 'bash' | 'powershell' | 'cmd' | 'zsh' | 'fish';
 
@@ -63,14 +63,13 @@ export const useTerminalStore = create<TerminalState>((set, get) => {
 
         removeTerminal: (id: string) => {
             const { terminals, activeTerminalId } = get();
-            const terminal = terminals.find((t) => t.id === id);
+            terminals.find((t) => t.id === id);
 
 
             // PTY closure is handled by the component's cleanup or the plugin automatically
             /*
             if (terminal?.backendTerminalId) {
-                tauriApi.closeTerminal(terminal.backendTerminalId).catch((err) => {
-                    console.error('Failed to close backend terminal:', err);
+                tauriApi.closeTerminal(terminal.backendTerminalId).catch(() => {
                 });
             }
             */

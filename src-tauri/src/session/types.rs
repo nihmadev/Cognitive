@@ -199,6 +199,7 @@ impl Default for WindowState {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct SessionChangeEvent {
     pub event_type: SessionEventType,
     pub workspace_path: Option<String>,
@@ -208,6 +209,7 @@ pub struct SessionChangeEvent {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
+#[allow(dead_code)]
 pub enum SessionEventType {
     WorkspaceOpened,
     WorkspaceClosed,

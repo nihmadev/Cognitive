@@ -17,6 +17,7 @@ pub enum OllamaError {
     #[error("API error: {0}")]
     ApiError(String),
     #[error("Stream error: {0}")]
+    #[allow(dead_code)]
     StreamError(String),
 }
 
@@ -68,12 +69,14 @@ pub struct ChatResponse {
 #[derive(Debug, Clone, Deserialize)]
 pub struct StreamResponse {
     pub message: Option<MessagePart>,
+    #[allow(dead_code)]
     pub done: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MessagePart {
     pub content: String,
+    #[allow(dead_code)]
     pub role: Option<String>,
 }
 
@@ -277,13 +280,10 @@ pub async fn ollama_chat(
         options,
     };
     
-    // Simple logging for debugging
-    println!("Sending Ollama chat request to model: {}", request.model);
     
     match client.chat(request).await {
         Ok(response) => Ok(response),
         Err(e) => {
-            println!("Ollama chat error: {}", e);
             Err(e.to_string())
         }
     }
@@ -335,14 +335,12 @@ pub async fn ollama_chat_stream(
                         if !msg.content.is_empty() {
                             
                             if let Err(e) = window.emit("ollama-stream", &msg.content) {
-                                println!("Failed to emit event: {}", e);
                             }
                             full_response.push_str(&msg.content);
                         }
                     }
                 },
                 Err(e) => {
-                    println!("Failed to parse stream line: {} - Error: {}", line, e);
                 }
             }
         }

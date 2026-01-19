@@ -4,6 +4,7 @@ import { useProjectStore } from '../../../store/projectStore';
 import { useUIStore } from '../../../store/uiStore';
 import { useEditorStore } from '../../../store/editorStore';
 import { useAutoSaveStore } from '../../../store/autoSaveStore';
+import { useLspIntegration } from '../../../hooks/useLspIntegration';
 import { tauriApi } from '../../../lib/tauri-api';
 import { configureMonacoTypeScript } from '../../../lib/monaco-config';
 import { registerMonacoThemes, getMonacoThemeName } from '../../../themes/monaco-themes';
@@ -72,6 +73,16 @@ export const CodeEditor = () => {
         currentWorkspace,
         editorRef,
         monacoRef,
+    });
+
+    // LSP Integration
+    useLspIntegration({
+        currentWorkspace,
+        activeFile,
+        editorRef,
+        monacoRef,
+        fileContent: fileContents[activeFile || ''] || code,
+        editorVersion,
     });
 
     
@@ -297,12 +308,16 @@ export const CodeEditor = () => {
         return <BinaryWarning fileName={fileName} />;
     }
 
+    // Нормализуем путь для Monaco Editor (всегда используем прямые слэши)
+    const monacoPath = activeFile ? activeFile.replace(/\\/g, '/') : activeFile;
+
     
     const editorContent = (
         <MonacoEditor
             key={`${activeFile}-${editorVersion}-${fontSettings.fontFamily}-${fontSettings.fontSize}-${fontSettings.lineHeight}`}
             height="100%"
             language={language}
+            path={monacoPath} // Используем нормализованный путь для Monaco URI
             value={fileContents[activeFile] || code}
             theme={getMonacoThemeName(theme)}
             options={getEditorOptions(fontSettings, availableFonts, minimapEnabled, lineNumbersEnabled, tabSize)}

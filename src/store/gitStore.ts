@@ -36,10 +36,39 @@ interface GitStore {
     stageAll: (workspacePath: string) => Promise<void>;
     unstageAll: (workspacePath: string) => Promise<void>;
     commit: (workspacePath: string) => Promise<void>;
+    commitAmend: (workspacePath: string) => Promise<void>;
     discardChanges: (workspacePath: string, filePath: string) => Promise<void>;
     push: (workspacePath: string, remoteName?: string, branchName?: string, force?: boolean) => Promise<GitPushResult>;
+    pull: (workspacePath: string) => Promise<void>;
+    fetch: (workspacePath: string) => Promise<void>;
+    sync: (workspacePath: string) => Promise<void>;
+    commitAndPush: (workspacePath: string) => Promise<void>;
+    commitAndSync: (workspacePath: string) => Promise<void>;
     clearPushResult: () => void;
     setAuthModalOpen: (open: boolean) => void;
+    
+    // Branch operations
+    listBranches: (workspacePath: string) => Promise<void>;
+    createBranch: (workspacePath: string, branchName: string) => Promise<void>;
+    checkoutBranch: (workspacePath: string, branchName: string) => Promise<void>;
+    deleteBranch: (workspacePath: string, branchName: string, force?: boolean) => Promise<void>;
+    mergeBranch: (workspacePath: string, branchName: string) => Promise<void>;
+    
+    // Stash operations
+    stashSave: (workspacePath: string, message?: string) => Promise<void>;
+    stashPop: (workspacePath: string, index?: number) => Promise<void>;
+    stashList: (workspacePath: string) => Promise<Array<[number, string]>>;
+    stashDrop: (workspacePath: string, index: number) => Promise<void>;
+    
+    // Remote operations
+    listRemotes: (workspacePath: string) => Promise<string[]>;
+    addRemote: (workspacePath: string, name: string, url: string) => Promise<void>;
+    removeRemote: (workspacePath: string, name: string) => Promise<void>;
+    
+    // Tag operations
+    listTags: (workspacePath: string) => Promise<string[]>;
+    createTag: (workspacePath: string, tagName: string, message?: string) => Promise<void>;
+    deleteTag: (workspacePath: string, tagName: string) => Promise<void>;
 }
 
 export const useGitStore = create<GitStore>((set, get) => ({
@@ -91,7 +120,6 @@ export const useGitStore = create<GitStore>((set, get) => ({
             const contributors = await tauriApi.gitContributors(workspacePath);
             set({ contributors });
         } catch (e: any) {
-            console.error('Failed to load contributors:', e);
             set({ contributors: [] });
         }
     },
@@ -102,7 +130,6 @@ export const useGitStore = create<GitStore>((set, get) => ({
             const commits = await tauriApi.gitLog(workspacePath, 50);
             set({ commits });
         } catch (e: any) {
-            console.error('Failed to load commits:', e);
             set({ commits: [] });
         }
     },
@@ -154,17 +181,22 @@ export const useGitStore = create<GitStore>((set, get) => ({
             await tauriApi.gitCommit(workspacePath, commitMessage);
             set({ commitMessage: '' });
             await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+        }
+    },
 
-
-            const { info } = get();
-            if (info?.has_remote && info.branch) {
-                try {
-                    await get().push(workspacePath);
-                } catch (pushError) {
-
-                    console.warn('Push failed after commit:', pushError);
-                }
-            }
+    commitAmend: async (workspacePath) => {
+        const { commitMessage } = get();
+        if (!commitMessage.trim()) {
+            set({ error: 'Commit message is required' });
+            return;
+        }
+        try {
+            await tauriApi.gitCommitAmend(workspacePath, commitMessage);
+            set({ commitMessage: '' });
+            await get().refresh(workspacePath);
+            await get().refreshCommits(workspacePath);
         } catch (e: any) {
             set({ error: e.toString() });
         }
@@ -214,5 +246,196 @@ export const useGitStore = create<GitStore>((set, get) => ({
         }
     },
 
+    pull: async (workspacePath) => {
+        set({ isLoading: true, error: null });
+        try {
+            await tauriApi.gitPull(workspacePath);
+            await get().refresh(workspacePath);
+            await get().refreshCommits(workspacePath);
+            set({ isLoading: false });
+        } catch (e: any) {
+            set({ error: e.toString(), isLoading: false });
+        }
+    },
+
+    fetch: async (workspacePath) => {
+        set({ isLoading: true, error: null });
+        try {
+            await tauriApi.gitFetch(workspacePath);
+            await get().refresh(workspacePath);
+            await get().refreshCommits(workspacePath);
+            set({ isLoading: false });
+        } catch (e: any) {
+            set({ error: e.toString(), isLoading: false });
+        }
+    },
+
+    sync: async (workspacePath) => {
+        await get().pull(workspacePath);
+        if (!get().error) {
+            await get().push(workspacePath);
+        }
+    },
+
+    commitAndPush: async (workspacePath) => {
+        await get().commit(workspacePath);
+        if (!get().error) {
+            await get().push(workspacePath);
+        }
+    },
+
+    commitAndSync: async (workspacePath) => {
+        await get().commit(workspacePath);
+        if (!get().error) {
+            await get().sync(workspacePath);
+        }
+    },
+
     clearPushResult: () => set({ pushResult: null }),
+    
+    // Branch operations
+    listBranches: async (workspacePath) => {
+        try {
+            const branches = await tauriApi.gitListBranches(workspacePath);
+            return branches;
+        } catch (e: any) {
+            throw e;
+        }
+    },
+    
+    createBranch: async (workspacePath, branchName) => {
+        try {
+            await tauriApi.gitCreateBranch(workspacePath, { name: branchName });
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    checkoutBranch: async (workspacePath, branchName) => {
+        try {
+            await tauriApi.gitCheckoutBranch(workspacePath, branchName);
+            await get().refresh(workspacePath);
+            await get().refreshCommits(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    deleteBranch: async (workspacePath, branchName, force = false) => {
+        try {
+            await tauriApi.gitDeleteBranch(workspacePath, branchName, force);
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    mergeBranch: async (workspacePath, branchName) => {
+        try {
+            await tauriApi.gitMergeBranch(workspacePath, branchName);
+            await get().refresh(workspacePath);
+            await get().refreshCommits(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    // Stash operations
+    stashSave: async (workspacePath, message) => {
+        try {
+            await tauriApi.gitStashSave(workspacePath, message);
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    stashPop: async (workspacePath, index) => {
+        try {
+            await tauriApi.gitStashPop(workspacePath, index);
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    stashList: async (workspacePath) => {
+        try {
+            return await tauriApi.gitStashList(workspacePath);
+        } catch (e: any) {
+            return [];
+        }
+    },
+    
+    stashDrop: async (workspacePath, index) => {
+        try {
+            await tauriApi.gitStashDrop(workspacePath, index);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    // Remote operations
+    listRemotes: async (workspacePath) => {
+        try {
+            return await tauriApi.gitListRemotes(workspacePath);
+        } catch (e: any) {
+            return [];
+        }
+    },
+    
+    addRemote: async (workspacePath, name, url) => {
+        try {
+            await tauriApi.gitAddRemote(workspacePath, name, url);
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    removeRemote: async (workspacePath, name) => {
+        try {
+            await tauriApi.gitRemoveRemote(workspacePath, name);
+            await get().refresh(workspacePath);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    // Tag operations
+    listTags: async (workspacePath) => {
+        try {
+            return await tauriApi.gitListTags(workspacePath);
+        } catch (e: any) {
+            return [];
+        }
+    },
+    
+    createTag: async (workspacePath, tagName, message) => {
+        try {
+            await tauriApi.gitCreateTag(workspacePath, tagName, message);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
+    
+    deleteTag: async (workspacePath, tagName) => {
+        try {
+            await tauriApi.gitDeleteTag(workspacePath, tagName);
+        } catch (e: any) {
+            set({ error: e.toString() });
+            throw e;
+        }
+    },
 }));

@@ -44,25 +44,31 @@ struct GoogleSafetySetting {
 #[derive(Debug, Deserialize)]
 struct GoogleResponse {
     candidates: Vec<GoogleCandidate>,
+    #[allow(dead_code)]
     usage_metadata: GoogleUsageMetadata,
 }
 
 #[derive(Debug, Deserialize)]
 struct GoogleCandidate {
     content: GoogleContent,
+    #[allow(dead_code)]
     finish_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct GoogleUsageMetadata {
+    #[allow(dead_code)]
     prompt_token_count: u32,
+    #[allow(dead_code)]
     candidates_token_count: u32,
+    #[allow(dead_code)]
     total_token_count: u32,
 }
 
 #[derive(Debug, Deserialize)]
 struct GoogleStreamChunk {
     candidates: Vec<GoogleCandidate>,
+    #[allow(dead_code)]
     usage_metadata: Option<GoogleUsageMetadata>,
 }
 

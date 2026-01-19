@@ -22,22 +22,29 @@ struct AnthropicRequest {
 
 #[derive(Debug, Deserialize)]
 struct AnthropicResponse {
+    #[allow(dead_code)]
     id: String,
+    #[allow(dead_code)]
     type_: String,
+    #[allow(dead_code)]
     role: String,
     content: Vec<AnthropicContent>,
+    #[allow(dead_code)]
     usage: AnthropicUsage,
 }
 
 #[derive(Debug, Deserialize)]
 struct AnthropicContent {
+    #[allow(dead_code)]
     type_: String,
     text: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct AnthropicUsage {
+    #[allow(dead_code)]
     input_tokens: u32,
+    #[allow(dead_code)]
     output_tokens: u32,
 }
 

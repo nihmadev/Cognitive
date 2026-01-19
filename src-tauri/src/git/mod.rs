@@ -4,6 +4,7 @@ use git2::{Repository, StatusOptions, Signature};
 use serde::{Serialize, Deserialize};
 use std::path::Path;
 use std::collections::HashMap;
+use md5::{Md5, Digest};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GitContributor {
@@ -635,7 +636,6 @@ pub fn git_delete_branch(repo_path: String, branch_name: String) -> Result<(), S
 }
 
 fn md5_hash(input: &str) -> String {
-    use md5::{Md5, Digest};
     let mut hasher = Md5::new();
     hasher.update(input.as_bytes());
     format!("{:x}", hasher.finalize())
@@ -706,4 +706,345 @@ pub fn git_github_auth_login() -> Result<(), String> {
         }
         Err(e) => Err(format!("Failed to run GitHub CLI: {}", e)),
     }
+}
+
+#[tauri::command]
+pub fn git_pull(repo_path: String, remote_name: Option<String>, branch_name: Option<String>) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let remote_name = remote_name.unwrap_or_else(|| "origin".to_string());
+    let mut remote = repo.find_remote(&remote_name).map_err(|e| e.to_string())?;
+    
+    let branch_name = branch_name.or_else(|| {
+        repo.head().ok()
+            .and_then(|h| h.shorthand().map(|s| s.to_string()))
+    }).unwrap_or_else(|| "main".to_string());
+    
+    remote.fetch(&[&branch_name], None, None).map_err(|e| e.to_string())?;
+    
+    let fetch_head = repo.find_reference("FETCH_HEAD").map_err(|e| e.to_string())?;
+    let fetch_commit = repo.reference_to_annotated_commit(&fetch_head).map_err(|e| e.to_string())?;
+    
+    let analysis = repo.merge_analysis(&[&fetch_commit]).map_err(|e| e.to_string())?;
+    
+    if analysis.0.is_up_to_date() {
+        return Ok("Already up to date".to_string());
+    }
+    
+    if analysis.0.is_fast_forward() {
+        let refname = format!("refs/heads/{}", branch_name);
+        let mut reference = repo.find_reference(&refname).map_err(|e| e.to_string())?;
+        reference.set_target(fetch_commit.id(), "Fast-forward").map_err(|e| e.to_string())?;
+        repo.set_head(&refname).map_err(|e| e.to_string())?;
+        repo.checkout_head(Some(git2::build::CheckoutBuilder::default().force()))
+            .map_err(|e| e.to_string())?;
+        return Ok("Fast-forward successful".to_string());
+    }
+    
+    if analysis.0.is_normal() {
+        let head_commit = repo.reference_to_annotated_commit(&repo.head().map_err(|e| e.to_string())?)
+            .map_err(|e| e.to_string())?;
+        
+        repo.merge(&[&fetch_commit], None, None).map_err(|e| e.to_string())?;
+        
+        let mut index = repo.index().map_err(|e| e.to_string())?;
+        if index.has_conflicts() {
+            return Err("Merge conflicts detected. Please resolve conflicts manually.".to_string());
+        }
+        
+        let tree_id = index.write_tree().map_err(|e| e.to_string())?;
+        let tree = repo.find_tree(tree_id).map_err(|e| e.to_string())?;
+        
+        let config = repo.config().map_err(|e| e.to_string())?;
+        let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+        let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+        let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+        
+        let local_commit = repo.find_commit(head_commit.id()).map_err(|e| e.to_string())?;
+        let remote_commit = repo.find_commit(fetch_commit.id()).map_err(|e| e.to_string())?;
+        
+        let message = format!("Merge branch '{}' of {}", branch_name, remote_name);
+        repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &[&local_commit, &remote_commit])
+            .map_err(|e| e.to_string())?;
+        
+        repo.cleanup_state().map_err(|e| e.to_string())?;
+        
+        return Ok("Merge successful".to_string());
+    }
+    
+    Err("Unable to pull: unknown merge analysis result".to_string())
+}
+
+#[tauri::command]
+pub fn git_fetch(repo_path: String, remote_name: Option<String>) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let remote_name = remote_name.unwrap_or_else(|| "origin".to_string());
+    let mut remote = repo.find_remote(&remote_name).map_err(|e| e.to_string())?;
+    
+    remote.fetch(&[] as &[&str], None, None).map_err(|e| e.to_string())?;
+    
+    Ok(format!("Fetched from {}", remote_name))
+}
+
+#[tauri::command]
+pub fn git_commit_amend(repo_path: String, message: String) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let head = repo.head().map_err(|e| e.to_string())?;
+    let head_commit = head.peel_to_commit().map_err(|e| e.to_string())?;
+    
+    let mut index = repo.index().map_err(|e| e.to_string())?;
+    let tree_id = index.write_tree().map_err(|e| e.to_string())?;
+    let tree = repo.find_tree(tree_id).map_err(|e| e.to_string())?;
+    
+    let config = repo.config().map_err(|e| e.to_string())?;
+    let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+    let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+    let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+    
+    let parents: Vec<git2::Commit> = head_commit.parents().collect();
+    let parent_refs: Vec<&git2::Commit> = parents.iter().collect();
+    
+    let commit_id = repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &parent_refs)
+        .map_err(|e| e.to_string())?;
+    
+    Ok(commit_id.to_string())
+}
+
+
+
+#[tauri::command]
+pub fn git_stash_save(repo_path: String, message: Option<String>) -> Result<String, String> {
+    let mut repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let config = repo.config().map_err(|e| e.to_string())?;
+    let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+    let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+    let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+    
+    let msg = message.as_deref().unwrap_or("WIP");
+    
+    let stash_id = repo.stash_save(&sig, msg, None).map_err(|e| e.to_string())?;
+    
+    Ok(stash_id.to_string())
+}
+
+#[tauri::command]
+pub fn git_stash_pop(repo_path: String, index: Option<usize>) -> Result<(), String> {
+    let mut repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let idx = index.unwrap_or(0);
+    repo.stash_pop(idx, None).map_err(|e| e.to_string())?;
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_stash_list(repo_path: String) -> Result<Vec<(usize, String)>, String> {
+    let mut repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let mut stashes = Vec::new();
+    repo.stash_foreach(|index, name, _oid| {
+        stashes.push((index, name.to_string()));
+        true
+    }).map_err(|e| e.to_string())?;
+    
+    Ok(stashes)
+}
+
+#[tauri::command]
+pub fn git_stash_drop(repo_path: String, index: usize) -> Result<(), String> {
+    let mut repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    repo.stash_drop(index).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_add_remote(repo_path: String, name: String, url: String) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    repo.remote(&name, &url).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_remove_remote(repo_path: String, name: String) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    repo.remote_delete(&name).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_rename_remote(repo_path: String, old_name: String, new_name: String) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    repo.remote_rename(&old_name, &new_name).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_create_tag(repo_path: String, tag_name: String, message: Option<String>) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let head = repo.head().map_err(|e| e.to_string())?;
+    let target = head.peel_to_commit().map_err(|e| e.to_string())?;
+    
+    let config = repo.config().map_err(|e| e.to_string())?;
+    let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+    let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+    let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+    
+    let tag_id = if let Some(msg) = message {
+        repo.tag(&tag_name, target.as_object(), &sig, &msg, false)
+            .map_err(|e| e.to_string())?
+    } else {
+        repo.tag_lightweight(&tag_name, target.as_object(), false)
+            .map_err(|e| e.to_string())?
+    };
+    
+    Ok(tag_id.to_string())
+}
+
+#[tauri::command]
+pub fn git_delete_tag(repo_path: String, tag_name: String) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    repo.tag_delete(&tag_name).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_list_tags(repo_path: String) -> Result<Vec<String>, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    let tags = repo.tag_names(None).map_err(|e| e.to_string())?;
+    
+    let tag_list: Vec<String> = tags.iter()
+        .filter_map(|t| t.map(|s| s.to_string()))
+        .collect();
+    
+    Ok(tag_list)
+}
+
+#[tauri::command]
+pub fn git_merge_branch(repo_path: String, branch_name: String) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let branch = repo.find_branch(&branch_name, git2::BranchType::Local)
+        .map_err(|e| e.to_string())?;
+    let branch_ref = branch.into_reference();
+    let annotated_commit = repo.reference_to_annotated_commit(&branch_ref)
+        .map_err(|e| e.to_string())?;
+    
+    let analysis = repo.merge_analysis(&[&annotated_commit])
+        .map_err(|e| e.to_string())?;
+    
+    if analysis.0.is_up_to_date() {
+        return Ok("Already up to date".to_string());
+    }
+    
+    if analysis.0.is_fast_forward() {
+        let refname = format!("refs/heads/{}", 
+            repo.head().ok()
+                .and_then(|h| h.shorthand().map(|s| s.to_string()))
+                .unwrap_or_else(|| "main".to_string())
+        );
+        let mut reference = repo.find_reference(&refname).map_err(|e| e.to_string())?;
+        reference.set_target(annotated_commit.id(), "Fast-forward")
+            .map_err(|e| e.to_string())?;
+        repo.set_head(&refname).map_err(|e| e.to_string())?;
+        repo.checkout_head(Some(git2::build::CheckoutBuilder::default().force()))
+            .map_err(|e| e.to_string())?;
+        return Ok("Fast-forward merge successful".to_string());
+    }
+    
+    repo.merge(&[&annotated_commit], None, None).map_err(|e| e.to_string())?;
+    
+    let mut index = repo.index().map_err(|e| e.to_string())?;
+    if index.has_conflicts() {
+        return Err("Merge conflicts detected. Please resolve conflicts manually.".to_string());
+    }
+    
+    let tree_id = index.write_tree().map_err(|e| e.to_string())?;
+    let tree = repo.find_tree(tree_id).map_err(|e| e.to_string())?;
+    
+    let config = repo.config().map_err(|e| e.to_string())?;
+    let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+    let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+    let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+    
+    let head_commit = repo.head()
+        .and_then(|h| h.peel_to_commit())
+        .map_err(|e| e.to_string())?;
+    let merge_commit = repo.find_commit(annotated_commit.id())
+        .map_err(|e| e.to_string())?;
+    
+    let message = format!("Merge branch '{}'", branch_name);
+    repo.commit(Some("HEAD"), &sig, &sig, &message, &tree, &[&head_commit, &merge_commit])
+        .map_err(|e| e.to_string())?;
+    
+    repo.cleanup_state().map_err(|e| e.to_string())?;
+    
+    Ok("Merge successful".to_string())
+}
+
+#[tauri::command]
+pub fn git_rebase(repo_path: String, branch_name: String) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let branch = repo.find_branch(&branch_name, git2::BranchType::Local)
+        .map_err(|e| e.to_string())?;
+    let branch_ref = branch.into_reference();
+    let annotated_commit = repo.reference_to_annotated_commit(&branch_ref)
+        .map_err(|e| e.to_string())?;
+    
+    let head = repo.head().map_err(|e| e.to_string())?;
+    let head_commit = repo.reference_to_annotated_commit(&head)
+        .map_err(|e| e.to_string())?;
+    
+    let config = repo.config().map_err(|e| e.to_string())?;
+    let name = config.get_string("user.name").unwrap_or_else(|_| "Unknown".to_string());
+    let email = config.get_string("user.email").unwrap_or_else(|_| "unknown@example.com".to_string());
+    let sig = Signature::now(&name, &email).map_err(|e| e.to_string())?;
+    
+    let mut rebase = repo.rebase(Some(&head_commit), Some(&annotated_commit), None, None)
+        .map_err(|e| e.to_string())?;
+    
+    while let Some(op) = rebase.next() {
+        op.map_err(|e| e.to_string())?;
+        rebase.commit(None, &sig, None).map_err(|e| e.to_string())?;
+    }
+    
+    rebase.finish(Some(&sig)).map_err(|e| e.to_string())?;
+    
+    Ok("Rebase successful".to_string())
+}
+
+#[tauri::command]
+pub fn git_reset_hard(repo_path: String, commit_hash: Option<String>) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let target = if let Some(hash) = commit_hash {
+        let oid = git2::Oid::from_str(&hash).map_err(|e| e.to_string())?;
+        repo.find_commit(oid).map_err(|e| e.to_string())?
+    } else {
+        repo.head()
+            .and_then(|h| h.peel_to_commit())
+            .map_err(|e| e.to_string())?
+    };
+    
+    repo.reset(target.as_object(), git2::ResetType::Hard, None)
+        .map_err(|e| e.to_string())?;
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_reset_soft(repo_path: String, commit_hash: String) -> Result<(), String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    
+    let oid = git2::Oid::from_str(&commit_hash).map_err(|e| e.to_string())?;
+    let commit = repo.find_commit(oid).map_err(|e| e.to_string())?;
+    
+    repo.reset(commit.as_object(), git2::ResetType::Soft, None)
+        .map_err(|e| e.to_string())?;
+    
+    Ok(())
 }

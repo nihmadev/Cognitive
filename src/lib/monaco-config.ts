@@ -7,7 +7,7 @@ export function configureMonacoTypeScript(monaco: any) {
     
     const compilerOptions = {
         target: monaco.languages.typescript.ScriptTarget.ES2020,
-        lib: ['ES2020', 'DOM', 'DOM.Iterable'],
+        lib: ['ES2020', 'ES2019', 'ES2018', 'ES2017', 'ES2016', 'ES2015', 'DOM', 'DOM.Iterable'],
         module: monaco.languages.typescript.ModuleKind.ESNext,
         moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs, 
 
@@ -58,19 +58,11 @@ export function configureMonacoTypeScript(monaco: any) {
     });
 
     
+    // Отключаем встроенную диагностику Monaco, полагаемся только на LSP (как в VSCode)
     const diagnosticsOptions = {
-        noSemanticValidation: false,
-        noSyntaxValidation: false,
-        noSuggestionDiagnostics: false,
-
-        
-        diagnosticCodesToIgnore: [
-            
-            2307, 
-            
-            6133, 
-            6192, 
-        ]
+        noSemanticValidation: true,  // Отключаем семантическую валидацию Monaco
+        noSyntaxValidation: false,   // Оставляем только синтаксическую валидацию
+        noSuggestionDiagnostics: true, // Отключаем подсказки Monaco
     };
 
     tsDefaults.setDiagnosticsOptions(diagnosticsOptions);
@@ -80,32 +72,9 @@ export function configureMonacoTypeScript(monaco: any) {
     tsDefaults.setEagerModelSync(true);
     jsDefaults.setEagerModelSync(true);
 
-    
-    monaco.languages.typescript.javascriptDefaults.setWorkerOptions({
-        customWorkerPath: undefined
-    });
-    monaco.languages.typescript.typescriptDefaults.setWorkerOptions({
-        customWorkerPath: undefined
-    });
+    console.log('Monaco TypeScript configuration applied (LSP-only mode, like VSCode)');
 
-    
-    // Initialize TypeScript worker with error handling
-    try {
-        monaco.languages.typescript.getTypeScriptWorker().then((worker: any) => {
-            worker.getLibFiles().then(() => {
-                console.log('Monaco TypeScript worker initialized with lib files');
-            }).catch((error: any) => {
-                console.warn('Failed to load TypeScript lib files:', error);
-            });
-        }).catch((error: any) => {
-            console.warn('Failed to initialize TypeScript worker:', error);
-        });
-    } catch (error) {
-        console.warn('TypeScript worker not available:', error);
-    }
-
-    
-    
+    // Добавляем типы для CSS модулей и других ассетов
     const cssModuleDeclaration = `
 declare module '*.module.css' {
   const classes: { readonly [key: string]: string };
@@ -191,6 +160,4 @@ declare module '*.bmp' {
     
     tsDefaults.addExtraLib(cssModuleDeclaration, 'file:///node_modules/@types/css-modules/index.d.ts');
     jsDefaults.addExtraLib(cssModuleDeclaration, 'file:///node_modules/@types/css-modules/index.d.ts');
-
-    console.log('Monaco TypeScript configuration applied');
 }

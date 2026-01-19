@@ -4,6 +4,7 @@ use super::types::*;
 pub const MAX_RECENT_WORKSPACES: usize = 10;
 
 
+#[allow(dead_code)]
 pub const AUTO_SAVE_INTERVAL_SECS: u64 = 30;
 
 
@@ -31,11 +32,13 @@ pub fn default_workspace_session(workspace_path: &str) -> WorkspaceSession {
 }
 
 
+#[allow(dead_code)]
 pub fn default_panels_state() -> PanelsState {
     PanelsState::default()
 }
 
 
+#[allow(dead_code)]
 pub fn default_editor_view_state() -> EditorViewState {
     EditorViewState {
         cursor: CursorPosition { line: 1, column: 1 },

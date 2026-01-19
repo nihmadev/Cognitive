@@ -23,40 +23,52 @@ struct XAIRequest {
 #[derive(Debug, Deserialize)]
 struct XAIResponse {
     choices: Vec<XAIChoice>,
+    #[allow(dead_code)]
     usage: XAIUsage,
 }
 
 #[derive(Debug, Deserialize)]
 struct XAIChoice {
     message: XAIMessage,
+    #[allow(dead_code)]
     finish_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct XAIUsage {
+    #[allow(dead_code)]
     prompt_tokens: u32,
+    #[allow(dead_code)]
     completion_tokens: u32,
+    #[allow(dead_code)]
     total_tokens: u32,
 }
 
 #[derive(Debug, Deserialize)]
 struct XAIStreamChunk {
+    #[allow(dead_code)]
     id: String,
+    #[allow(dead_code)]
     object: String,
+    #[allow(dead_code)]
     created: u64,
+    #[allow(dead_code)]
     model: String,
     choices: Vec<XAIStreamChoice>,
 }
 
 #[derive(Debug, Deserialize)]
 struct XAIStreamChoice {
+    #[allow(dead_code)]
     index: u32,
     delta: XAIStreamDelta,
+    #[allow(dead_code)]
     finish_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct XAIStreamDelta {
+    #[allow(dead_code)]
     role: Option<String>,
     content: Option<String>,
 }

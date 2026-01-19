@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { tauriApi, type FileProblems } from '../../../../lib/tauri-api';
+import { useState, useEffect } from 'react';
 import { useProjectStore } from '../../../../store/projectStore';
 import { useDiagnosticsStore } from '../../../../store/diagnosticsStore';
 import { useProblemsMerge, type UnifiedProblem } from './useProblemsMerge';
@@ -11,57 +10,21 @@ interface ProblemsPanelProps {
 }
 
 export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
-    const [oxcProblems, setOxcProblems] = useState<FileProblems[]>([]);
     const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set());
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [scanStats, setScanStats] = useState<{ timeMs: number; cacheHits: number; cacheMisses: number } | null>(null);
     
     const currentWorkspace = useProjectStore((state) => state.currentWorkspace);
     const openFile = useProjectStore((state) => state.openFile);
     
-    
+    // Используем Monaco и LSP диагностику
     const monacoDiagnostics = useDiagnosticsStore((state) => state.monacoDiagnostics);
+    const lspDiagnostics = useDiagnosticsStore((state) => state.lspDiagnostics);
     
-    
+    // Преобразуем диагностику в формат FileProblems
     const { mergedProblems } = useProblemsMerge({
-        oxcProblems,
         monacoDiagnostics,
+        lspDiagnostics,
         currentWorkspace,
     });
-
-    const fetchProblems = useCallback(async () => {
-        if (!currentWorkspace) {
-            setOxcProblems([]);
-            return;
-        }
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const result = await tauriApi.getProblems(currentWorkspace);
-            setOxcProblems(result.files);
-            setScanStats({
-                timeMs: result.scan_time_ms,
-                cacheHits: result.cache_hits,
-                cacheMisses: result.cache_misses,
-            });
-        } catch (err) {
-            console.error('Failed to fetch problems:', err);
-            setError(err instanceof Error ? err.message : 'Failed to fetch problems');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [currentWorkspace]);
-
-    useEffect(() => {
-        fetchProblems();
-        
-        
-        const interval = setInterval(fetchProblems, 10000);
-        return () => clearInterval(interval);
-    }, [fetchProblems]);
 
     
     useEffect(() => {
@@ -82,26 +45,34 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
     };
 
     const handleProblemClick = async (problem: UnifiedProblem, filePath: string) => {
-        let fullPath = filePath.replace(/\\/g, '/');
+        // filePath уже полный путь с прямыми слэшами (например C:/ColBex/src/index.css)
+        // Нормализуем его для текущей ОС
         
+        // Определяем ОС по формату пути (если есть диск C:, D: и т.д. - это Windows)
+        const isWindows = /^[a-zA-Z]:/.test(filePath);
         
-        if (!fullPath.startsWith('/') && !/^[a-zA-Z]:/.test(fullPath)) {
-            fullPath = currentWorkspace 
-                ? `${currentWorkspace}/${fullPath}`.replace(/\/+/g, '/')
-                : fullPath;
-        }
+        // Нормализуем слэши для текущей ОС
+        let fullPath = isWindows 
+            ? filePath.replace(/\//g, '\\')
+            : filePath.replace(/\\/g, '/');
         
+        // Убираем дублирующиеся слэши
+        fullPath = fullPath.replace(/[\\\/]+/g, isWindows ? '\\' : '/');
         
         if (!fullPath || fullPath === '/' || fullPath === currentWorkspace) {
-            console.error('Invalid file path:', fullPath);
             return;
         }
         
         try {
+            const openFiles = useProjectStore.getState().openFiles;
+            const isAlreadyOpen = openFiles.includes(fullPath);
+            
             openFile(fullPath);
             
             
             const column = Math.max(1, problem.column);
+            const delay = isAlreadyOpen ? 50 : 150;
+            
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent('editor-reveal-line', {
                     detail: {
@@ -111,9 +82,8 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
                         end: column - 1
                     }
                 }));
-            }, 150);
+            }, delay);
         } catch (error) {
-            console.error('Failed to open file:', fullPath, error);
         }
     };
 
@@ -128,62 +98,25 @@ export const ProblemsPanel = ({ filterText = '' }: ProblemsPanelProps) => {
         })).filter(file => file.problems.length > 0)
         : mergedProblems;
 
-    if (isLoading && mergedProblems.length === 0) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.placeholder}>
-                    <span className={styles.spinner}>⟳</span> Checking for problems...
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.placeholder}>
-                    <span className={styles.errorText}>⚠</span> {error}
-                    <button className={styles.retryButton} onClick={fetchProblems}>
-                        Retry
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    if (filteredData.length === 0) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.placeholder}>
-                    No problems detected in workspace
-                    {scanStats && (
-                        <span className={styles.scanStats}>
-                            {' '}(scanned in {scanStats.timeMs}ms, cache: {scanStats.cacheHits}/{scanStats.cacheHits + scanStats.cacheMisses})
-                        </span>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className={styles.container}>
-            {scanStats && (
-                <div className={styles.statsBar}>
-                    ⚡ {scanStats.timeMs}ms | Cache: {scanStats.cacheHits} hits, {scanStats.cacheMisses} misses
+            {filteredData.length === 0 ? (
+                <div className={styles.placeholder}>
+                    No problems detected in workspace
+                </div>
+            ) : (
+                <div className={styles.list}>
+                    {filteredData.map((fileProblems) => (
+                        <FileProblemsGroup
+                            key={fileProblems.displayPath}
+                            fileProblems={fileProblems}
+                            isExpanded={expandedFiles.has(fileProblems.displayPath)}
+                            onToggle={() => toggleFile(fileProblems.displayPath)}
+                            onProblemClick={handleProblemClick}
+                        />
+                    ))}
                 </div>
             )}
-            <div className={styles.list}>
-                {filteredData.map((fileProblems) => (
-                    <FileProblemsGroup
-                        key={fileProblems.path}
-                        fileProblems={fileProblems}
-                        isExpanded={expandedFiles.has(fileProblems.path)}
-                        onToggle={() => toggleFile(fileProblems.path)}
-                        onProblemClick={handleProblemClick}
-                    />
-                ))}
-            </div>
         </div>
     );
 };

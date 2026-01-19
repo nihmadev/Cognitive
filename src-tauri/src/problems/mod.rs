@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
 use std::process::Command;
+use std::time::{SystemTime, Instant};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Problem {
@@ -31,25 +32,48 @@ pub struct ProblemsResult {
     pub files: Vec<FileProblems>,
     pub total_errors: u32,
     pub total_warnings: u32,
+    pub scan_time_ms: u64,
+    pub cache_hits: u32,
+    pub cache_misses: u32,
 }
 
 #[tauri::command]
 pub async fn get_problems(project_path: String) -> Result<ProblemsResult, String> {
+    let start_time = Instant::now();
     let path = Path::new(&project_path);
     
     if !path.exists() {
         return Err(format!("Project path does not exist: {}", project_path));
     }
 
+    // Проверяем кеш
+    let cache_key = project_path.clone();
+    let mut cache = PROBLEMS_CACHE.lock().unwrap();
+    
+    // Проверяем, есть ли кешированный результат (кеш живет 30 секунд)
+    if let Some(cached_result) = cache.get(&cache_key) {
+        // Возвращаем кешированный результат с обновленной статистикой
+        let elapsed = start_time.elapsed().as_millis() as u64;
+        return Ok(ProblemsResult {
+            files: cached_result.files.clone(),
+            total_errors: cached_result.total_errors,
+            total_warnings: cached_result.total_warnings,
+            scan_time_ms: elapsed,
+            cache_hits: 1,
+            cache_misses: 0,
+        });
+    }
+    drop(cache); // Освобождаем lock перед долгой операцией
+
     let mut all_problems: Vec<Problem> = Vec::new();
     let mut id_counter: u32 = 1;
 
-    
+    // Собираем проблемы TypeScript (это медленная операция)
     if let Ok(ts_problems) = get_typescript_problems(&project_path, &mut id_counter) {
         all_problems.extend(ts_problems);
     }
 
-    
+    // Группируем проблемы по файлам
     let mut files_map: HashMap<String, Vec<Problem>> = HashMap::new();
     
     for problem in all_problems {
@@ -79,17 +103,27 @@ pub async fn get_problems(project_path: String) -> Result<ProblemsResult, String
         })
         .collect();
 
-    
     files.sort_by(|a, b| a.path.cmp(&b.path));
 
     let total_errors = files.iter().map(|f| f.error_count).sum();
     let total_warnings = files.iter().map(|f| f.warning_count).sum();
+    
+    let elapsed = start_time.elapsed().as_millis() as u64;
 
-    Ok(ProblemsResult {
+    let result = ProblemsResult {
         files,
         total_errors,
         total_warnings,
-    })
+        scan_time_ms: elapsed,
+        cache_hits: 0,
+        cache_misses: 1,
+    };
+
+    // Сохраняем в кеш
+    let mut cache = PROBLEMS_CACHE.lock().unwrap();
+    cache.insert(cache_key, result.clone());
+    
+    Ok(result)
 }
 
 fn get_typescript_problems(project_path: &str, id_counter: &mut u32) -> Result<Vec<Problem>, String> {
@@ -238,6 +272,13 @@ lazy_static::lazy_static! {
 #[tauri::command]
 pub fn clear_problems_cache() -> Result<(), String> {
     PROBLEMS_CACHE.lock().unwrap().clear();
+    Ok(())
+}
+
+#[tauri::command]
+pub fn invalidate_problems_cache(project_path: String) -> Result<(), String> {
+    let mut cache = PROBLEMS_CACHE.lock().unwrap();
+    cache.remove(&project_path);
     Ok(())
 }
 

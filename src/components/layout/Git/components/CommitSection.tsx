@@ -5,11 +5,14 @@ import styles from '../GitPane.module.css';
 
 type CommitAction = 'commit' | 'commit-push' | 'commit-sync' | 'commit-amend';
 
-export const CommitSection = ({ 
-    commitMessage, 
-    filesCount, 
-    onCommitMessageChange, 
-    onCommit 
+export const CommitSection = ({
+    commitMessage,
+    filesCount,
+    onCommitMessageChange,
+    onCommit,
+    onCommitPush,
+    onCommitSync,
+    onCommitAmend
 }: CommitSectionProps) => {
     const [showMenu, setShowMenu] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -25,23 +28,22 @@ export const CommitSection = ({
 
     const handleAction = (action: CommitAction) => {
         setShowMenu(false);
-        
+
         switch (action) {
             case 'commit':
-                console.log('Commit only');
                 onCommit();
                 break;
             case 'commit-push':
-                console.log('Commit & Push');
-                onCommit();
+                if (onCommitPush) onCommitPush();
+                else onCommit();
                 break;
             case 'commit-sync':
-                console.log('Commit & Sync');
-                onCommit();
+                if (onCommitSync) onCommitSync();
+                else onCommit();
                 break;
             case 'commit-amend':
-                console.log('Commit (Amend)');
-                onCommit();
+                if (onCommitAmend) onCommitAmend();
+                else onCommit();
                 break;
         }
     };
@@ -49,8 +51,9 @@ export const CommitSection = ({
     const toggleMenu = () => {
         if (!showMenu && buttonRef.current) {
             const buttonRect = buttonRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
             setMenuPosition({
-                top: buttonRect.bottom + 20,
+                top: viewportHeight - buttonRect.top + 5,
                 left: buttonRect.left + 70
             });
         }
@@ -86,7 +89,7 @@ export const CommitSection = ({
                 onKeyDown={handleKeyDown}
             />
             <div className={styles.commitBtnGroup}>
-                <button 
+                <button
                     className={styles.commitBtn}
                     onClick={() => handleAction('commit-push')}
                     disabled={isDisabled}
@@ -94,7 +97,7 @@ export const CommitSection = ({
                     <Check size={14} />
                     Commit & Push
                 </button>
-                <button 
+                <button
                     ref={buttonRef}
                     className={styles.commitBtnDropdown}
                     onClick={toggleMenu}
@@ -104,15 +107,15 @@ export const CommitSection = ({
                 </button>
             </div>
             {showMenu && (
-                <div 
+                <div
                     ref={menuRef}
                     className={styles.commitMenu}
                     style={{
-                        top: `${menuPosition.top}px`,
+                        bottom: `${menuPosition.top}px`,
                         left: `${menuPosition.left}px`
                     }}
                 >
-                    <button 
+                    <button
                         className={styles.commitMenuItem}
                         onClick={() => handleAction('commit')}
                         disabled={isDisabled}
@@ -120,7 +123,7 @@ export const CommitSection = ({
                     >
                         Commit
                     </button>
-                    <button 
+                    <button
                         className={styles.commitMenuItem}
                         onClick={() => handleAction('commit-amend')}
                         disabled={isDisabled}
@@ -129,7 +132,7 @@ export const CommitSection = ({
                         Commit (Amend)
                     </button>
                     <div className={styles.commitMenuDivider} />
-                    <button 
+                    <button
                         className={styles.commitMenuItem}
                         onClick={() => handleAction('commit-push')}
                         disabled={isDisabled}
@@ -137,7 +140,7 @@ export const CommitSection = ({
                     >
                         Commit & Push
                     </button>
-                    <button 
+                    <button
                         className={styles.commitMenuItem}
                         onClick={() => handleAction('commit-sync')}
                         disabled={isDisabled}

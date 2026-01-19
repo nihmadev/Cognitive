@@ -40,13 +40,11 @@ export const useTerminalKeyboard = ({
             
             if (e.ctrlKey && e.shiftKey && e.code === 'Digit5' && !e.altKey) {
                 e.preventDefault();
-                console.log('Split terminal');
             }
 
             
             if (e.altKey && e.ctrlKey && e.shiftKey && e.code === 'Backquote') {
                 e.preventDefault();
-                console.log('New terminal window');
             }
 
             

@@ -1,12 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useProjectStore } from '../../../store/projectStore';
 import { X, GitCompare, Settings, User, History } from 'lucide-react';
 import { getFileIcon } from '../../../utils/fileIcons';
 import { TabActions } from '../TabActions';
 import { useFileGitStatus } from '../Sidebar/useFileGitStatus';
+import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 import clsx from 'clsx';
 import styles from './styles.module.css';
-
 
 const FileTab = ({ 
     path, 
@@ -24,6 +24,36 @@ const FileTab = ({
     onCloseFile: (path: string) => void;
 }) => {
     const gitStatus = useFileGitStatus(path);
+    
+    // Normalize path to match diagnostics store (forward slashes)
+    const normalizedPath = useMemo(() => path.replace(/\\/g, '/'), [path]);
+    
+    // Subscribe to diagnostics arrays for this file
+    const monacoDiags = useDiagnosticsStore(state => state.monacoDiagnostics[normalizedPath]);
+    const lspDiags = useDiagnosticsStore(state => state.lspDiagnostics[normalizedPath]);
+    
+    // Calculate counts only when diagnostics change
+    const diagnostics = useMemo(() => {
+        let errors = 0;
+        let warnings = 0;
+        
+        if (monacoDiags) {
+            for (const d of monacoDiags) {
+                if (d.type === 'error') errors++;
+                else if (d.type === 'warning') warnings++;
+            }
+        }
+        
+        if (lspDiags) {
+            for (const d of lspDiags) {
+                if (d.type === 'error') errors++;
+                else if (d.type === 'warning') warnings++;
+            }
+        }
+        
+        return { errors, warnings };
+    }, [monacoDiags, lspDiags]);
+    
     const name = path.split(/[\\/]/).pop() || path;
     
     
@@ -74,6 +104,11 @@ const FileTab = ({
     
     
     const showDeletedBadge = isDeleted && !gitStatusInfo;
+    
+    // Determine tab label color based on diagnostics
+    const hasErrors = diagnostics.errors > 0;
+    const hasWarnings = diagnostics.warnings > 0;
+    const diagnosticsCount = diagnostics.errors + diagnostics.warnings;
 
     return (
         <div
@@ -91,23 +126,47 @@ const FileTab = ({
                 <span className={styles.tabIcon}>
                     {getFileIcon(name, path)}
                 </span>
-                <span className={clsx(styles.tabLabel, isDeleted && styles.tabLabelDeleted, gitStatusInfo && gitStatusInfo.className)}>
+                <span className={clsx(
+                    styles.tabLabel, 
+                    isDeleted && styles.tabLabelDeleted,
+                    hasErrors && styles.tabLabelError,
+                    !hasErrors && hasWarnings && styles.tabLabelWarning
+                )}>
                     {name}
                 </span>
-                {showDeletedBadge && (
-                    <span 
-                        className={clsx(styles.gitStatusText, styles.gitDeleted)}
-                        title="File deleted from disk"
-                    >
-                        D
-                    </span>
-                )}
-                {gitStatusInfo && (
-                    <span 
-                        className={clsx(styles.gitStatusText, gitStatusInfo.className)}
-                        title={gitStatusInfo.title}
-                    >
-                        {gitStatusInfo.text}
+                {(diagnosticsCount > 0 || gitStatusInfo || showDeletedBadge) && (
+                    <span className={styles.statusContainer}>
+                        {diagnosticsCount > 0 && (
+                            <span 
+                                className={clsx(
+                                    styles.diagnosticsCount,
+                                    hasErrors && styles.diagnosticsError,
+                                    !hasErrors && hasWarnings && styles.diagnosticsWarning
+                                )}
+                                title={`${diagnostics.errors} error(s), ${diagnostics.warnings} warning(s)`}
+                            >
+                                {diagnosticsCount}
+                            </span>
+                        )}
+                        {(diagnosticsCount > 0 && (gitStatusInfo || showDeletedBadge)) && (
+                            <span className={styles.statusSeparator}>,</span>
+                        )}
+                        {showDeletedBadge && (
+                            <span 
+                                className={clsx(styles.gitStatusText, styles.gitDeleted)}
+                                title="File deleted from disk"
+                            >
+                                D
+                            </span>
+                        )}
+                        {gitStatusInfo && (
+                            <span 
+                                className={clsx(styles.gitStatusText, gitStatusInfo.className)}
+                                title={gitStatusInfo.title}
+                            >
+                                {gitStatusInfo.text}
+                            </span>
+                        )}
                     </span>
                 )}
                                 <button
