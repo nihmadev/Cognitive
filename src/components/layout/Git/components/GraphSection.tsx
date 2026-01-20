@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
-    ChevronRight, ChevronDown, Cloud, CircleDot, ExternalLink,
+    ChevronRight, ChevronDown, ExternalLink,
     MoreHorizontal, RefreshCw, Target, ArrowDownToLine, ArrowDown, CloudUpload, Check, ChevronsDownUp
 } from 'lucide-react';
 import { GraphSectionProps } from '../types';
@@ -31,7 +31,7 @@ export const GraphSection = ({
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
     const commitsListRef = useRef<HTMLDivElement>(null);
     const headCommitRef = useRef<HTMLDivElement>(null);
-    const workspacePathFromStore = useProjectStore((state) => state.workspacePath);
+    const workspacePathFromStore = useProjectStore((state) => state.currentWorkspace);
     const openCommitDiffTab = useProjectStore((state) => state.openCommitDiffTab);
     const workspacePath = workspacePathProp || workspacePathFromStore;
 

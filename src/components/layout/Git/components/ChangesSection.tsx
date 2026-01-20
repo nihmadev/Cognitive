@@ -21,8 +21,8 @@ export const ChangesSection = ({
     onDiscardChanges,
     onOpenFile
 }: ChangesSectionProps) => {
-    // Filter out ignored files from changes
-    const nonIgnoredFiles = files.filter(file => !file.is_ignored);
+    // Filter out ignored files from changes (if the property exists)
+    const nonIgnoredFiles = files.filter(file => !(file as any).is_ignored);
     
     return (
         <div className={`${styles.changesSection} ${changesOpen ? styles.open : ''}`}>

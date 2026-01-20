@@ -32,7 +32,7 @@ export interface GraphSectionProps {
     onCommitHover: (commit: GitCommit, e: React.MouseEvent) => void;
     onCommitLeave: () => void;
     onPull?: () => void | Promise<void>;
-    onPush?: () => void | Promise<void>;
+    onPush?: () => void | Promise<any>;
     onFetch?: () => void | Promise<void>;
     onRefresh?: () => void | Promise<void>;
 }
