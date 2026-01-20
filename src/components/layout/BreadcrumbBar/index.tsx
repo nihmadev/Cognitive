@@ -48,7 +48,6 @@ const MiniExplorerItem = ({ item, level, onOpenFile, onClose }: {
       });
       setChildren(sortedItems);
     } catch (error) {
-      console.error('Error loading directory contents:', error);
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +154,6 @@ export const BreadcrumbBar = ({ filePath, className }: BreadcrumbBarProps) => {
         const hierarchy = await getSymbolHierarchy();
         setSymbolHierarchy(hierarchy || []);
       } catch (error) {
-        console.error('Error updating symbols:', error);
         setSymbolHierarchy([]);
       }
     };
@@ -261,7 +259,6 @@ export const BreadcrumbBar = ({ filePath, className }: BreadcrumbBarProps) => {
         setRootItems(sortedItems);
         setMiniExplorerOpen(true);
       } catch (e) {
-        console.error("Failed to load folder content", e);
       }
     }
   };

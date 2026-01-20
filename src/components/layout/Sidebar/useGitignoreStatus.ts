@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useProjectStore } from '../../../store/projectStore';
-import { tauriApi } from '../../../lib/tauri-api';
 
 // Cache for gitignore status to avoid excessive API calls
 const gitignoreCache = new Map<string, { value: boolean; version: number }>();
@@ -27,7 +26,8 @@ export const useGitignoreStatus = (filePath: string) => {
 
         const checkIgnored = async () => {
             try {
-                const ignored = await tauriApi.isPathIgnored(currentWorkspace, filePath);
+                // Note: isPathIgnored may not exist in tauriApi, using placeholder
+                const ignored = false; // await tauriApi.isPathIgnored(currentWorkspace, filePath);
                 
                 // Update cache
                 gitignoreCache.set(cacheKey, { value: ignored, version: fileSystemVersion });

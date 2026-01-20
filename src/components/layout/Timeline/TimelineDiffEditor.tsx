@@ -40,7 +40,7 @@ const getLanguageFromPath = (path: string): string => {
     return langMap[ext] || 'plaintext';
 };
 
-export const TimelineDiffEditor = ({ filePath, oldContent, newContent, date }: TimelineDiffEditorProps) => {
+export const TimelineDiffEditor = ({ filePath, oldContent, newContent }: TimelineDiffEditorProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const diffEditorRef = useRef<any>(null);
     const scrollAnimationRef = useRef<number | null>(null);
@@ -190,28 +190,60 @@ export const TimelineDiffEditor = ({ filePath, oldContent, newContent, date }: T
                     diffEditorRef.current = editor;
                     monacoRef.current = monaco;
 
-                    // Use the correct API for diff navigation
-                    try {
-                        navigatorRef.current = monaco.editor.createDiffNavigator(editor, {
-                            followsCaret: true,
-                            ignoreCharChanges: true,
-                            alwaysRevealFirst: false
-                        });
-                    } catch (error) {
-                        console.warn('DiffNavigator fallback');
-                        navigatorRef.current = {
-                            next: () => {
-                                editor.getModifiedEditor().getAction('editor.action.diffReview.next')?.run();
-                            },
-                            previous: () => {
-                                editor.getModifiedEditor().getAction('editor.action.diffReview.prev')?.run();
+                    // Get line changes for navigation
+                    const getLineChanges = () => {
+                        const lineChanges = editor.getLineChanges();
+                        return lineChanges || [];
+                    };
+
+                    let currentChangeIndex = -1;
+
+                    navigatorRef.current = {
+                        next: () => {
+                            const changes = getLineChanges();
+                            if (changes.length === 0) {
+                                console.log('No changes found');
+                                return;
                             }
-                        };
-                    }
+
+                            currentChangeIndex = (currentChangeIndex + 1) % changes.length;
+                            const change = changes[currentChangeIndex];
+                            
+                            // Scroll to the change in modified editor
+                            const modifiedEditor = editor.getModifiedEditor();
+                            const lineNumber = change.modifiedStartLineNumber || 1;
+                            
+                            modifiedEditor.revealLineInCenter(lineNumber);
+                            modifiedEditor.setPosition({ lineNumber, column: 1 });
+                            
+                            console.log(`Navigated to change ${currentChangeIndex + 1}/${changes.length} at line ${lineNumber}`);
+                        },
+                        previous: () => {
+                            const changes = getLineChanges();
+                            if (changes.length === 0) {
+                                console.log('No changes found');
+                                return;
+                            }
+
+                            currentChangeIndex = currentChangeIndex <= 0 ? changes.length - 1 : currentChangeIndex - 1;
+                            const change = changes[currentChangeIndex];
+                            
+                            // Scroll to the change in modified editor
+                            const modifiedEditor = editor.getModifiedEditor();
+                            const lineNumber = change.modifiedStartLineNumber || 1;
+                            
+                            modifiedEditor.revealLineInCenter(lineNumber);
+                            modifiedEditor.setPosition({ lineNumber, column: 1 });
+                            
+                            console.log(`Navigated to change ${currentChangeIndex + 1}/${changes.length} at line ${lineNumber}`);
+                        }
+                    };
 
                     const modifiedEditor = editor.getModifiedEditor();
                     currentScrollTopRef.current = modifiedEditor.getScrollTop();
                     targetScrollTopRef.current = currentScrollTopRef.current;
+                    
+                    console.log('Diff navigator initialized with', getLineChanges().length, 'changes');
                 }}
                 options={{
                     readOnly: true,

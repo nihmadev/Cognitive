@@ -56,7 +56,6 @@ export async function searchInDirectory(
             })),
         }));
     } catch (e) {
-        console.error('Error searching directory', dirPath, e);
         return [];
     }
 }

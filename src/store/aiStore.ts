@@ -113,9 +113,7 @@ export const useAIStore = create<AIState>()(
                     
                     Object.entries(keys).forEach(([provider, key]) => {
                         if (key !== undefined) {
-                            invoke('set_api_key', { provider, key: key.trim() }).catch(error => {
-                                console.error(`Failed to set ${provider} API key:`, error);
-                            });
+                            invoke('set_api_key', { provider, key: key.trim() }).catch(() => {});
                         }
                     });
                     
@@ -134,7 +132,6 @@ export const useAIStore = create<AIState>()(
             
             
             initializeAgentRouter: async () => {
-                console.log('AgentRouter initialization removed');
             },
 
             initializeModels: async () => {
@@ -150,7 +147,6 @@ export const useAIStore = create<AIState>()(
                     await get().refreshOllamaModels();
                     
                 } catch (error) {
-                    console.error('Failed to initialize models:', error);
                     
                     set({ 
                         availableModels: [],
@@ -169,9 +165,7 @@ export const useAIStore = create<AIState>()(
                         if (key && key.trim()) {
                             try {
                                 await invoke('set_api_key', { provider, key: key.trim() });
-                                console.log(`Synced ${provider} API key to backend`);
                             } catch (error) {
-                                console.error(`Failed to sync ${provider} API key:`, error);
                             }
                         }
                     });
@@ -180,7 +174,6 @@ export const useAIStore = create<AIState>()(
                     
                     
                 } catch (error) {
-                    console.error('Failed to initialize API keys:', error);
                 }
             },
             
@@ -209,7 +202,6 @@ export const useAIStore = create<AIState>()(
                         return { availableModels: allModels };
                     });
                 } catch (error) {
-                    console.error('Failed to refresh Ollama models:', error);
                     
                 }
             },
@@ -311,7 +303,6 @@ export const useAIStore = create<AIState>()(
                     openAIModelsService.clearCache();
                     
                     
-                    console.log('Fetching OpenAI models from API...');
                     const openaiModels = await openAIModelsService.fetchAvailableModels();
                     
                     
@@ -344,11 +335,8 @@ export const useAIStore = create<AIState>()(
                     });
 
                     
-                    const stats = openAIModelsService.getModelStats(openaiModels);
-                    console.log('OpenAI Models Statistics:', stats);
 
                 } catch (error) {
-                    console.error('Failed to refresh OpenAI models:', error);
                     
                 } finally {
                     set({ isLoadingModels: false });
@@ -389,7 +377,6 @@ export const useAIStore = create<AIState>()(
                     });
 
                 } catch (error) {
-                    console.error('Failed to force refresh OpenAI models:', error);
                 } finally {
                     set({ isLoadingModels: false });
                 }
@@ -402,7 +389,6 @@ export const useAIStore = create<AIState>()(
                     const { googleModelsService } = await import('../components/ai/services/GoogleModelsService');
                     
                     
-                    console.log('Fetching Google models from service...');
                     const googleModels = await googleModelsService.fetchAvailableModels();
                     
                     
@@ -428,11 +414,8 @@ export const useAIStore = create<AIState>()(
                     });
 
                     
-                    const stats = googleModelsService.getModelStats(googleModels);
-                    console.log('Google Models Statistics:', stats);
 
                 } catch (error) {
-                    console.error('Failed to refresh Google models:', error);
                 } finally {
                     set({ isLoadingModels: false });
                 }
@@ -445,7 +428,6 @@ export const useAIStore = create<AIState>()(
                     const { anthropicModelsService } = await import('../components/ai/services/AnthropicModelsService');
                     
                     
-                    console.log('Fetching Anthropic models from service...');
                     const anthropicModels = await anthropicModelsService.fetchAvailableModels();
                     
                     
@@ -471,11 +453,8 @@ export const useAIStore = create<AIState>()(
                     });
 
                     
-                    const stats = anthropicModelsService.getModelStats(anthropicModels);
-                    console.log('Anthropic Models Statistics:', stats);
 
                 } catch (error) {
-                    console.error('Failed to refresh Anthropic models:', error);
                 } finally {
                     set({ isLoadingModels: false });
                 }
@@ -488,7 +467,6 @@ export const useAIStore = create<AIState>()(
                     const { glmModelsService } = await import('../components/ai/services/GLMModelsService');
                     
                     
-                    console.log('Fetching GLM models from service...');
                     const glmModels = await glmModelsService.fetchAvailableModels();
                     
                     
@@ -514,11 +492,8 @@ export const useAIStore = create<AIState>()(
                     });
 
                     
-                    const stats = glmModelsService.getModelStats(glmModels);
-                    console.log('GLM Models Statistics:', stats);
 
                 } catch (error) {
-                    console.error('Failed to refresh GLM models:', error);
                 } finally {
                     set({ isLoadingModels: false });
                 }
@@ -550,6 +525,21 @@ export const useAIStore = create<AIState>()(
         {
             name: 'ai-storage-v12', 
             version: 12,
+            partialize: (state) => ({
+                // Сохраняем разговоры и активный разговор
+                conversations: state.conversations,
+                activeConversationId: state.activeConversationId,
+                
+                // Сохраняем выбранную модель и режим
+                activeModelId: state.activeModelId,
+                activeMode: state.activeMode,
+                
+                // Сохраняем API ключи
+                apiKeys: state.apiKeys,
+                
+                // Сохраняем состояние видимости ассистента
+                isAssistantOpen: state.isAssistantOpen,
+            }),
             migrate: (persistedState: any, version: number) => {
                 
                 if (version < 12) {

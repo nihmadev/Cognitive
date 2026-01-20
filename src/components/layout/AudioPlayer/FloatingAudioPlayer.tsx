@@ -1,4 +1,4 @@
-import { Play, Pause, Music, X } from 'lucide-react';
+import { Play, Pause, Music, X, SkipForward, SkipBack } from 'lucide-react';
 import { useAudioStore } from '../../../store/audioStore';
 import styles from './FloatingAudioPlayer.module.css';
 
@@ -10,7 +10,10 @@ export const FloatingAudioPlayer = () => {
         currentTime,
         duration,
         setPlaying,
-        stop
+        stop,
+        playNext,
+        playPrevious,
+        playlist
     } = useAudioStore();
 
     if (!currentPath) return null;
@@ -36,6 +39,15 @@ export const FloatingAudioPlayer = () => {
             </div>
 
             <div className={styles.controls}>
+                {playlist.length > 1 && (
+                    <button
+                        className={styles.controlButton}
+                        onClick={playPrevious}
+                        title="Previous Track"
+                    >
+                        <SkipBack size={16} />
+                    </button>
+                )}
                 <button
                     className={styles.controlButtonMain}
                     onClick={() => setPlaying(!isPlaying)}
@@ -43,6 +55,15 @@ export const FloatingAudioPlayer = () => {
                 >
                     {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                 </button>
+                {playlist.length > 1 && (
+                    <button
+                        className={styles.controlButton}
+                        onClick={playNext}
+                        title="Next Track"
+                    >
+                        <SkipForward size={16} />
+                    </button>
+                )}
                 <button
                     className={styles.closeButton}
                     onClick={stop}

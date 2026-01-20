@@ -60,7 +60,6 @@ const GoToFileModal: React.FC<GoToFileModalProps> = ({ isOpen, onClose }) => {
                 const files = await tauriApi.getAllFiles(currentWorkspace);
                 setAllFiles(files);
             } catch (error) {
-                console.error('Error loading files:', error);
             }
         }
     };

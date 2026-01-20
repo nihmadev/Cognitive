@@ -63,9 +63,6 @@ export abstract class BaseAIService implements AIService {
       signal?.addEventListener('abort', abortHandler);
 
       
-      console.log(`${config.providerName} using model: ${modelId}`);
-
-      
       const transformedMessages = config.transformMessages 
         ? config.transformMessages(messages)
         : messages;
@@ -79,7 +76,6 @@ export abstract class BaseAIService implements AIService {
       if (signal?.aborted) {
         return; 
       }
-      console.error(`${config.providerName} API error:`, error);
       onStreamChunk(`[Error: ${error instanceof Error ? error.message : String(error)}]`);
     } finally {
       if (unlisten) unlisten();
@@ -124,8 +120,6 @@ Title:`;
       const response = await config.completeFn(modelId, transformedMessages);
       return response.trim().replace(/^["']|["']$/g, '').slice(0, 50);
     } catch (error) {
-      console.error('Error generating title:', error);
-      // Fallback to a more meaningful title based on user message
       return this.generateFallbackTitle(userMessage);
     }
   }

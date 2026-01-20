@@ -87,8 +87,6 @@ const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
                 const shell = isWindows ? 'powershell.exe' : 'bash';
                 const args = isWindows ? ['-NoLogo'] : [];
 
-                console.log('[Terminal] Spawning PTY:', shell, args, 'cwd:', workspaceRef.current);
-
                 // Spawn PTY process используя tauri-pty API
                 const pty = spawn(shell, args, {
                     cols: term.cols,
@@ -113,13 +111,11 @@ const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
                         } else if (data && typeof data === 'object' && data.buffer) {
                             text = new TextDecoder().decode(new Uint8Array(data.buffer || data));
                         } else {
-                            console.warn('[Terminal] Unknown data type:', typeof data);
                             return;
                         }
                         
                         term.write(text);
                     } catch (err) {
-                        console.error('[Terminal] Error writing to terminal:', err);
                     }
                 });
 
@@ -128,13 +124,10 @@ const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
                     try {
                         pty.write(data);
                     } catch (err) {
-                        console.error('[Terminal] Error writing to PTY:', err);
                     }
                 });
 
-                console.log('[Terminal] PTY initialized successfully');
             } catch (err) {
-                console.error('[Terminal] Failed to spawn PTY:', err);
                 term.write(`\r\n\x1b[31mFailed to spawn PTY: ${err}\x1b[0m\r\n`);
                 term.write(`\r\nPlease check that PowerShell is installed and accessible.\r\n`);
             }
@@ -205,7 +198,6 @@ const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
                     const { cols, rows } = xtermRef.current;
                     ptyRef.current.resize(cols, rows);
                 } catch (err) {
-                    console.error('[Terminal] Resize error:', err);
                 }
             }
         };
@@ -243,7 +235,6 @@ const TerminalViewComponent = ({ terminalId, isActive }: TerminalViewProps) => {
                     const { cols, rows } = xtermRef.current!;
                     ptyRef.current?.resize(cols, rows);
                 } catch (err) {
-                    console.error('[Terminal] Active resize error:', err);
                 }
             }, 50);
 

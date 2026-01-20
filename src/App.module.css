@@ -62,8 +62,7 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  min-height: 100vh;
-  padding-top: 40px;
+  height: 100vh;
 }
 
 .app::before {
@@ -84,6 +83,7 @@
   overflow: hidden;
   isolation: isolate;
   background: hsl(240 10% 4%);
+  margin-top: 40px;
 }
 
 .content {

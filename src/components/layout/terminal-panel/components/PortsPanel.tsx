@@ -10,7 +10,7 @@ export const PortsPanel = () => {
     
     // Refs for optimization
     const portsRef = useRef<PortInfo[]>([]);
-    const fetchTimeoutRef = useRef<NodeJS.Timeout>();
+    const fetchTimeoutRef = useRef<number | undefined>(undefined);
     const lastFetchRef = useRef<number>(0);
     const isMountedRef = useRef(true);
 
@@ -31,9 +31,7 @@ export const PortsPanel = () => {
             let data: PortInfo[];
             if (!force && portsRef.current.length > 0) {
                 try {
-                    console.log('[Ports] Fetching port changes...');
                     const changes = await tauriApi.getPortChanges();
-                    console.log('[Ports] Port changes received:', changes);
                     // If we have changes, merge with existing data
                     if (changes.length > 0) {
                         const existingSet = new Set(
@@ -56,36 +54,29 @@ export const PortsPanel = () => {
                         data = portsRef.current; // No changes
                     }
                 } catch (e) {
-                    console.error('[Ports] Error fetching changes, falling back to full refresh:', e);
                     // Fallback to full refresh if incremental fails
                     data = await tauriApi.getListeningPorts();
                 }
             } else {
-                console.log('[Ports] Fetching all listening ports (force=' + force + ')...');
                 data = await tauriApi.getListeningPorts();
-                console.log('[Ports] Listening ports received:', data);
             }
             
             if (!isMountedRef.current) return;
             
             // Only update if data actually changed
             if (JSON.stringify(data) !== JSON.stringify(portsRef.current)) {
-                console.log('[Ports] Updating ports state with', data.length, 'ports');
                 portsRef.current = data;
                 setPorts(data);
             } else {
-                console.log('[Ports] No changes detected');
             }
         } catch (err) {
             if (!isMountedRef.current) return;
-            console.error('[Ports] Failed to fetch ports:', err);
             // Only set error state for initial fetch or forced refresh
             if (force || portsRef.current.length === 0) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch ports');
             }
         } finally {
             if (isMountedRef.current) {
-                console.log('[Ports] Setting loading to false');
                 setLoading(false);
             }
         }
@@ -94,7 +85,6 @@ export const PortsPanel = () => {
     useEffect(() => {
         // Set mounted flag
         isMountedRef.current = true;
-        console.log('[Ports] Component mounted, starting initial fetch');
         
         // Initial fetch
         fetchPorts(true);
@@ -106,8 +96,7 @@ export const PortsPanel = () => {
         const setupPolling = () => {
             intervalId = setInterval(() => {
                 if (isMountedRef.current) {
-                    fetchPorts().catch(err => {
-                        console.error('Error fetching ports:', err);
+                    fetchPorts().catch(() => {
                         // Don't update error state for polling errors, just log them
                     });
                 }
@@ -117,7 +106,6 @@ export const PortsPanel = () => {
         setupPolling();
 
         return () => {
-            console.log('[Ports] Component unmounting, cleaning up');
             if (intervalId) {
                 clearInterval(intervalId);
             }

@@ -109,6 +109,12 @@
     text-decoration: line-through;
 }
 
+.fileName.ignored {
+    color: var(--theme-foreground-subtle, #8b949e);
+    opacity: 0.6;
+    font-style: italic;
+}
+
 .filePath {
     color: var(--theme-foreground-subtle);
     font-size: 11px;

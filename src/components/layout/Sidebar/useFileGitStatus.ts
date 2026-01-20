@@ -6,6 +6,7 @@ export type FileGitStatus = {
     status: string;
     isStaged: boolean;
     hasConflicts: boolean;
+    isIgnored: boolean;
 };
 
 export const useFileGitStatus = (filePath: string, isDirectory: boolean = false) => {
@@ -31,7 +32,7 @@ export const useFileGitStatus = (filePath: string, isDirectory: boolean = false)
     
     const gitStatus = useMemo(() => {
         if (!relativePath) {
-            return { status: '', isStaged: false, hasConflicts: false };
+            return { status: '', isStaged: false, hasConflicts: false, isIgnored: false };
         }
 
         
@@ -46,8 +47,11 @@ export const useFileGitStatus = (filePath: string, isDirectory: boolean = false)
         });
 
         if (matchingFiles.length === 0) {
-            return { status: '', isStaged: false, hasConflicts: false };
+            return { status: '', isStaged: false, hasConflicts: false, isIgnored: false };
         }
+
+        // Check if file/folder is ignored
+        const isIgnored = matchingFiles.some(file => file.is_ignored);
 
         
         
@@ -65,6 +69,13 @@ export const useFileGitStatus = (filePath: string, isDirectory: boolean = false)
 
             
             switch (file.status) {
+                case 'ignored':
+                    // Ignored files should still show as ignored
+                    if (finalStatus === '') {
+                        finalStatus = 'ignored';
+                        isStaged = false;
+                    }
+                    break;
                 case 'deleted':
                 case 'staged_deleted':
                     if (finalStatus !== 'conflicted') {
@@ -86,7 +97,7 @@ export const useFileGitStatus = (filePath: string, isDirectory: boolean = false)
                     }
                     break;
                 case 'staged_new':
-                    if (finalStatus === '') {
+                    if (finalStatus === '' || finalStatus === 'ignored') {
                         finalStatus = 'staged';
                         isStaged = true;
                     }
@@ -94,7 +105,7 @@ export const useFileGitStatus = (filePath: string, isDirectory: boolean = false)
             }
         }
 
-        return { status: finalStatus, isStaged, hasConflicts };
+        return { status: finalStatus, isStaged, hasConflicts, isIgnored };
     }, [files, relativePath, isDirectory]);
 
     return gitStatus;

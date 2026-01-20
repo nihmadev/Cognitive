@@ -13,7 +13,6 @@ export interface GLMModel {
 
 export class GLMModelsService {
   async fetchAvailableModels(_apiKey?: string): Promise<GLMModel[]> {
-    console.log('GLMModelsService: Returning predefined GLM models...');
     return await this.getFallbackModels();
   }
 
@@ -119,7 +118,6 @@ export class GLMModelsService {
       const models = await this.fetchAvailableModels();
       return models.find(model => model.id === modelId) || null;
     } catch (error) {
-      console.error(`Failed to get model details for ${modelId}:`, error);
       return null;
     }
   }
@@ -130,7 +128,6 @@ export class GLMModelsService {
       const models = await this.fetchAvailableModels();
       return models.filter(model => model.capabilities.includes(capability));
     } catch (error) {
-      console.error(`Failed to get models by capability ${capability}:`, error);
       return [];
     }
   }
@@ -175,7 +172,6 @@ export class GLMModelsService {
 
   
   clearCache(): void {
-    console.log('GLMModelsService: Cache cleared (no-op)');
   }
 
   

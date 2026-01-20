@@ -18,6 +18,38 @@
     text-transform: uppercase;
     color: #ffffff;
     letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerActions {
+    display: flex;
+    gap: 4px;
+}
+
+.headerBtn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #ffffff;
+    background: transparent;
+    border: none;
+    padding: 0;
+    transition: background-color 0.1s;
+}
+
+.headerBtn:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.headerBtn.active {
+    background-color: var(--theme-accent-muted);
+    color: var(--theme-accent);
 }
 
 .searchInputs {
@@ -179,14 +211,17 @@
 }
 
 .matchItem {
-    padding: 2px 0 2px 24px;
+    padding: 2px 8px 2px 8px;
     cursor: pointer;
     color: #ffffff;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 12px;
-    white-space: pre;
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.matchItem::-webkit-scrollbar {
+    display: none;
 }
 
 .matchItem:hover {
@@ -196,7 +231,8 @@
 
 .lineNum {
     color: #ffffff;
-    margin-right: 8px;
+    margin-right: 4px;
+    flex-shrink: 0;
 }
 
 .highlight {
@@ -204,4 +240,27 @@
     
     color: var(--theme-accent);
     font-weight: bold;
+}
+
+.flatFileResult {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.flatFileHeader {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    background-color: var(--theme-background-secondary);
+    color: var(--theme-foreground);
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.flatFileName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
 }

@@ -83,7 +83,6 @@ export const ProfileDetails = ({
                 ));
             }
         } catch (e) {
-            console.error('Failed to open folder dialog:', e);
             onSetProfiles(profiles.map(p => 
                 p.id === profile.id 
                     ? { ...p, folders: [...p.folders, { host: 'Local', path: '' }] }

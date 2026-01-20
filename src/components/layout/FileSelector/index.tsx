@@ -11,7 +11,6 @@ export const FileSelector = () => {
     
     const splitViewSecondFile: string | null = null;
     const setSplitViewSecondFile = (_file: string | null) => {
-        console.warn('Split view is not currently implemented');
     };
 
     const fileName = (path: string) => path.split(/[\\/]/).pop() || path;

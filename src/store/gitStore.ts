@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { tauriApi, GitFileStatus, GitInfo, GitContributor, GitCommit, GitPushResult } from '../lib/tauri-api';
 
 interface GitStore {
@@ -18,6 +19,8 @@ interface GitStore {
     repositoriesVisible: boolean;
     changesVisible: boolean;
     graphVisible: boolean;
+    repositoriesOpen: boolean;
+    changesOpen: boolean;
 
     setRepositoriesVisible: (visible: boolean) => void;
     setChangesVisible: (visible: boolean) => void;
@@ -25,6 +28,8 @@ interface GitStore {
     toggleRepositories: () => void;
     toggleChanges: () => void;
     toggleGraph: () => void;
+    setRepositoriesOpen: (open: boolean) => void;
+    setChangesOpen: (open: boolean) => void;
     setCommitMessage: (message: string) => void;
     setSearchQuery: (query: string) => void;
     setGraphOpen: (open: boolean) => void;
@@ -48,7 +53,7 @@ interface GitStore {
     setAuthModalOpen: (open: boolean) => void;
     
     // Branch operations
-    listBranches: (workspacePath: string) => Promise<void>;
+    listBranches: (workspacePath: string) => Promise<any[]>;
     createBranch: (workspacePath: string, branchName: string) => Promise<void>;
     checkoutBranch: (workspacePath: string, branchName: string) => Promise<void>;
     deleteBranch: (workspacePath: string, branchName: string, force?: boolean) => Promise<void>;
@@ -71,22 +76,26 @@ interface GitStore {
     deleteTag: (workspacePath: string, tagName: string) => Promise<void>;
 }
 
-export const useGitStore = create<GitStore>((set, get) => ({
-    files: [],
-    info: null,
-    contributors: [],
-    commits: [],
-    isLoading: false,
-    error: null,
-    commitMessage: '',
-    searchQuery: '',
-    graphOpen: false,
-    isPushing: false,
-    pushResult: null,
-    isAuthModalOpen: false,
-    repositoriesVisible: true,
-    changesVisible: true,
-    graphVisible: true,
+export const useGitStore = create<GitStore>()(
+    persist(
+        (set, get) => ({
+            files: [],
+            info: null,
+            contributors: [],
+            commits: [],
+            isLoading: false,
+            error: null,
+            commitMessage: '',
+            searchQuery: '',
+            graphOpen: true,
+            isPushing: false,
+            pushResult: null,
+            isAuthModalOpen: false,
+            repositoriesVisible: true,
+            changesVisible: true,
+            graphVisible: true,
+            repositoriesOpen: true,
+            changesOpen: true,
 
     setCommitMessage: (message) => set({ commitMessage: message }),
     setSearchQuery: (query) => set({ searchQuery: query }),
@@ -99,6 +108,8 @@ export const useGitStore = create<GitStore>((set, get) => ({
     toggleRepositories: () => set(state => ({ repositoriesVisible: !state.repositoriesVisible })),
     toggleChanges: () => set(state => ({ changesVisible: !state.changesVisible })),
     toggleGraph: () => set(state => ({ graphVisible: !state.graphVisible })),
+    setRepositoriesOpen: (open) => set({ repositoriesOpen: open }),
+    setChangesOpen: (open) => set({ changesOpen: open }),
 
     refresh: async (workspacePath) => {
         if (!workspacePath) return;
@@ -154,6 +165,7 @@ export const useGitStore = create<GitStore>((set, get) => ({
 
     stageAll: async (workspacePath) => {
         try {
+            // Use git's native stage all command which respects .gitignore automatically
             await tauriApi.gitStageAll(workspacePath);
             await get().refresh(workspacePath);
         } catch (e: any) {
@@ -438,4 +450,19 @@ export const useGitStore = create<GitStore>((set, get) => ({
             throw e;
         }
     },
-}));
+        }),
+        {
+            name: 'git-storage',
+            partialize: (state) => ({
+                // Сохраняем состояние видимости секций Git панели
+                repositoriesVisible: state.repositoriesVisible,
+                changesVisible: state.changesVisible,
+                graphVisible: state.graphVisible,
+                graphOpen: state.graphOpen,
+                // Сохраняем состояние открытия/закрытия секций
+                repositoriesOpen: state.repositoriesOpen,
+                changesOpen: state.changesOpen,
+            }),
+        }
+    )
+);

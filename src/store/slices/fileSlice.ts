@@ -65,7 +65,7 @@ export interface FileSlice {
 }
 
 export const createFileSlice: StateCreator<
-    FileSlice & { activeDiffTab: string | null; activeSettingsTab: string | null; activeProfilesTab: string | null },
+    FileSlice & { activeDiffTab: string | null; activeSettingsTab: string | null; activeProfilesTab: string | null; activeSearchTab: string | null },
     [],
     [],
     FileSlice
@@ -88,8 +88,6 @@ export const createFileSlice: StateCreator<
     tabsLocked: false,
 
     openNewFileModal: () => {
-        
-        console.warn('openNewFileModal called but not implemented in store');
     },
 
     setWorkspace: async (path: string) => {
@@ -107,7 +105,6 @@ export const createFileSlice: StateCreator<
             const { startFileWatcher } = get();
             await startFileWatcher();
         } catch (error) {
-            console.error('Failed to load workspace:', error);
         }
     },
 
@@ -146,7 +143,6 @@ export const createFileSlice: StateCreator<
                 await startFileWatcher();
                 return true;
             } catch (error) {
-                console.error('Failed to load last workspace:', error);
                 localStorage.removeItem('lastWorkspace');
                 return false;
             }
@@ -157,17 +153,19 @@ export const createFileSlice: StateCreator<
     refreshWorkspace: async () => {
         const { currentWorkspace } = get();
         if (currentWorkspace) {
-            const structure = await invoke<FileEntry[]>('read_dir', { path: currentWorkspace });
-            set({ 
-                fileStructure: structure,
-                fileSystemVersion: get().fileSystemVersion + 1 
-            });
+            try {
+                const structure = await invoke<FileEntry[]>('read_dir', { path: currentWorkspace });
+                set({ 
+                    fileStructure: structure,
+                    fileSystemVersion: get().fileSystemVersion + 1 
+                });
+            } catch (error) {
+            }
         }
     },
 
     openFile: (path: string) => {
         if (!path || path.trim() === '') {
-            console.error('openFile: Invalid empty path');
             return;
         }
         
@@ -206,6 +204,7 @@ export const createFileSlice: StateCreator<
             activeDiffTab: null,
             activeSettingsTab: null,
             activeProfilesTab: null,
+            activeSearchTab: null,
             history: newHistory,
             historyIndex: newHistoryIndex,
             deletedFiles: newDeletedFiles
@@ -386,7 +385,6 @@ export const createFileSlice: StateCreator<
         
         
         if (deletedFiles[filePath]) {
-            console.error('[Save] Cannot save deleted file:', filePath);
             throw new Error('Cannot save deleted file');
         }
         
@@ -401,7 +399,6 @@ export const createFileSlice: StateCreator<
                 delete newOriginalContents[filePath];
                 set({ originalContents: newOriginalContents });
             } catch (error) {
-                console.error('Failed to save file:', error);
                 throw error;
             }
         }
@@ -419,7 +416,6 @@ export const createFileSlice: StateCreator<
                 await get().setWorkspace(path);
             }
         } catch (error) {
-            console.error('Failed to open folder dialog:', error);
         }
     },
 
@@ -446,7 +442,6 @@ export const createFileSlice: StateCreator<
             
             await get().refreshWorkspace();
         } catch (error) {
-            console.error('Failed to create new file:', error);
         }
     },
 
@@ -473,7 +468,6 @@ export const createFileSlice: StateCreator<
             
             await get().refreshWorkspace();
         } catch (error) {
-            console.error('Failed to create new text file:', error);
         }
     },
 
@@ -500,7 +494,6 @@ export const createFileSlice: StateCreator<
             
             await get().refreshWorkspace();
         } catch (error) {
-            console.error('Failed to create custom file:', error);
         }
     },
 
@@ -527,7 +520,6 @@ export const createFileSlice: StateCreator<
             
             await get().refreshWorkspace();
         } catch (error) {
-            console.error('Failed to create new file with extension:', error);
         }
     },
 
@@ -535,14 +527,9 @@ export const createFileSlice: StateCreator<
         const { currentWorkspace } = get();
         if (currentWorkspace) {
             try {
-                console.log('[FileWatcher] Starting file watcher for workspace:', currentWorkspace);
                 await tauriApi.startFileWatcher(currentWorkspace);
-                console.log('[FileWatcher] File watcher started successfully for workspace:', currentWorkspace);
             } catch (error) {
-                console.error('[FileWatcher] Failed to start file watcher:', error);
             }
-        } else {
-            console.warn('[FileWatcher] No workspace to watch');
         }
     },
 
@@ -551,25 +538,17 @@ export const createFileSlice: StateCreator<
         if (currentWorkspace) {
             try {
                 await tauriApi.stopFileWatcher(currentWorkspace);
-                console.log('File watcher stopped for workspace:', currentWorkspace);
             } catch (error) {
-                console.error('Failed to stop file watcher:', error);
             }
         }
     },
 
     markPathDeleted: (path: string) => {
         if (!path) return;
-        const { deletedFiles, openFiles } = get();
-        
-        console.log('[FileStore] markPathDeleted called for:', path);
-        console.log('[FileStore] Currently open files:', openFiles);
-        console.log('[FileStore] Is file open?', openFiles.includes(path));
+        const { deletedFiles } = get();
         
         
         const newDeletedFiles = { ...deletedFiles, [path]: true };
-        
-        console.log('[FileStore] Updated deletedFiles:', newDeletedFiles);
         
         set({
             deletedFiles: newDeletedFiles,

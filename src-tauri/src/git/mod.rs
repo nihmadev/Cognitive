@@ -5,6 +5,8 @@ use serde::{Serialize, Deserialize};
 use std::path::Path;
 use std::collections::HashMap;
 use md5::{Md5, Digest};
+use std::fs;
+use std::io::{self, BufRead};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GitContributor {
@@ -22,6 +24,7 @@ pub struct GitFileStatus {
     pub status: String,
     pub is_staged: bool,
     pub is_dir: bool,
+    pub is_ignored: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -84,12 +87,17 @@ pub fn git_status(path: String) -> Result<Vec<GitFileStatus>, String> {
     let repo = Repository::open(&path).map_err(|e| e.to_string())?;
     let mut statuses = Vec::new();
     
+    // Read .gitignore patterns
+    let gitignore_patterns = read_gitignore_patterns(&path);
+    
     let mut opts = StatusOptions::new();
     opts.include_untracked(true);
-    opts.include_ignored(false);
+    opts.include_ignored(true); // Include to see all files
+    opts.recurse_untracked_dirs(true);
 
     for entry in repo.statuses(Some(&mut opts)).map_err(|e| e.to_string())?.iter() {
         let status = entry.status();
+        
         let is_staged = status.is_index_new() || status.is_index_modified() || status.is_index_deleted();
         
         let status_str = if status.is_index_new() {
@@ -104,6 +112,8 @@ pub fn git_status(path: String) -> Result<Vec<GitFileStatus>, String> {
             "modified"
         } else if status.is_wt_deleted() {
             "deleted"
+        } else if status.is_ignored() {
+            "ignored"
         } else {
             continue;
         };
@@ -111,11 +121,17 @@ pub fn git_status(path: String) -> Result<Vec<GitFileStatus>, String> {
         if let Some(file_path) = entry.path() {
             let full_path = Path::new(&path).join(file_path);
             let is_dir = full_path.is_dir();
+            
+            // Check if file is ignored using our manual check
+            // This is more reliable than git2's is_ignored() for display purposes
+            let is_ignored = is_path_ignored(file_path, &gitignore_patterns);
+            
             statuses.push(GitFileStatus {
                 path: file_path.to_string(),
                 status: status_str.to_string(),
                 is_staged,
                 is_dir,
+                is_ignored,
             });
         }
     }
@@ -653,6 +669,123 @@ fn extract_github_username(url: &str) -> Option<String> {
     }
 }
 
+/// Reads .gitignore file and returns a list of patterns
+fn read_gitignore_patterns(repo_path: &str) -> Vec<String> {
+    let gitignore_path = Path::new(repo_path).join(".gitignore");
+    let mut patterns = Vec::new();
+    
+    if let Ok(file) = fs::File::open(gitignore_path) {
+        let reader = io::BufReader::new(file);
+        for line in reader.lines() {
+            if let Ok(line) = line {
+                let trimmed = line.trim();
+                // Skip empty lines and comments
+                if !trimmed.is_empty() && !trimmed.starts_with('#') {
+                    patterns.push(trimmed.to_string());
+                }
+            }
+        }
+    }
+    
+    patterns
+}
+
+/// Checks if a file path matches any gitignore pattern
+fn is_path_ignored(file_path: &str, patterns: &[String]) -> bool {
+    // Check if the file itself or any of its parent directories match a pattern
+    
+    for pattern in patterns {
+        let pattern = pattern.trim();
+        
+        // Skip empty patterns and comments
+        if pattern.is_empty() || pattern.starts_with('#') {
+            continue;
+        }
+        
+        // Handle negation patterns (starting with !)
+        if pattern.starts_with('!') {
+            continue; // Skip negation for now
+        }
+        
+        // Remove trailing slash for directory patterns
+        let pattern = pattern.trim_end_matches('/');
+        
+        // Handle patterns starting with / (root-relative, must match from start)
+        if pattern.starts_with('/') {
+            let pattern_without_slash = &pattern[1..];
+            if file_path == pattern_without_slash || file_path.starts_with(&format!("{}/", pattern_without_slash)) {
+                return true;
+            }
+            continue; // Root-relative patterns don't match anywhere else
+        }
+        
+        // Handle wildcard patterns
+        if pattern.contains('*') {
+            if pattern.starts_with("*.") {
+                // *.ext - match file extension anywhere in the tree
+                let ext = &pattern[1..]; // includes the dot
+                // Check if the file itself ends with this extension
+                if file_path.ends_with(ext) {
+                    return true;
+                }
+                // Check if any path component ends with this extension
+                for component in file_path.split('/') {
+                    if component.ends_with(ext) {
+                        return true;
+                    }
+                }
+            } else if pattern.ends_with('*') && !pattern.contains('/') {
+                // prefix* - match files/dirs starting with prefix
+                let prefix = &pattern[..pattern.len()-1];
+                // Check each path component for exact prefix match
+                for component in file_path.split('/') {
+                    if component.starts_with(prefix) {
+                        return true;
+                    }
+                }
+            } else if pattern.starts_with('*') && !pattern.contains('/') {
+                // *suffix - match files/dirs ending with suffix
+                let suffix = &pattern[1..];
+                for component in file_path.split('/') {
+                    if component.ends_with(suffix) {
+                        return true;
+                    }
+                }
+            }
+            // Skip other complex wildcard patterns
+            continue;
+        }
+        
+        // For simple patterns (no wildcards, no leading /)
+        // These patterns can match anywhere in the directory tree
+        
+        // Check if the entire path matches
+        if file_path == pattern {
+            return true;
+        }
+        
+        // Check if path starts with pattern (for directories)
+        // e.g., "node_modules" matches "node_modules/file"
+        if file_path.starts_with(&format!("{}/", pattern)) {
+            return true;
+        }
+        
+        // Check each component of the path
+        // e.g., "node_modules" matches "path/node_modules/file"
+        let file_components: Vec<&str> = file_path.split('/').collect();
+        for (i, component) in file_components.iter().enumerate() {
+            if *component == pattern {
+                // This component matches the pattern
+                // If it's not the last component, everything under it is ignored
+                // If it is the last component, the file/dir itself is ignored
+                return true;
+            }
+        }
+    }
+    
+    false
+}
+
 fn get_avatar_url(email: &str, name: &str, is_local: bool, github_username: Option<&str>) -> Option<String> {
     if email.contains("@users.noreply.github.com") {
         let username = email.split('+').nth(1)
@@ -1048,3 +1181,118 @@ pub fn git_reset_soft(repo_path: String, commit_hash: String) -> Result<(), Stri
     
     Ok(())
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CommitFile {
+    pub path: String,
+    pub status: String, // A (Added), M (Modified), D (Deleted), R (Renamed)
+    pub old_path: Option<String>, // For renamed files
+}
+
+#[tauri::command]
+pub fn git_commit_files(repo_path: String, commit_hash: String) -> Result<Vec<CommitFile>, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    let oid = git2::Oid::from_str(&commit_hash).map_err(|e| e.to_string())?;
+    let commit = repo.find_commit(oid).map_err(|e| e.to_string())?;
+    
+    let mut files = Vec::new();
+    
+    // Get the commit's tree
+    let commit_tree = commit.tree().map_err(|e| e.to_string())?;
+    
+    // Get parent tree (if exists)
+    let parent_tree = if commit.parent_count() > 0 {
+        Some(commit.parent(0).map_err(|e| e.to_string())?.tree().map_err(|e| e.to_string())?)
+    } else {
+        None
+    };
+    
+    // Create diff between parent and current commit
+    let diff = repo.diff_tree_to_tree(
+        parent_tree.as_ref(),
+        Some(&commit_tree),
+        None
+    ).map_err(|e| e.to_string())?;
+    
+    // Iterate through deltas
+    for delta in diff.deltas() {
+        let status = match delta.status() {
+            git2::Delta::Added => "A",
+            git2::Delta::Modified => "M",
+            git2::Delta::Deleted => "D",
+            git2::Delta::Renamed => "R",
+            git2::Delta::Copied => "C",
+            _ => "M",
+        };
+        
+        let path = delta.new_file().path()
+            .or(delta.old_file().path())
+            .and_then(|p| p.to_str())
+            .unwrap_or("")
+            .to_string();
+        
+        let old_path = if delta.status() == git2::Delta::Renamed {
+            delta.old_file().path().and_then(|p| p.to_str()).map(|s| s.to_string())
+        } else {
+            None
+        };
+        
+        files.push(CommitFile {
+            path,
+            status: status.to_string(),
+            old_path,
+        });
+    }
+    
+    Ok(files)
+}
+
+#[tauri::command]
+pub fn git_file_at_commit(repo_path: String, commit_hash: String, file_path: String) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    let oid = git2::Oid::from_str(&commit_hash).map_err(|e| e.to_string())?;
+    let commit = repo.find_commit(oid).map_err(|e| e.to_string())?;
+    let tree = commit.tree().map_err(|e| e.to_string())?;
+    
+    // Get the file from the tree
+    let entry = tree.get_path(std::path::Path::new(&file_path))
+        .map_err(|e| format!("File not found in commit: {}", e))?;
+    
+    let object = entry.to_object(&repo).map_err(|e| e.to_string())?;
+    let blob = object.as_blob()
+        .ok_or_else(|| "Object is not a blob".to_string())?;
+    
+    // Convert blob content to string
+    let content = std::str::from_utf8(blob.content())
+        .map_err(|e| format!("Failed to decode file content: {}", e))?;
+    
+    Ok(content.to_string())
+}
+
+#[tauri::command]
+pub fn git_file_at_parent_commit(repo_path: String, commit_hash: String, file_path: String) -> Result<String, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    let oid = git2::Oid::from_str(&commit_hash).map_err(|e| e.to_string())?;
+    let commit = repo.find_commit(oid).map_err(|e| e.to_string())?;
+    
+    // Get parent commit (first parent for merge commits)
+    let parent = commit.parent(0)
+        .map_err(|_| "No parent commit found (this might be the initial commit)".to_string())?;
+    
+    let tree = parent.tree().map_err(|e| e.to_string())?;
+    
+    // Try to get the file from the parent tree
+    let entry = tree.get_path(std::path::Path::new(&file_path))
+        .map_err(|_| "File did not exist in parent commit (newly added file)".to_string())?;
+    
+    let object = entry.to_object(&repo).map_err(|e| e.to_string())?;
+    let blob = object.as_blob()
+        .ok_or_else(|| "Object is not a blob".to_string())?;
+    
+    // Convert blob content to string
+    let content = std::str::from_utf8(blob.content())
+        .map_err(|e| format!("Failed to decode file content: {}", e))?;
+    
+    Ok(content.to_string())
+}
+

@@ -1,4 +1,6 @@
-import { Files, Search, GitBranch, Bug, Monitor } from 'lucide-react';
+import { Files, Search, Bug, Monitor } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCodeBranch } from '@fortawesome/free-solid-svg-icons';
 import styles from './ActivityBar.module.css';
 
 export type ActivityId = 'files' | 'search' | 'git' | 'debug' | 'remote';
@@ -12,27 +14,27 @@ interface ActivityBarItem {
 const activityBarItems: ActivityBarItem[] = [
   {
     id: 'files',
-    icon: <Files size={16} strokeWidth={1.5} />,
+    icon: <Files size={20} strokeWidth={1.5} style={{ transform: 'scaleX(-1)' }} />,
     title: 'Files'
   },
   {
-    id: 'search',
-    icon: <Search size={16} strokeWidth={1.5} />,
-    title: 'Search'
-  },
-  {
     id: 'git',
-    icon: <GitBranch size={16} strokeWidth={1.5} />,
+    icon: <FontAwesomeIcon icon={faCodeBranch} style={{ fontSize: '20px' }} />,
     title: 'Source Control'
   },
   {
+    id: 'search',
+    icon: <Search size={20} strokeWidth={1.5} style={{ transform: 'scaleX(-1)' }} />,
+    title: 'Search'
+  },
+  {
     id: 'debug',
-    icon: <Bug size={16} strokeWidth={1.5} />,
+    icon: <Bug size={20} strokeWidth={1.5} />,
     title: 'Debug'
   },
   {
     id: 'remote',
-    icon: <Monitor size={16} strokeWidth={1.5} />,
+    icon: <Monitor size={20} strokeWidth={1.5} />,
     title: 'Remote Explorer'
   }
 ];

@@ -80,6 +80,29 @@
     gap: 4px;
 }
 
+.controlButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--theme-foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.controlButton:hover {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-accent);
+}
+
+.controlButton:active {
+    transform: scale(0.9);
+}
+
 .controlButtonMain {
     width: 32px;
     height: 32px;

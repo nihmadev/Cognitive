@@ -82,7 +82,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             shortcut: 'Ctrl + Shift + O', 
             icon: <Code className={styles.iconMd} />,
             action: () => {
-                console.log('Go to Symbol action triggered');
                 setShowSymbolModal(true);
                 onClose();
             }
@@ -149,7 +148,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                 const files = await tauriApi.getAllFiles(currentWorkspace);
                 setAllFiles(files);
             } catch (error) {
-                console.error('Error loading files:', error);
             }
         }
     };

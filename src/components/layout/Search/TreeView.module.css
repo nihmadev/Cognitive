@@ -1,0 +1,117 @@
+.treeView {
+    display: flex;
+    flex-direction: column;
+}
+
+.folderNode,
+.fileNode {
+    display: flex;
+    flex-direction: column;
+}
+
+.folderHeader,
+.fileHeader {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    user-select: none;
+}
+
+.folderHeader:hover,
+.fileHeader:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.chevron {
+    margin-right: 4px;
+    color: var(--theme-foreground);
+    display: flex;
+    align-items: center;
+}
+
+.folderIcon,
+.fileIcon {
+    margin-right: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.folderIcon {
+    color: var(--theme-accent);
+}
+
+.folderName,
+.fileName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.replaceFileBtn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 8px;
+    transition: all 0.1s;
+}
+
+.replaceFileBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-accent);
+}
+
+.matchCount {
+    margin-left: auto;
+    background: var(--theme-background-tertiary);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--theme-foreground);
+}
+
+.folderChildren {
+    display: flex;
+    flex-direction: column;
+}
+
+.matches {
+    display: flex;
+    flex-direction: column;
+}
+
+.matchItem {
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.matchItem:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.lineNum {
+    color: var(--theme-foreground-muted);
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.highlight {
+    background-color: var(--theme-selection);
+    color: var(--theme-accent);
+    font-weight: bold;
+}

@@ -90,7 +90,6 @@ export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
             const npmScripts = await tauriApi.npmGetScripts(currentWorkspace);
             setScripts(npmScripts);
         } catch (err) {
-            console.error('Failed to load NPM scripts:', err);
             setError('Failed to load NPM scripts');
             setScripts([]);
         } finally {
@@ -102,10 +101,8 @@ export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
         if (!currentWorkspace) return;
 
         try {
-            const result = await tauriApi.npmRunScriptInTerminal(currentWorkspace, scriptName);
-            console.log('Script started in terminal:', result);
+            await tauriApi.npmRunScriptInTerminal(currentWorkspace, scriptName);
         } catch (err) {
-            console.error('Failed to run script in terminal:', err);
         }
     }, [currentWorkspace]);
 
@@ -118,7 +115,6 @@ export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
                 return next;
             });
         } catch (err) {
-            console.error('Failed to stop script:', err);
         }
     }, []);
 
@@ -127,7 +123,6 @@ export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
             const running = await tauriApi.npmGetRunningScripts();
             setRunningScripts(new Set(running.map(script => script.name)));
         } catch (err) {
-            console.error('Failed to get running scripts:', err);
         }
     }, []);
 

@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronDown, Plus, Undo2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, Undo2, FileText } from 'lucide-react';
 import { getFileIcon, getFolderIcon } from '../../../../utils/fileIcons';
 import { ChangesSectionProps } from '../types';
 import { getStatusLabel, getFileName, getFilePath } from '../utils';
@@ -18,19 +18,23 @@ export const ChangesSection = ({
     onFileClick,
     onStageFile,
     onStageAll,
-    onDiscardChanges
+    onDiscardChanges,
+    onOpenFile
 }: ChangesSectionProps) => {
+    // Filter out ignored files from changes
+    const nonIgnoredFiles = files.filter(file => !file.is_ignored);
+    
     return (
         <div className={`${styles.changesSection} ${changesOpen ? styles.open : ''}`}>
             <div className={styles.sectionHeader} onClick={onToggle}>
                 <div className={styles.sectionTitle}>
                     {changesOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     <span>Changes</span>
-                    {files.length > 0 && (
-                        <span className={styles.sectionCount}>{files.length}</span>
+                    {nonIgnoredFiles.length > 0 && (
+                        <span className={styles.sectionCount}>{nonIgnoredFiles.length}</span>
                     )}
                 </div>
-                {files.length > 0 && (
+                {nonIgnoredFiles.length > 0 && (
                     <div className={styles.sectionActions}>
                         <button
                             className={styles.sectionBtn}
@@ -45,10 +49,10 @@ export const ChangesSection = ({
 
             {changesOpen && (
                 <div className={styles.filesList}>
-                    {files.length === 0 ? (
+                    {nonIgnoredFiles.length === 0 ? (
                         <div className={styles.emptySection}>No changes</div>
                     ) : (
-                        files.map((file) => (
+                        nonIgnoredFiles.map((file) => (
                             <div
                                 key={file.path}
                                 className={styles.fileItem}
@@ -69,6 +73,13 @@ export const ChangesSection = ({
                                     {getStatusLabel(file.status)}
                                 </span>
                                 <div className={styles.fileActions}>
+                                    <button
+                                        className={styles.fileActionBtn}
+                                        onClick={(e) => { e.stopPropagation(); onOpenFile?.(file.path); }}
+                                        title="Open File"
+                                    >
+                                        <FileText size={12} />
+                                    </button>
                                     <button
                                         className={styles.fileActionBtn}
                                         onClick={(e) => { e.stopPropagation(); onDiscardChanges(file.path); }}

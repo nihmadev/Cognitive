@@ -49,6 +49,8 @@ export const CodeEditor = () => {
         openProfilesTabs,
         activeTimelineDiffTab,
         openTimelineDiffTabs,
+        activeCommitDiffTab,
+        openCommitDiffTabs,
     } = useProjectStore();
 
     
@@ -130,6 +132,7 @@ export const CodeEditor = () => {
     const activeSettings = activeSettingsTab ? openSettingsTabs.find(t => t.id === activeSettingsTab) : null;
     const activeProfiles = activeProfilesTab ? openProfilesTabs.find(t => t.id === activeProfilesTab) : null;
     const activeTimelineDiff = activeTimelineDiffTab ? openTimelineDiffTabs.find(t => t.id === activeTimelineDiffTab) : null;
+    const activeCommitDiff = activeCommitDiffTab ? openCommitDiffTabs.find(t => t.id === activeCommitDiffTab) : null;
 
     
     
@@ -148,7 +151,6 @@ export const CodeEditor = () => {
             }
 
             if (!activeFile.trim() || activeFile === '/') {
-                console.error('Invalid file path:', activeFile);
                 setCode("// Invalid file path");
                 setLanguage('plaintext');
                 setIsBinary(false);
@@ -192,7 +194,6 @@ export const CodeEditor = () => {
                 
                 
                 if (isVideoFile(activeFile) || isAudioFile(activeFile) || isImageFile(activeFile)) {
-                    console.error('Attempting to read media file as text:', activeFile);
                     setIsBinary(false);
                     return;
                 }
@@ -208,7 +209,6 @@ export const CodeEditor = () => {
                 setFileContent(activeFile, content);
                 setLanguage(getLanguageFromExtension(ext));
             } catch (error) {
-                console.error('Failed to load file:', activeFile, error);
                 const errorStr = String(error);
                 if (errorStr.includes('File does not exist')) {
                     const { markPathDeleted } = useProjectStore.getState();
@@ -276,6 +276,22 @@ export const CodeEditor = () => {
                         oldContent={activeTimelineDiff.oldContent}
                         newContent={activeTimelineDiff.newContent}
                         date={activeTimelineDiff.date}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // Render Commit Diff Editor
+    if (activeCommitDiff) {
+        return (
+            <div className={styles.root}>
+                <div className={styles.container}>
+                    <TimelineDiffEditor
+                        filePath={activeCommitDiff.filePath}
+                        oldContent={activeCommitDiff.oldContent}
+                        newContent={activeCommitDiff.newContent}
+                        date={`Commit: ${activeCommitDiff.commitMessage}`}
                     />
                 </div>
             </div>

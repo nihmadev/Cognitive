@@ -40,7 +40,6 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ path }) => {
                     }
                 }
             } catch (error) {
-                console.error('Failed to load media:', error);
                 if (isMounted) setLoading(false);
             }
         };

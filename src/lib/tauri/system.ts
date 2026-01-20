@@ -20,7 +20,6 @@ export const getListeningPorts = async (): Promise<PortInfo[]> => {
     try {
         return await invoke<PortInfo[]>('get_listening_ports');
     } catch (error) {
-        console.error('Failed to get listening ports:', error);
         // Return empty array as fallback
         return [];
     }
@@ -30,7 +29,6 @@ export const getPortChanges = async (): Promise<PortInfo[]> => {
     try {
         return await invoke<PortInfo[]>('get_port_changes');
     } catch (error) {
-        console.error('Failed to get port changes:', error);
         // Return empty array as fallback
         return [];
     }

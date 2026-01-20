@@ -198,7 +198,6 @@ export class AgentRouterService implements AIService {
             
             onStreamChunk(`\n${toolCallJson}\n`);
           } catch (error) {
-            console.error('Failed to parse tool call:', error);
           }
         });
       }
@@ -231,7 +230,6 @@ export class AgentRouterService implements AIService {
       
     } catch (error) {
       if (signal?.aborted) return;
-      console.error('AgentRouter API error:', error);
       onStreamChunk(`[Error: ${error instanceof Error ? error.message : String(error)}]`);
     } finally {
       if (unlistenStream) unlistenStream();
@@ -265,8 +263,6 @@ Title:`;
       const response = await tauriApi.agentrouterChatComplete(modelId, messages);
       return response.trim().replace(/^"'|"'$/g, '').slice(0, 50);
     } catch (error) {
-      console.error('Error generating title:', error);
-      // Fallback to a more meaningful title based on user message
       const words = userMessage.split(' ').slice(0, 4);
       const fallbackTitle = words.join(' ') + (userMessage.split(' ').length > 4 ? '...' : '');
       return fallbackTitle.charAt(0).toUpperCase() + fallbackTitle.slice(1);

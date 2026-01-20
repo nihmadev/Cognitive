@@ -22,7 +22,6 @@ export const AISettings: React.FC<AISettingsProps> = ({ onBack, onClose, styles 
     try {
       await refreshOllamaModels();
     } catch (error) {
-      console.error('Failed to refresh models:', error);
     } finally {
       setIsRefreshing(false);
     }

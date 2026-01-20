@@ -75,6 +75,7 @@ export type GitFileStatus = {
     status: string;
     is_staged: boolean;
     is_dir: boolean;
+    is_ignored: boolean;
 };
 
 export type GitInfo = {
@@ -143,6 +144,12 @@ export type GitCommit = {
     files_changed: number;
     insertions: number;
     deletions: number;
+};
+
+export type CommitFile = {
+    path: string;
+    status: string; // A (Added), M (Modified), D (Deleted), R (Renamed), C (Copied)
+    old_path: string | null; // For renamed files
 };
 
 export type InitialState = {
@@ -306,12 +313,28 @@ export const tauriApi = {
     gitCreateBranch: (repoPath: string, request: { name: string; from_branch?: string; from_commit?: string }) => invoke<string>('git_create_branch', { repoPath, request }),
     gitCheckoutBranch: (repoPath: string, branchName: string) => invoke<string>('git_checkout_branch', { repoPath, branchName }),
     gitDeleteBranch: (repoPath: string, branchName: string, force: boolean) => invoke<string>('git_delete_branch', { repoPath, branchName, force }),
+    gitMergeBranch: (repoPath: string, branchName: string) => invoke<string>('git_merge_branch', { repoPath, branchName }),
+    gitStashSave: (repoPath: string, message?: string) => invoke<string>('git_stash_save', { repoPath, message }),
+    gitStashPop: (repoPath: string, index?: number) => invoke<string>('git_stash_pop', { repoPath, index }),
+    gitStashList: (repoPath: string) => invoke<Array<[number, string]>>('git_stash_list', { repoPath }),
+    gitStashDrop: (repoPath: string, index: number) => invoke<string>('git_stash_drop', { repoPath, index }),
+    gitAddRemote: (repoPath: string, name: string, url: string) => invoke<string>('git_add_remote', { repoPath, name, url }),
+    gitRemoveRemote: (repoPath: string, name: string) => invoke<string>('git_remove_remote', { repoPath, name }),
+    gitListTags: (repoPath: string) => invoke<string[]>('git_list_tags', { repoPath }),
+    gitCreateTag: (repoPath: string, tagName: string, message?: string) => invoke<string>('git_create_tag', { repoPath, tagName, message }),
+    gitDeleteTag: (repoPath: string, tagName: string) => invoke<string>('git_delete_tag', { repoPath, tagName }),
+    gitCommitAmend: (repoPath: string, message: string) => invoke<string>('git_commit_amend', { repoPath, message }),
+    gitPull: (repoPath: string) => invoke<string>('git_pull', { repoPath }),
+    gitFetch: (repoPath: string) => invoke<string>('git_fetch', { repoPath }),
     gitPush: (repoPath: string, remoteName?: string, branchName?: string, force?: boolean) => invoke<GitPushResult>('git_push', { repoPath, remoteName, branchName, force }),
     gitPushWithForce: (repoPath: string, remoteName?: string, branchName?: string) => invoke<GitPushResult>('git_push_with_force', { repoPath, remoteName, branchName }),
     gitListRemotes: (repoPath: string) => invoke<string[]>('git_list_remotes', { repoPath }),
     gitGetRemoteUrl: (repoPath: string, remoteName: string) => invoke<string>('git_get_remote_url', { repoPath, remoteName }),
     gitGithubAuthStatus: () => invoke<boolean>('git_github_auth_status'),
     gitGithubAuthLogin: () => invoke<void>('git_github_auth_login'),
+    gitCommitFiles: (repoPath: string, commitHash: string) => invoke<CommitFile[]>('git_commit_files', { repoPath, commitHash }),
+    gitFileAtCommit: (repoPath: string, commitHash: string, filePath: string) => invoke<string>('git_file_at_commit', { repoPath, commitHash, filePath }),
+    gitFileAtParentCommit: (repoPath: string, commitHash: string, filePath: string) => invoke<string>('git_file_at_parent_commit', { repoPath, commitHash, filePath }),
     searchInFiles: (root_path: string, options: SearchOptions) =>
         invoke<SearchResult[]>('search_in_files', { rootPath: root_path, options }),
     replaceAll: (root_path: string, options: SearchOptions, replace_query: string, preserve_case_flag: boolean) =>

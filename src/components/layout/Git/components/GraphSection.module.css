@@ -86,25 +86,43 @@
     flex-direction: column;
 }
 
-.commitRow {
+.commitContainer {
     display: flex;
-    align-items: center;
-    padding: 4px 12px;
+    flex-direction: column;
+}
+
+.commitWithGraph {
+    display: flex;
     gap: 8px;
-    cursor: pointer;
-    position: relative;
 }
 
-.commitRow:hover {
-    background-color: var(--theme-hover-overlay);
-}
-
-.graphLine {
+.graphLineWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 16px;
     position: relative;
+    flex-shrink: 0;
+    padding-left: 12px;
+}
+
+.commitContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.commitRow {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px 4px 0;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.commitRow:hover {
+    background-color: var(--theme-hover-overlay);
 }
 
 .graphNode {
@@ -114,6 +132,7 @@
     background-color: var(--theme-accent);
     border: 2px solid var(--theme-accent-muted);
     z-index: 1;
+    flex-shrink: 0;
 }
 
 .graphNodeHead {
@@ -127,8 +146,16 @@
     position: absolute;
     top: 12px;
     width: 2px;
-    height: calc(100% + 8px);
+    height: calc(100% + 100px);
     background-color: var(--theme-accent);
+}
+
+.expandIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-foreground-subtle);
+    margin-left: auto;
 }
 
 .commitInfo {
@@ -244,4 +271,163 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.commitContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.expandIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-foreground-subtle);
+    margin-left: auto;
+}
+
+.commitFilesContainer {
+    padding: 2px 0 8px 0;
+    margin-top: -2px;
+    background-color: transparent;
+}
+
+.loadingFiles {
+    font-size: 11px;
+    color: var(--theme-foreground-subtle);
+    padding: 4px 0;
+}
+
+.noFiles {
+    font-size: 11px;
+    color: var(--theme-foreground-subtle);
+    padding: 4px 0;
+}
+
+.fileTree {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.filesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--theme-foreground-subtle);
+    padding: 4px 4px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.collapseAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: var(--theme-foreground-subtle);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.collapseAllBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.fileItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 4px;
+    font-size: 11px;
+    color: var(--theme-foreground);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.fileItem:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.fileItem.deleted {
+    color: var(--theme-git-deleted);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.fileItem.deleted:hover {
+    opacity: 1;
+}
+
+.fileName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fileStatus {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 0;
+    min-width: 12px;
+    text-align: center;
+}
+
+.statusA {
+    color: #2ea043;
+}
+
+.statusM {
+    color: #db9a04;
+}
+
+.statusD {
+    color: #cf222e;
+}
+
+.statusR {
+    color: #1f6feb;
+}
+
+.statusC {
+    color: #8957e5;
+}
+
+.folderItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.folderHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 4px;
+    font-size: 11px;
+    color: var(--theme-foreground);
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.folderHeader:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.folderName {
+    font-weight: 500;
+}
+
+.folderChildren {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }

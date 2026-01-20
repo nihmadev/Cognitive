@@ -66,13 +66,11 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
         const fileToSave = filePath || projectStore.activeFile || editorStore.currentFilePath;
         
         if (!fileToSave) {
-            console.log('No file to auto-save');
             return;
         }
 
         
         if (!projectStore.unsavedChanges[fileToSave]) {
-            console.log('No unsaved changes for:', fileToSave);
             return;
         }
 
@@ -90,9 +88,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
                 isAutoSaving: false
             }));
 
-            console.log('Auto-saved:', fileToSave);
         } catch (error) {
-            console.error('Auto-save failed for', fileToSave, ':', error);
             set({ isAutoSaving: false });
         }
     },
@@ -167,9 +163,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set, get) => ({
                 isAutoSaving: false
             });
 
-            console.log(`Auto-saved ${unsavedFiles.length} files`);
         } catch (error) {
-            console.error('Bulk auto-save failed:', error);
             set({ isAutoSaving: false });
         }
     },

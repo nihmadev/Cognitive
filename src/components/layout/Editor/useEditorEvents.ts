@@ -71,6 +71,17 @@ export const useEditorEvents = ({
                 return;
             }
             
+            // Skip diagnostics for non-code files (like .gitignore, .env, etc.)
+            const ext = activeFile.split('.').pop()?.toLowerCase();
+            const codeExtensions = ['ts', 'tsx', 'js', 'jsx', 'mts', 'cts', 'mjs', 'cjs', 
+                                   'py', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go', 
+                                   'rs', 'rb', 'php', 'swift', 'kt', 'scala', 'r', 
+                                   'css', 'scss', 'sass', 'less', 'html', 'xml', 'json', 
+                                   'yaml', 'yml', 'toml', 'md', 'txt'];
+            if (!ext || !codeExtensions.includes(ext)) {
+                return;
+            }
+            
             const markers = monaco.editor.getModelMarkers({ resource: model.uri });
             const fileName = activeFile.split(/[\\/]/).pop() || activeFile;
 
@@ -84,15 +95,6 @@ export const useEditorEvents = ({
                     ? normalizedPath.replace(currentWorkspace.replace(/\\/g, '/'), '').replace(/^[\\/]/, '')
                     : normalizedPath
                 : normalizedPath;
-
-            console.log('Debug diagnostics:', {
-                activeFile,
-                modelUri: model.uri.toString(),
-                modelPath,
-                normalizedPath,
-                relativePath,
-                markersCount: markers.length
-            });
 
             const diagnostics: MonacoDiagnostic[] = markers.map((marker: any, idx: number) => {
                 let type: 'error' | 'warning' | 'info' | 'hint' = 'info';
@@ -118,13 +120,10 @@ export const useEditorEvents = ({
 
             // Используем полный путь с прямыми слэшами как ключ для диагностики
             const diagnosticsKey = normalizedActiveFile;
-            console.log('[collectDiagnostics] Saving diagnostics with key:', diagnosticsKey, 'count:', diagnostics.length);
             setFileDiagnostics(diagnosticsKey, diagnostics);
         } catch (error: any) {
-            console.warn('Error collecting diagnostics:', error);
             
             if (error.message && error.message.includes('Could not find source file')) {
-                console.warn('In-memory model detected, skipping diagnostics collection');
                 return;
             }
         }
@@ -142,11 +141,21 @@ export const useEditorEvents = ({
         try {
             let symbols: OutlineSymbol[];
 
-
             const model = editorRef.current?.getModel();
             if (model && unsavedChanges[activeFile]) {
                 // Skip outline for in-memory models
                 if (model.uri.scheme === 'inmemory') {
+                    setLoading(false);
+                    clearSymbols();
+                    return;
+                }
+                
+                // Skip outline for non-code files
+                const ext = activeFile.split('.').pop()?.toLowerCase();
+                const codeExtensions = ['ts', 'tsx', 'js', 'jsx', 'mts', 'cts', 'mjs', 'cjs',
+                                       'py', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go',
+                                       'rs', 'rb', 'php', 'swift', 'kt', 'scala', 'r'];
+                if (!ext || !codeExtensions.includes(ext)) {
                     setLoading(false);
                     clearSymbols();
                     return;
@@ -158,6 +167,16 @@ export const useEditorEvents = ({
                     content
                 });
             } else {
+                // Skip outline for non-code files
+                const ext = activeFile.split('.').pop()?.toLowerCase();
+                const codeExtensions = ['ts', 'tsx', 'js', 'jsx', 'mts', 'cts', 'mjs', 'cjs',
+                                       'py', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go',
+                                       'rs', 'rb', 'php', 'swift', 'kt', 'scala', 'r'];
+                if (!ext || !codeExtensions.includes(ext)) {
+                    setLoading(false);
+                    clearSymbols();
+                    return;
+                }
 
                 symbols = await invoke<OutlineSymbol[]>('get_outline', { filePath: activeFile });
             }
@@ -169,7 +188,6 @@ export const useEditorEvents = ({
                 clearSymbols();
             }
         } catch (error) {
-            console.error('Failed to get outline symbols:', error);
             setLoading(false);
             clearSymbols();
         }
@@ -258,7 +276,6 @@ export const useEditorEvents = ({
 
                     const { deletedFiles } = useProjectStore.getState();
                     if (deletedFiles[activeFile]) {
-                        console.warn('[Save] Cannot save deleted file:', activeFile);
 
                         return;
                     }

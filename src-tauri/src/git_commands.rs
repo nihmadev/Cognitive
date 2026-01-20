@@ -569,3 +569,68 @@ fn get_avatar_url(email: &str, name: &str, is_local: bool, github_username: Opti
     let hash = md5_hash(&email.trim().to_lowercase());
     Some(format!("https://www.gravatar.com/avatar/{}?s=40&d=retro", hash))
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CommitFile {
+    pub path: String,
+    pub status: String, // A (Added), M (Modified), D (Deleted), R (Renamed)
+    pub old_path: Option<String>, // For renamed files
+}
+
+#[tauri::command]
+pub fn git_commit_files(repo_path: String, commit_hash: String) -> Result<Vec<CommitFile>, String> {
+    let repo = Repository::open(&repo_path).map_err(|e| e.to_string())?;
+    let oid = git2::Oid::from_str(&commit_hash).map_err(|e| e.to_string())?;
+    let commit = repo.find_commit(oid).map_err(|e| e.to_string())?;
+    
+    let mut files = Vec::new();
+    
+    // Get the commit's tree
+    let commit_tree = commit.tree().map_err(|e| e.to_string())?;
+    
+    // Get parent tree (if exists)
+    let parent_tree = if commit.parent_count() > 0 {
+        Some(commit.parent(0).map_err(|e| e.to_string())?.tree().map_err(|e| e.to_string())?)
+    } else {
+        None
+    };
+    
+    // Create diff between parent and current commit
+    let diff = repo.diff_tree_to_tree(
+        parent_tree.as_ref(),
+        Some(&commit_tree),
+        None
+    ).map_err(|e| e.to_string())?;
+    
+    // Iterate through deltas
+    for delta in diff.deltas() {
+        let status = match delta.status() {
+            git2::Delta::Added => "A",
+            git2::Delta::Modified => "M",
+            git2::Delta::Deleted => "D",
+            git2::Delta::Renamed => "R",
+            git2::Delta::Copied => "C",
+            _ => "M",
+        };
+        
+        let path = delta.new_file().path()
+            .or(delta.old_file().path())
+            .and_then(|p| p.to_str())
+            .unwrap_or("")
+            .to_string();
+        
+        let old_path = if delta.status() == git2::Delta::Renamed {
+            delta.old_file().path().and_then(|p| p.to_str()).map(|s| s.to_string())
+        } else {
+            None
+        };
+        
+        files.push(CommitFile {
+            path,
+            status: status.to_string(),
+            old_path,
+        });
+    }
+    
+    Ok(files)
+}

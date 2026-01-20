@@ -15,7 +15,6 @@ export const ProfilesPane = () => {
             const saved = localStorage.getItem(PROFILES_STORAGE_KEY);
             if (saved) return JSON.parse(saved);
         } catch (e) {
-            console.error('Failed to load profiles:', e);
         }
         return [{
             id: 'default',

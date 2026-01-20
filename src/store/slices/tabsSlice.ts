@@ -17,6 +17,21 @@ export interface TimelineDiffTab {
     date: string;
 }
 
+export interface CommitDiffTab {
+    id: string;
+    filePath: string;
+    fileName: string;
+    commitHash: string;
+    commitMessage: string;
+    oldContent: string;
+    newContent: string;
+}
+
+export interface SearchTab {
+    id: string;
+    title: string;
+}
+
 export interface TabsSlice {
     openDiffTabs: DiffTab[];
     activeDiffTab: string | null;
@@ -29,6 +44,18 @@ export interface TabsSlice {
     openTimelineDiffTab: (filePath: string, entryId: string, oldContent: string, newContent: string, date: string) => void;
     closeTimelineDiffTab: (id: string) => void;
     setActiveTimelineDiffTab: (id: string | null) => void;
+
+    openCommitDiffTabs: CommitDiffTab[];
+    activeCommitDiffTab: string | null;
+    openCommitDiffTab: (filePath: string, commitHash: string, commitMessage: string, oldContent: string, newContent: string) => void;
+    closeCommitDiffTab: (id: string) => void;
+    setActiveCommitDiffTab: (id: string | null) => void;
+
+    openSearchTabs: SearchTab[];
+    activeSearchTab: string | null;
+    openSearchTab: () => void;
+    closeSearchTab: (id: string) => void;
+    setActiveSearchTab: (id: string | null) => void;
 }
 
 export const createTabsSlice: StateCreator<
@@ -41,6 +68,10 @@ export const createTabsSlice: StateCreator<
     activeDiffTab: null,
     openTimelineDiffTabs: [],
     activeTimelineDiffTab: null,
+    openCommitDiffTabs: [],
+    activeCommitDiffTab: null,
+    openSearchTabs: [],
+    activeSearchTab: null,
 
     openDiffTab: (filePath: string, isStaged: boolean) => {
         const { openDiffTabs } = get();
@@ -49,7 +80,7 @@ export const createTabsSlice: StateCreator<
         
         const existing = openDiffTabs.find(t => t.id === id);
         if (existing) {
-            set({ activeDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeTimelineDiffTab: null });
+            set({ activeDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeTimelineDiffTab: null, activeCommitDiffTab: null });
             return;
         }
         
@@ -59,7 +90,8 @@ export const createTabsSlice: StateCreator<
             activeFile: null,
             activeSettingsTab: null,
             activeProfilesTab: null,
-            activeTimelineDiffTab: null
+            activeTimelineDiffTab: null,
+            activeCommitDiffTab: null
         });
     },
 
@@ -88,7 +120,7 @@ export const createTabsSlice: StateCreator<
 
     setActiveDiffTab: (id: string | null) => {
         if (id) {
-            set({ activeDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeTimelineDiffTab: null });
+            set({ activeDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeTimelineDiffTab: null, activeCommitDiffTab: null });
         } else {
             set({ activeDiffTab: null });
         }
@@ -101,7 +133,7 @@ export const createTabsSlice: StateCreator<
         
         const existing = openTimelineDiffTabs.find(t => t.id === id);
         if (existing) {
-            set({ activeTimelineDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null });
+            set({ activeTimelineDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeCommitDiffTab: null });
             return;
         }
         
@@ -111,7 +143,8 @@ export const createTabsSlice: StateCreator<
             activeFile: null,
             activeSettingsTab: null,
             activeProfilesTab: null,
-            activeDiffTab: null
+            activeDiffTab: null,
+            activeCommitDiffTab: null
         });
     },
 
@@ -140,9 +173,115 @@ export const createTabsSlice: StateCreator<
 
     setActiveTimelineDiffTab: (id: string | null) => {
         if (id) {
-            set({ activeTimelineDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null });
+            set({ activeTimelineDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeCommitDiffTab: null });
         } else {
             set({ activeTimelineDiffTab: null });
+        }
+    },
+
+    openCommitDiffTab: (filePath: string, commitHash: string, commitMessage: string, oldContent: string, newContent: string) => {
+        const { openCommitDiffTabs } = get();
+        const id = `commit:${filePath}:${commitHash}`;
+        const fileName = filePath.split(/[\\/]/).pop() || filePath;
+        
+        const existing = openCommitDiffTabs.find(t => t.id === id);
+        if (existing) {
+            set({ activeCommitDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeTimelineDiffTab: null });
+            return;
+        }
+        
+        set({
+            openCommitDiffTabs: [...openCommitDiffTabs, { id, filePath, fileName, commitHash, commitMessage, oldContent, newContent }],
+            activeCommitDiffTab: id,
+            activeFile: null,
+            activeSettingsTab: null,
+            activeProfilesTab: null,
+            activeDiffTab: null,
+            activeTimelineDiffTab: null
+        });
+    },
+
+    closeCommitDiffTab: (id: string) => {
+        const { openCommitDiffTabs, activeCommitDiffTab, openFiles } = get();
+        const newTabs = openCommitDiffTabs.filter(t => t.id !== id);
+        
+        let newActiveTab = activeCommitDiffTab;
+        let newActiveFile = null;
+        
+        if (activeCommitDiffTab === id) {
+            if (newTabs.length > 0) {
+                newActiveTab = newTabs[newTabs.length - 1].id;
+            } else {
+                newActiveTab = null;
+                newActiveFile = openFiles.length > 0 ? openFiles[openFiles.length - 1] : null;
+            }
+        }
+        
+        set({
+            openCommitDiffTabs: newTabs,
+            activeCommitDiffTab: newActiveTab,
+            activeFile: newActiveFile
+        });
+    },
+
+    setActiveCommitDiffTab: (id: string | null) => {
+        if (id) {
+            set({ activeCommitDiffTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeTimelineDiffTab: null });
+        } else {
+            set({ activeCommitDiffTab: null });
+        }
+    },
+
+    openSearchTab: () => {
+        const { openSearchTabs } = get();
+        const id = `search:${Date.now()}`;
+        
+        const existing = openSearchTabs.find(t => t.id.startsWith('search:'));
+        if (existing) {
+            set({ activeSearchTab: existing.id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeTimelineDiffTab: null, activeCommitDiffTab: null });
+            return;
+        }
+        
+        set({
+            openSearchTabs: [...openSearchTabs, { id, title: 'Search' }],
+            activeSearchTab: id,
+            activeFile: null,
+            activeSettingsTab: null,
+            activeProfilesTab: null,
+            activeDiffTab: null,
+            activeTimelineDiffTab: null,
+            activeCommitDiffTab: null
+        });
+    },
+
+    closeSearchTab: (id: string) => {
+        const { openSearchTabs, activeSearchTab, openFiles } = get();
+        const newTabs = openSearchTabs.filter(t => t.id !== id);
+        
+        let newActiveTab = activeSearchTab;
+        let newActiveFile = null;
+        
+        if (activeSearchTab === id) {
+            if (newTabs.length > 0) {
+                newActiveTab = newTabs[newTabs.length - 1].id;
+            } else {
+                newActiveTab = null;
+                newActiveFile = openFiles.length > 0 ? openFiles[openFiles.length - 1] : null;
+            }
+        }
+        
+        set({
+            openSearchTabs: newTabs,
+            activeSearchTab: newActiveTab,
+            activeFile: newActiveFile
+        });
+    },
+
+    setActiveSearchTab: (id: string | null) => {
+        if (id) {
+            set({ activeSearchTab: id, activeFile: null, activeSettingsTab: null, activeProfilesTab: null, activeDiffTab: null, activeTimelineDiffTab: null, activeCommitDiffTab: null });
+        } else {
+            set({ activeSearchTab: null });
         }
     },
 });

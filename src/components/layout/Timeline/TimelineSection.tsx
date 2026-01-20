@@ -97,7 +97,6 @@ export const TimelineSection = () => {
             const binaryExtensions = ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg', 'opus', 'weba', 'mp4', 'avi', 'mov', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'ico', 'pdf', 'zip', 'rar', 'exe', 'dll'];
             
             if (binaryExtensions.includes(extension)) {
-                console.warn('Cannot compare binary files:', activeFile);
                 return;
             }
 
@@ -105,7 +104,6 @@ export const TimelineSection = () => {
             const currentContent = await tauriApi.readFile(activeFile);
             openTimelineDiffTab(relativePath, entry.id, oldContent, currentContent, entry.date);
         } catch (e) {
-            console.error('Failed to compare:', e);
         }
     };
 
@@ -115,7 +113,6 @@ export const TimelineSection = () => {
             const content = await restore(currentWorkspace, relativePath, entry.id);
             forceUpdateContent(activeFile, content);
         } catch (e) {
-            console.error('Failed to restore:', e);
         }
     };
 

@@ -28,18 +28,15 @@ fn to_file_uri(path: &str) -> String {
 
 #[tauri::command]
 pub fn lsp_initialize(state: State<LspState>, app: AppHandle, project_path: String) -> Result<(), String> {
-    println!("[LSP] Initializing LSP for project: {}", project_path);
     let mut client = state.client.lock().map_err(|_| "Failed to lock LSP client")?;
     client.start(app).map_err(|e| format!("Failed to start LSP: {}", e))?;
     client.initialize(to_file_uri(&project_path))?;
-    println!("[LSP] LSP initialized successfully");
     Ok(())
 }
 
 #[tauri::command]
 pub fn lsp_did_open(state: State<LspState>, path: String, content: String) -> Result<(), String> {
     let uri = to_file_uri(&path);
-    println!("[LSP] Opening file: {} -> {}", path, uri);
     let mut client = state.client.lock().map_err(|_| "Failed to lock LSP client")?;
     client.did_open(uri, content)?;
     Ok(())
@@ -48,7 +45,6 @@ pub fn lsp_did_open(state: State<LspState>, path: String, content: String) -> Re
 #[tauri::command]
 pub fn lsp_did_change(state: State<LspState>, path: String, content: String, version: i32) -> Result<(), String> {
     let uri = to_file_uri(&path);
-    println!("[LSP] File changed: {} -> {}, version: {}", path, uri, version);
     let mut client = state.client.lock().map_err(|_| "Failed to lock LSP client")?;
     client.did_change(uri, content, version)?;
     Ok(())

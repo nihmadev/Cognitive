@@ -238,14 +238,28 @@ export const useUIStore = create<UIState>()(
         {
             name: 'ui-storage',
             partialize: (state) => ({
+                // Сохраняем настройки отображения
                 zoomLevel: state.zoomLevel,
                 theme: state.theme,
                 fontSettings: state.fontSettings,
                 minimapEnabled: state.minimapEnabled,
                 lineNumbersEnabled: state.lineNumbersEnabled,
                 tabSize: state.tabSize,
+                
+                // Сохраняем размеры панелей
                 sidebarWidth: state.sidebarWidth,
-                aiPanelWidth: state.aiPanelWidth
+                aiPanelWidth: state.aiPanelWidth,
+                
+                // Сохраняем состояние видимости панелей
+                showSidebar: state.showSidebar,
+                showTerminal: state.showTerminal,
+                isTerminalMaximized: state.isTerminalMaximized,
+                
+                // Сохраняем активную вкладку нижней панели
+                bottomPanelTab: state.bottomPanelTab,
+                
+                // Сохраняем режим вставки
+                insertMode: state.insertMode,
             }),
             onRehydrateStorage: () => (state) => {
 

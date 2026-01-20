@@ -8,22 +8,22 @@ import { TooltipPosition } from './types';
 import styles from './GitPane.module.css';
 
 export const GitPane = () => {
-    const { currentWorkspace, openDiffTab } = useProjectStore();
+    const { currentWorkspace, openDiffTab, openFile } = useProjectStore();
     const {
         files, info, commits, isLoading, error, commitMessage, graphOpen, pushResult,
         isAuthModalOpen,
         repositoriesVisible, changesVisible, graphVisible,
+        repositoriesOpen, changesOpen,
         setCommitMessage, setGraphOpen, refresh, refreshCommits, stageFile,
         stageAll, commit, commitAmend, discardChanges, clearPushResult, setAuthModalOpen, push,
         toggleRepositories, toggleChanges, toggleGraph,
+        setRepositoriesOpen, setChangesOpen,
         pull, fetch, commitAndPush, commitAndSync
     } = useGitStore();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-    const [repositoriesOpen, setRepositoriesOpen] = useState(false);
-    const [changesOpen, setChangesOpen] = useState(false);
     const [hoveredCommit, setHoveredCommit] = useState<GitCommit | null>(null);
     const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({ x: 0, y: 0 });
     const [isTooltipHovered, setIsTooltipHovered] = useState(false);
@@ -100,6 +100,14 @@ export const GitPane = () => {
 
     const handleFileClick = (file: { path: string; is_staged: boolean }) => {
         openDiffTab(file.path, file.is_staged);
+    };
+
+    const handleOpenFile = (relativePath: string) => {
+        if (!currentWorkspace) return;
+        
+        // Преобразуем относительный путь в полный
+        const fullPath = `${currentWorkspace}/${relativePath}`.replace(/\\/g, '/');
+        openFile(fullPath);
     };
 
     const handleAuthLogin = async () => {
@@ -248,6 +256,7 @@ export const GitPane = () => {
                     onStageFile={(path) => stageFile(currentWorkspace, path)}
                     onStageAll={() => stageAll(currentWorkspace)}
                     onDiscardChanges={(path) => discardChanges(currentWorkspace, path)}
+                    onOpenFile={handleOpenFile}
                 />
             )}
 
@@ -268,9 +277,14 @@ export const GitPane = () => {
                     commits={commits}
                     graphOpen={graphOpen}
                     remoteName={info?.remote_name}
+                    workspacePath={currentWorkspace}
                     onToggle={() => setGraphOpen(!graphOpen)}
                     onCommitHover={handleCommitHover}
                     onCommitLeave={handleCommitLeave}
+                    onPull={() => pull(currentWorkspace)}
+                    onPush={() => push(currentWorkspace)}
+                    onFetch={() => fetch(currentWorkspace)}
+                    onRefresh={() => refreshCommits(currentWorkspace)}
                 />
             )}
 

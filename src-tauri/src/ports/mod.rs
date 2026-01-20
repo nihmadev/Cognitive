@@ -38,28 +38,22 @@ lazy_static::lazy_static! {
 
 #[tauri::command]
 pub async fn get_listening_ports() -> Result<Vec<PortInfo>, String> {
-    println!("[Ports] get_listening_ports called");
     let mut cache = PORT_CACHE.lock().unwrap();
     
     // Return cached data if less than 2 seconds old
     if cache.timestamp.elapsed() < Duration::from_secs(2) && !cache.data.is_empty() {
-        println!("[Ports] Returning cached data ({} ports)", cache.data.len());
         return Ok(cache.data.clone());
     }
-
-    println!("[Ports] Cache expired or empty, fetching fresh data");
 
     #[cfg(target_os = "windows")]
     {
         match get_ports_windows_cached(&mut cache) {
             Ok(ports) => {
-                println!("[Ports] Successfully fetched {} ports on Windows", ports.len());
                 cache.data = ports.clone();
                 cache.timestamp = Instant::now();
                 Ok(ports)
             }
             Err(e) => {
-                println!("[Ports] Error fetching ports on Windows: {}", e);
                 Err(e)
             }
         }
@@ -198,33 +192,26 @@ pub async fn get_port_changes() -> Result<Vec<PortInfo>, String> {
 
 #[cfg(target_os = "windows")]
 fn get_ports_windows_cached(cache: &mut PortCache) -> Result<Vec<PortInfo>, String> {
-    println!("[Ports] Executing netstat command...");
     let output = Command::new("netstat")
         .args(["-ano"])
         .output()
         .map_err(|e| {
             let err_msg = format!("Failed to execute netstat: {}", e);
-            println!("[Ports] {}", err_msg);
             err_msg
         })?;
 
     if !output.status.success() {
         let err_msg = "netstat command failed".to_string();
-        println!("[Ports] {}", err_msg);
         return Err(err_msg);
     }
-
-    println!("[Ports] netstat command succeeded, parsing output...");
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut ports: Vec<PortInfo> = Vec::new();
     let mut seen_ports: HashSet<(u16, String)> = HashSet::new();
 
     // Use cached process data if less than 30 seconds old
     if cache.process_cache_timestamp.elapsed() > Duration::from_secs(30) {
-        println!("[Ports] Rebuilding process cache...");
         cache.process_cache = build_process_cache_windows();
         cache.process_cache_timestamp = Instant::now();
-        println!("[Ports] Process cache rebuilt with {} entries", cache.process_cache.len());
     }
 
     let mut line_count = 0;
@@ -282,7 +269,6 @@ fn get_ports_windows_cached(cache: &mut PortCache) -> Result<Vec<PortInfo>, Stri
         });
     }
 
-    println!("[Ports] Parsed {} lines, found {} unique listening ports", line_count, ports.len());
     ports.sort_by_key(|p| p.port);
     Ok(ports)
 }

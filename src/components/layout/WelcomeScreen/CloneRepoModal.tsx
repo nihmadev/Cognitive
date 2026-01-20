@@ -140,7 +140,6 @@ export const CloneRepoModal: React.FC<CloneRepoModalProps> = ({ isOpen, onClose 
       onClose();
     } catch (err: any) {
       setError(err.message || 'Failed to clone repository');
-      console.error('Clone error:', err);
     } finally {
       setIsCloning(false);
     }

@@ -43,7 +43,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             const settings = await settingsApi.init();
             set({ settings, isInitialized: true, isLoading: false });
         } catch (error) {
-            console.error('Failed to initialize settings:', error);
             set({ error: String(error), isLoading: false });
         }
     },
@@ -62,8 +61,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         try {
             await settingsApi.updateValue('ui', key, value, target);
         } catch (error) {
-            
-            console.error('Failed to update UI setting:', error);
             set({ settings, error: String(error) });
         }
     },
@@ -81,7 +78,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         try {
             await settingsApi.updateValue('editor', key, value, target);
         } catch (error) {
-            console.error('Failed to update editor setting:', error);
             set({ settings, error: String(error) });
         }
     },
@@ -99,7 +95,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         try {
             await settingsApi.updateValue('ai', key, value, target);
         } catch (error) {
-            console.error('Failed to update AI setting:', error);
             set({ settings, error: String(error) });
         }
     },
@@ -110,7 +105,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             const settings = await settingsApi.reload();
             set({ settings, isLoading: false });
         } catch (error) {
-            console.error('Failed to reload settings:', error);
             set({ error: String(error), isLoading: false });
         }
     },
@@ -121,7 +115,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             const settings = await settingsApi.reset(target);
             set({ settings, isLoading: false });
         } catch (error) {
-            console.error('Failed to reset settings:', error);
             set({ error: String(error), isLoading: false });
         }
     },
@@ -132,7 +125,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             const settings = await settingsApi.getAll();
             set({ settings });
         } catch (error) {
-            console.error('Failed to set workspace:', error);
             set({ error: String(error) });
         }
     },
@@ -143,7 +135,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             const settings = await settingsApi.getAll();
             set({ settings });
         } catch (error) {
-            console.error('Failed to clear workspace:', error);
             set({ error: String(error) });
         }
     },

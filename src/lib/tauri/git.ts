@@ -5,6 +5,7 @@ export type GitFileStatus = {
     status: string;
     is_staged: boolean;
     is_dir: boolean;
+    is_ignored: boolean;
 };
 
 export type GitInfo = {
@@ -99,6 +100,7 @@ export const gitPull = (repoPath: string, remoteName?: string, branchName?: stri
 export const gitFetch = (repoPath: string, remoteName?: string) => invoke<string>('git_fetch', { repoPath, remoteName });
 export const gitGithubAuthStatus = () => invoke<boolean>('git_github_auth_status');
 export const gitGithubAuthLogin = () => invoke<void>('git_github_auth_login');
+export const gitFileAtParentCommit = (repoPath: string, commitHash: string, filePath: string) => invoke<string>('git_file_at_parent_commit', { repoPath, commitHash, filePath });
 
 // Stash operations
 export const gitStashSave = (repoPath: string, message?: string) => invoke<string>('git_stash_save', { repoPath, message });

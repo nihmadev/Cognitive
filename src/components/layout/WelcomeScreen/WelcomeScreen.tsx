@@ -57,7 +57,6 @@ export const WelcomeScreen = () => {
         setWorkspace(selectedFolder);
       }
     } catch (error) {
-      console.error('Failed to open folder dialog:', error);
     }
   };
 
@@ -67,7 +66,6 @@ export const WelcomeScreen = () => {
 
   const handleConnectSSH = () => {
     
-    console.log('Connect via SSH clicked');
   };
 
   return (

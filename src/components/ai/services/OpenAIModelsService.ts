@@ -13,7 +13,6 @@ export interface OpenAIModel {
 
 export class OpenAIModelsService {
   async fetchAvailableModels(_apiKey?: string): Promise<OpenAIModel[]> {
-    console.log('OpenAIModelsService: Returning predefined OpenAI models...');
     return await this.getFallbackModels();
   }
 
@@ -138,7 +137,6 @@ export class OpenAIModelsService {
       const models = await this.fetchAvailableModels();
       return models.find(model => model.id === modelId) || null;
     } catch (error) {
-      console.error(`Failed to get model details for ${modelId}:`, error);
       return null;
     }
   }
@@ -149,7 +147,6 @@ export class OpenAIModelsService {
       const models = await this.fetchAvailableModels();
       return models.filter(model => model.capabilities.includes(capability));
     } catch (error) {
-      console.error(`Failed to get models by capability ${capability}:`, error);
       return [];
     }
   }
@@ -193,7 +190,6 @@ export class OpenAIModelsService {
 
   
   clearCache(): void {
-    console.log('OpenAIModelsService: Cache cleared (no-op)');
   }
 
   

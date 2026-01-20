@@ -13,7 +13,6 @@ export interface AnthropicModel {
 
 export class AnthropicModelsService {
   async fetchAvailableModels(_apiKey?: string): Promise<AnthropicModel[]> {
-    console.log('AnthropicModelsService: Returning predefined Claude models...');
     return await this.getFallbackModels();
   }
 
@@ -110,7 +109,6 @@ export class AnthropicModelsService {
       const models = await this.fetchAvailableModels();
       return models.find(model => model.id === modelId) || null;
     } catch (error) {
-      console.error(`Failed to get model details for ${modelId}:`, error);
       return null;
     }
   }
@@ -121,7 +119,6 @@ export class AnthropicModelsService {
       const models = await this.fetchAvailableModels();
       return models.filter(model => model.capabilities.includes(capability));
     } catch (error) {
-      console.error(`Failed to get models by capability ${capability}:`, error);
       return [];
     }
   }
@@ -163,7 +160,6 @@ export class AnthropicModelsService {
 
   
   clearCache(): void {
-    console.log('AnthropicModelsService: Cache cleared (no-op)');
   }
 
   

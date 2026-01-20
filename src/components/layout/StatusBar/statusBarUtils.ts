@@ -158,3 +158,70 @@ export const isBinaryFile = (extension: string) => {
     const allBinaryExtensions = [...BINARY_EXTENSIONS, ...videoExtensions];
     return allBinaryExtensions.includes(extension);
 };
+
+export const detectEncoding = (content: string): string => {
+    // Простая проверка на UTF-8
+    try {
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder('utf-8', { fatal: true });
+        const encoded = encoder.encode(content);
+        decoder.decode(encoded);
+        return 'UTF-8';
+    } catch {
+        return 'Unknown';
+    }
+};
+
+export const detectLineEnding = (content: string): 'CRLF' | 'LF' | 'Mixed' => {
+    const hasCRLF = content.includes('\r\n');
+    const hasLF = content.includes('\n') && !content.includes('\r\n');
+    
+    if (hasCRLF && hasLF) return 'Mixed';
+    if (hasCRLF) return 'CRLF';
+    return 'LF';
+};
+
+export const detectIndentation = (content: string): { type: 'Spaces' | 'Tabs' | 'Mixed'; size?: number } => {
+    const lines = content.split('\n');
+    let tabCount = 0;
+    let spaceCount = 0;
+    const spaceSizes: number[] = [];
+
+    for (const line of lines) {
+        if (line.length === 0) continue;
+        
+        const match = line.match(/^(\s+)/);
+        if (!match) continue;
+
+        const indent = match[1];
+        if (indent.includes('\t')) {
+            tabCount++;
+        } else {
+            spaceCount++;
+            spaceSizes.push(indent.length);
+        }
+    }
+
+    if (tabCount > 0 && spaceCount > 0) {
+        return { type: 'Mixed' };
+    }
+
+    if (tabCount > spaceCount) {
+        return { type: 'Tabs' };
+    }
+
+    // Определяем наиболее частый размер отступа
+    if (spaceSizes.length > 0) {
+        const sizeCounts = spaceSizes.reduce((acc, size) => {
+            acc[size] = (acc[size] || 0) + 1;
+            return acc;
+        }, {} as Record<number, number>);
+
+        const mostCommonSize = Object.entries(sizeCounts)
+            .sort(([, a], [, b]) => b - a)[0]?.[0];
+
+        return { type: 'Spaces', size: mostCommonSize ? parseInt(mostCommonSize) : 4 };
+    }
+
+    return { type: 'Spaces', size: 4 };
+};

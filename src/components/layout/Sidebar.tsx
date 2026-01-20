@@ -110,7 +110,6 @@ export const Sidebar = () => {
             setSelectedPath(null);
             await refreshWorkspace();
         } catch (e) {
-            console.error("Failed to delete:", e);
         }
     }, [selectedPath, fileStructure, expandedFolders, closeFile, refreshWorkspace]);
 

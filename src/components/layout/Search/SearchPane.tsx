@@ -2,9 +2,10 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useSearchStore } from '../../../store/searchStore';
 import { useProjectStore } from '../../../store/projectStore';
-import { ChevronRight, ChevronDown, MoreHorizontal, CaseSensitive, WholeWord, Regex, Replace } from 'lucide-react';
+import { ChevronRight, MoreHorizontal, CaseSensitive, WholeWord, Regex, Replace, RefreshCw, X, FileText, FolderTree, ChevronsDownUp } from 'lucide-react';
 import clsx from 'clsx';
 import { getFileIcon } from '../../../utils/fileIcons';
+import { TreeView } from './TreeView';
 import styles from './SearchPane.module.css';
 
 const INITIAL_VISIBLE_FILES = 50;
@@ -16,13 +17,15 @@ export const SearchPane = () => {
         includePattern, excludePattern, filterPattern, results, isSearching,
         setQuery, setReplaceQuery, setIncludePattern, setExcludePattern, setFilterPattern,
         toggleCaseSensitive, toggleWholeWord, toggleRegex, togglePreserveCase,
-        performSearch, replaceAll, clearResults
+        performSearch, replaceAll, clearResults, openSearchEditor
     } = useSearchStore();
 
     const { currentWorkspace, openFile, activeFile } = useProjectStore();
     const [showDetails, setShowDetails] = useState(false);
     const [replaceExpanded, setReplaceExpanded] = useState(false);
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_FILES);
+    const [viewAsTree, setViewAsTree] = useState(true);
+    const [allCollapsed, setAllCollapsed] = useState(false);
     const resultsListRef = useRef<HTMLDivElement>(null);
 
     
@@ -98,10 +101,53 @@ export const SearchPane = () => {
         await replaceAll(currentWorkspace);
     };
 
+    const handleRefresh = () => {
+        if (currentWorkspace && query) {
+            performSearch(currentWorkspace);
+        }
+    };
+
+    const handleClearResults = () => {
+        clearResults();
+    };
+
+    const handleOpenSearchEditor = () => {
+        openSearchEditor();
+    };
+
+    const handleToggleViewAsTree = () => {
+        setViewAsTree(!viewAsTree);
+    };
+
+    const handleCollapseAll = () => {
+        setAllCollapsed(!allCollapsed);
+    };
+
     return (
         <div className={styles.searchPane}>
             <div className={styles.header}>
                 <span>Search</span>
+                <div className={styles.headerActions}>
+                    <button className={styles.headerBtn} title="Refresh" onClick={handleRefresh}>
+                        <RefreshCw size={14} />
+                    </button>
+                    <button className={styles.headerBtn} title="Clear Search Results" onClick={handleClearResults}>
+                        <X size={14} />
+                    </button>
+                    <button className={styles.headerBtn} title="Open New Search Editor" onClick={handleOpenSearchEditor}>
+                        <FileText size={14} />
+                    </button>
+                    <button 
+                        className={clsx(styles.headerBtn, viewAsTree && styles.active)} 
+                        title="View As Tree" 
+                        onClick={handleToggleViewAsTree}
+                    >
+                        <FolderTree size={14} />
+                    </button>
+                    <button className={styles.headerBtn} title="Collapse All" onClick={handleCollapseAll}>
+                        <ChevronsDownUp size={14} />
+                    </button>
+                </div>
             </div>
 
             <div className={styles.searchInputs}>
@@ -212,8 +258,17 @@ export const SearchPane = () => {
             <div className={styles.resultsList} ref={resultsListRef} onScroll={handleScroll}>
                 {isSearching && <div style={{ padding: 16, textAlign: 'center', color: '#71717a' }}>Searching...</div>}
 
-                {!isSearching && visibleResults.map((result) => (
-                    <FileResult key={result.file.path} result={result} openFile={openFile} />
+                {!isSearching && viewAsTree && (
+                    <TreeView 
+                        results={visibleResults} 
+                        openFile={openFile} 
+                        forceCollapsed={allCollapsed}
+                        showContext={true}
+                    />
+                )}
+
+                {!isSearching && !viewAsTree && visibleResults.map((result) => (
+                    <FlatFileResult key={result.file.path} result={result} openFile={openFile} />
                 ))}
                 
                 {!isSearching && hasMore && (
@@ -226,27 +281,12 @@ export const SearchPane = () => {
     );
 };
 
-const FileResult = ({ result, openFile }: { result: any, openFile: (path: string) => void }) => {
-    const [isOpen, setIsOpen] = useState(true);
-
-    const handleFileClick = () => {
-        setIsOpen(!isOpen);
-    };
-
+const FlatFileResult = ({ result, openFile }: { result: any, openFile: (path: string) => void }) => {
     const handleMatchClick = (match: any) => {
-        
-        
-        
-        
         openFile(result.file.path);
-
-        
         window.dispatchEvent(new CustomEvent('editor-apply-search-decorations', {
             detail: { path: result.file.path, matches: result.matches }
         }));
-
-        
-        
         setTimeout(() => {
             window.dispatchEvent(new CustomEvent('editor-reveal-line', {
                 detail: { path: result.file.path, line: match.line, start: match.charStart, end: match.charEnd }
@@ -255,61 +295,54 @@ const FileResult = ({ result, openFile }: { result: any, openFile: (path: string
     };
 
     return (
-        <div className={styles.fileResult}>
-            <div className={styles.fileHeader} onClick={handleFileClick}>
-                <span className={styles.folderIcon}>
-                    {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                </span>
+        <div className={styles.flatFileResult}>
+            <div className={styles.flatFileHeader}>
                 <span style={{ marginRight: 6 }}>
                     {getFileIcon(result.file.name, result.file.path)}
                 </span>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {result.file.name}
-                </span>
+                <span className={styles.flatFileName}>{result.file.path}</span>
                 <span className={styles.matchCount}>{result.matches.length}</span>
             </div>
-
-            {isOpen && (
-                <div className={styles.matches}>
-                    {result.matches.map((match: any, idx: number) => (
-                        <div key={idx} className={styles.matchItem} onClick={() => handleMatchClick(match)}>
-                            <span className={styles.lineNum}>{match.line}:</span>
-                            <HighlightText text={match.lineText} range={[match.charStart, match.charEnd]} />
-                        </div>
-                    ))}
-                </div>
-            )}
+            <div className={styles.matches}>
+                {result.matches.map((match: any, idx: number) => (
+                    <div key={idx} className={styles.matchItem} onClick={() => handleMatchClick(match)}>
+                        <span className={styles.lineNum}>{match.line}:</span>
+                        <HighlightText text={match.lineText} range={[match.charStart, match.charEnd]} />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
 
 const HighlightText = ({ text, range }: { text: string, range: [number, number] }) => {
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    
     const start = range[0];
     const end = range[1];
 
     if (start < 0 || end > text.length) return <span title={text}>{text}</span>;
 
-    const before = text.substring(0, start);
     const match = text.substring(start, end);
-    const after = text.substring(end);
+    
+    // Показываем контекст: 20 символов до и 50 после найденного слова
+    const contextBefore = 20;
+    const contextAfter = 50;
+    
+    const actualStart = Math.max(0, start - contextBefore);
+    const actualEnd = Math.min(text.length, end + contextAfter);
+    
+    const before = text.substring(actualStart, start);
+    const after = text.substring(end, actualEnd);
+    
+    const showStartEllipsis = actualStart > 0;
+    const showEndEllipsis = actualEnd < text.length;
 
     return (
         <span title={text}>
+            {showStartEllipsis && '...'}
             {before}
             <span className={styles.highlight}>{match}</span>
             {after}
+            {showEndEllipsis && '...'}
         </span>
     );
 };

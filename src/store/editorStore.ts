@@ -41,7 +41,6 @@ const getCurrentCssSymbol = (model: any, position: any): string | null => {
         
         return null;
     } catch (error) {
-        console.error('Error getting CSS symbol:', error);
         return null;
     }
 };
@@ -81,7 +80,6 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
                     }
                 }
             } catch (symbolError) {
-                console.warn('Failed to get document symbols:', symbolError);
             }
         }
         
@@ -242,7 +240,6 @@ const getCurrentTsJsSymbol = (monaco: any, model: any, position: any): string | 
         
         return null;
     } catch (error) {
-        console.error('Error getting TS/JS symbol:', error);
         return null;
     }
 };
@@ -274,7 +271,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             try {
                 editorInstance.getAction('editor.action.selectAll').run();
             } catch (error) {
-                console.error('Failed to execute selectAll:', error);
                 
                 editorInstance.setSelection(editorInstance.getModel().getFullModelRange());
             }
@@ -283,7 +279,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     save: async () => {
         const { editorInstance, currentFilePath } = get();
         if (!editorInstance) {
-            console.error('No editor instance available');
             return;
         }
 
@@ -299,9 +294,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 
                 projectStore.setFileContent(activeFilePath, content);
                 projectStore.markFileAsSaved(activeFilePath);
-                console.log('File saved successfully:', activeFilePath);
             } catch (error) {
-                console.error('Failed to save file:', error);
             }
         } else {
             
@@ -311,7 +304,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     saveAs: async () => {
         const { editorInstance } = get();
         if (!editorInstance) {
-            console.error('No editor instance available');
             return;
         }
 
@@ -329,10 +321,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 projectStore.markFileAsSaved(filePath);
                 
                 set({ currentFilePath: filePath });
-                console.log('File saved successfully:', filePath);
             }
         } catch (error) {
-            console.error('Failed to save file as:', error);
         }
     },
     getCurrentSymbol: () => {
@@ -369,7 +359,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             const word = model.getWordAtPosition(position);
             return word ? word.word : null;
         } catch (error) {
-            console.error('Error getting current symbol:', error);
             return null;
         }
     },
@@ -401,7 +390,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             try {
                 // Check if this is an in-memory model
                 if (model.uri.scheme === 'inmemory') {
-                    console.warn('In-memory model detected, skipping TypeScript worker');
                     return [];
                 }
                 
@@ -415,8 +403,12 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 const worker = await monacoInstance.languages.typescript.getTypeScriptWorker();
                 const client = await worker(model.uri);
                 
+                // Если worker вернул null (файл отфильтрован), возвращаем пустой массив
+                if (!client) {
+                    return [];
+                }
+                
                 if (!client || typeof client.getNavigationBarItems !== 'function') {
-                    console.warn('TypeScript worker client does not have getNavigationBarItems method');
                     return [];
                 }
                 
@@ -488,11 +480,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
                 return containingSymbols;
             } catch (tsError: any) {
-                console.warn('Failed to get symbols from TypeScript worker:', tsError);
                 
                 
                 if (tsError.message && tsError.message.includes('Could not find source file')) {
-                    console.warn('In-memory model detected, skipping TypeScript symbol resolution');
                     return [];
                 }
                 
@@ -529,7 +519,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 return [];
             }
         } catch (error) {
-            console.error('Error getting symbol hierarchy:', error);
             return [];
         }
     },

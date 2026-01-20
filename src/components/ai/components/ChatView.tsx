@@ -364,12 +364,6 @@ export const ChatView: React.FC<ChatViewProps> = ({
   isLoading,
   styles
 }) => {
-  console.log('ChatView render:', { 
-    hasActiveConversation: !!activeConversation, 
-    conversationId: activeConversation?.id,
-    messagesCount: activeConversation?.messages?.length || 0 
-  });
-  
   const goBack = () => {
     setActiveConversation(null);
   };

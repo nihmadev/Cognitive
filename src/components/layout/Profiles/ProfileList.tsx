@@ -51,7 +51,6 @@ export const ProfileList = ({
         try {
             await tauriApi.openNewWindow(profile.folders[0].path, profile.name);
         } catch (err) {
-            console.error('Failed to open new window:', err);
         }
     };
 

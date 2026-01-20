@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useProjectStore } from '../../../store/projectStore';
 import { useUIStore } from '../../../store/uiStore';
 import { useGitStore } from '../../../store/gitStore';
+import { useDiagnosticsStore } from '../../../store/diagnosticsStore';
 import { tauriApi } from '../../../lib/tauri-api';
 import { BranchModal } from '../BranchModal';
 import styles from '../../../App.module.css';
@@ -12,9 +13,11 @@ import { UIControlsSection } from './UIControlsSection';
 import { EditorInfoSection } from './EditorInfoSection';
 import {
     getLanguageFromExtension,
-    countIssues,
     generateRandomCommitMessage,
-    isBinaryFile
+    isBinaryFile,
+    detectEncoding,
+    detectLineEnding,
+    detectIndentation
 } from './statusBarUtils';
 
 interface GitInfo {
@@ -26,11 +29,7 @@ export const StatusBar = () => {
     const {
         activeFile,
         currentWorkspace,
-        cursorPosition,
-        errors,
-        warnings,
-        setFileErrors,
-        setFileWarnings
+        cursorPosition
     } = useProjectStore();
 
     const {
@@ -45,10 +44,15 @@ export const StatusBar = () => {
     } = useUIStore();
 
     const { isPushing, push: pushToRemote, stageAll, commit, setCommitMessage } = useGitStore();
+    
+    const { getFileDiagnosticsCounts } = useDiagnosticsStore();
 
     const [gitInfo, setGitInfo] = useState<GitInfo>({ branch: 'main', hasChanges: false });
     const [language, setLanguage] = useState<string>('Plain Text');
     const [lineCount, setLineCount] = useState<number>(0);
+    const [encoding, setEncoding] = useState<string>('UTF-8');
+    const [lineEnding, setLineEnding] = useState<'CRLF' | 'LF' | 'Mixed'>('LF');
+    const [indentation, setIndentation] = useState<{ type: 'Spaces' | 'Tabs' | 'Mixed'; size?: number }>({ type: 'Spaces', size: 4 });
     const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
 
     const updateGitInfo = useCallback(async () => {
@@ -65,7 +69,6 @@ export const StatusBar = () => {
                 hasChanges: statusInfo.length > 0
             });
         } catch (error) {
-            console.error('Failed to update git info:', error);
             setGitInfo({ branch: 'main', hasChanges: false });
         }
     }, [currentWorkspace]);
@@ -81,7 +84,6 @@ export const StatusBar = () => {
             await pushToRemote(currentWorkspace);
             updateGitInfo();
         } catch (error) {
-            console.error('Commit and push failed:', error);
         }
     }, [currentWorkspace, gitInfo.hasChanges, stageAll, commit, setCommitMessage, pushToRemote, updateGitInfo]);
 
@@ -92,8 +94,9 @@ export const StatusBar = () => {
             if (isBinaryFile(extension)) {
                 setLineCount(0);
                 setLanguage('Binary');
-                setFileErrors(filePath, 0);
-                setFileWarnings(filePath, 0);
+                setEncoding('Binary');
+                setLineEnding('LF');
+                setIndentation({ type: 'Spaces', size: 4 });
                 return;
             }
 
@@ -104,16 +107,14 @@ export const StatusBar = () => {
             const detectedLanguage = getLanguageFromExtension(extension);
             setLanguage(detectedLanguage);
 
-            const { errorCount, warningCount } = countIssues(content, detectedLanguage);
-            setFileErrors(filePath, errorCount);
-            setFileWarnings(filePath, warningCount);
+            // Определяем кодировку, тип переноса строк и отступы
+            setEncoding(detectEncoding(content));
+            setLineEnding(detectLineEnding(content));
+            setIndentation(detectIndentation(content));
 
         } catch (error) {
-            console.error('Failed to analyze file:', error);
-            setFileErrors(filePath, 0);
-            setFileWarnings(filePath, 0);
         }
-    }, [setFileErrors, setFileWarnings]);
+    }, []);
 
     useEffect(() => {
         if (activeFile) {
@@ -121,6 +122,9 @@ export const StatusBar = () => {
         } else {
             setLineCount(0);
             setLanguage('Plain Text');
+            setEncoding('UTF-8');
+            setLineEnding('LF');
+            setIndentation({ type: 'Spaces', size: 4 });
         }
     }, [activeFile, analyzeFile]);
 
@@ -136,8 +140,10 @@ export const StatusBar = () => {
         };
     }, [updateGitInfo]);
 
-    const errorCount = activeFile ? errors[activeFile] || 0 : 0;
-    const warningCount = activeFile ? warnings[activeFile] || 0 : 0;
+    // Получаем количество ошибок и предупреждений из diagnosticsStore
+    const { errors: errorCount, warnings: warningCount } = activeFile 
+        ? getFileDiagnosticsCounts(activeFile)
+        : { errors: 0, warnings: 0 };
 
     const handleOpenProblems = () => {
         setTerminalOpen(true);
@@ -180,6 +186,9 @@ export const StatusBar = () => {
                             column={cursorPosition.column}
                             language={language}
                             lineCount={lineCount}
+                            encoding={encoding}
+                            lineEnding={lineEnding}
+                            indentation={indentation}
                         />
                     )}
                 </div>

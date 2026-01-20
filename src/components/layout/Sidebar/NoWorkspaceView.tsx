@@ -12,7 +12,6 @@ export const NoWorkspaceView = () => {
                 setWorkspace(selectedFolder);
             }
         } catch (error) {
-            console.error("Failed to open folder dialog:", error);
         }
     };
 

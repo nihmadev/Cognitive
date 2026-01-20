@@ -17,7 +17,6 @@ export class OpenAIService extends BaseAIService {
       const { openAIModelsService } = await import('./OpenAIModelsService');
       return await openAIModelsService.getModelDetails(apiKey, modelId);
     } catch (error) {
-      console.error(`Failed to get model details for ${modelId}:`, error);
       return null;
     }
   }

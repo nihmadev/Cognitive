@@ -68,7 +68,6 @@ class VideoStreamer {
 
             await this.streamNextChunk();
         } catch (error) {
-            console.error('Failed to start video streaming:', error);
             this.isStreaming = false;
             throw error;
         }
@@ -111,7 +110,6 @@ class VideoStreamer {
                 requestAnimationFrame(() => this.streamNextChunk());
             }
         } catch (error) {
-            console.error('Video streaming error:', error);
             this.isStreaming = false;
             
             if (this.mediaSource.readyState === 'open') {
@@ -129,7 +127,6 @@ class VideoStreamer {
             try {
                 this.sourceBuffer.appendBuffer(chunk.buffer as ArrayBuffer);
             } catch (error) {
-                console.error('Video buffer append error:', error);
                 this.isStreaming = false;
             }
         }
@@ -157,7 +154,6 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
 
     const startStreaming = async (isMountedRef: { current: boolean }) => {
         if (!MediaSource.isTypeSupported(mimeType)) {
-            console.warn('Video streaming not supported for MIME type:', mimeType);
             return false;
         }
 
@@ -175,7 +171,6 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
             return new Promise<boolean>((resolve) => {
                 const handleSourceOpen = async () => {
                     try {
-                        console.log('Video MediaSource opened, starting streaming');
                         await streamer.startStreaming();
                         if (isMountedRef.current) {
                             setSrcUrl(objectUrl);
@@ -185,7 +180,6 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
                             resolve(true);
                         }
                     } catch (error) {
-                        console.error('Failed to start video streaming:', error);
                         mediaSource.removeEventListener('sourceopen', handleSourceOpen);
                         resolve(false);
                     }
@@ -196,14 +190,12 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
                 
                 setTimeout(() => {
                     if (mediaSource.readyState === 'closed') {
-                        console.warn('Video MediaSource timeout - sourceopen never fired');
                         mediaSource.removeEventListener('sourceopen', handleSourceOpen);
                         resolve(false);
                     }
                 }, 5000); 
             });
         } catch (error) {
-            console.error('Failed to initialize video streaming:', error);
             return false;
         }
     };
@@ -220,7 +212,6 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
                 
                 const fileSize = await tauriApi.getFileSize(path);
                 if (fileSize > 50 * 1024 * 1024) { 
-                    console.warn('Large video file detected, using streaming instead of blob');
                     throw new Error('File too large for blob fallback');
                 }
                 
@@ -275,15 +266,12 @@ export const VideoViewer = ({ path }: VideoViewerProps) => {
 
             try {
                 
-                console.log('Attempting video streaming for:', path);
                 const streamingStarted = await startStreaming(isMountedRef);
                 
                 if (!streamingStarted && isMountedRef.current) {
-                    console.log('Video streaming failed, falling back to blob');
                     await fallbackToBlob();
                 }
             } catch (e) {
-                console.error('Video loading failed completely:', e);
                 const details = e instanceof Error ? e.message : String(e);
                 setError('Failed to load video file');
                 setErrorDetails(`All video loading methods failed.\n${details}`);

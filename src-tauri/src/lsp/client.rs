@@ -77,7 +77,6 @@ impl LspClient {
                                     if notif.method == "textDocument/publishDiagnostics" {
                                         if let Some(params) = notif.params {
                                            if let Ok(diag_params) = serde_json::from_value::<PublishDiagnosticsParams>(params) {
-                                                println!("[LSP] Publishing diagnostics for: {}, count: {}", diag_params.uri, diag_params.diagnostics.len());
                                                 let _ = app_handle_clone.emit("lsp:diagnostics", diag_params);
                                            }
                                         }

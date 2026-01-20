@@ -44,8 +44,6 @@ export const RepositoriesSection: React.FC<RepositoriesSectionProps> = ({
         stashPop,
         stashList,
         listBranches,
-        listRemotes,
-        listTags,
     } = useGitStore();
     
     const repoName = currentWorkspace.split(/[\\/]/).pop() || '';
@@ -76,7 +74,7 @@ export const RepositoriesSection: React.FC<RepositoriesSectionProps> = ({
     const handleCheckout = async () => {
         try {
             const branches = await listBranches(currentWorkspace);
-            const branchNames = branches.map(b => b.name).join('\n');
+            const branchNames = branches.map((b: any) => b.name).join('\n');
             const branch = prompt(`Available branches:\n${branchNames}\n\nEnter branch name to checkout:`);
             if (branch) {
                 await checkoutBranch(currentWorkspace, branch);
@@ -101,7 +99,7 @@ export const RepositoriesSection: React.FC<RepositoriesSectionProps> = ({
     const handleDeleteBranch = async () => {
         try {
             const branches = await listBranches(currentWorkspace);
-            const branchNames = branches.filter(b => !b.is_head).map(b => b.name).join('\n');
+            const branchNames = branches.filter((b: any) => !b.is_head).map((b: any) => b.name).join('\n');
             const branch = prompt(`Available branches:\n${branchNames}\n\nEnter branch name to delete:`);
             if (branch) {
                 const force = confirm('Force delete?');
@@ -116,7 +114,7 @@ export const RepositoriesSection: React.FC<RepositoriesSectionProps> = ({
     const handleMergeBranch = async () => {
         try {
             const branches = await listBranches(currentWorkspace);
-            const branchNames = branches.filter(b => !b.is_head).map(b => b.name).join('\n');
+            const branchNames = branches.filter((b: any) => !b.is_head).map((b: any) => b.name).join('\n');
             const branch = prompt(`Available branches:\n${branchNames}\n\nEnter branch name to merge:`);
             if (branch) {
                 await mergeBranch(currentWorkspace, branch);
@@ -144,8 +142,8 @@ export const RepositoriesSection: React.FC<RepositoriesSectionProps> = ({
                 alert('No stashes available');
                 return;
             }
-            const stashList = stashes.map(([idx, msg]) => `${idx}: ${msg}`).join('\n');
-            const input = prompt(`Available stashes:\n${stashList}\n\nEnter stash index (default: 0):`);
+            const stashListStr: string = stashes.map(([idx, msg]: [number, string]) => `${idx}: ${msg}`).join('\n');
+            const input = prompt(`Available stashes:\n${stashListStr}\n\nEnter stash index (default: 0):`);
             const index = input ? parseInt(input) : 0;
             await stashPop(currentWorkspace, index);
         } catch (e) {

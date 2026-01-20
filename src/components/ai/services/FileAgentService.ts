@@ -90,8 +90,6 @@ export class FileAgentService implements AIService {
 
       
       if (this.isChatGPTModel(modelId)) {
-        console.log(`FileAgentService using ChatGPT model: ${modelId}`);
-        
         unlisten = await listen<string>('openai-stream', (event) => {
           if (signal?.aborted) {
             if (unlisten) unlisten();
@@ -166,7 +164,6 @@ export class FileAgentService implements AIService {
       signal?.removeEventListener('abort', abortHandler);
     } catch (error) {
       if (signal?.aborted) return;
-      console.error('FileAgentService API error:', error);
       onStreamChunk(`[Error: ${error instanceof Error ? error.message : String(error)}]`);
     } finally {
       if (unlisten) unlisten();
@@ -181,8 +178,6 @@ export class FileAgentService implements AIService {
     try {
       
       if (this.isChatGPTModel(modelId)) {
-        console.log(`FileAgentService generating title with ChatGPT model: ${modelId}`);
-        
         const titlePrompt = `Generate a concise, descriptive title (max 5 words) for this conversation:
 
 User: ${userMessage}
@@ -225,8 +220,6 @@ Title:`;
       const response = await tauriApi.agentrouterChatComplete(modelId, messages);
       return response.trim().replace(/^"'|"'$/g, '').slice(0, 50);
     } catch (error) {
-      console.error('Error generating title:', error);
-      // Fallback to a more meaningful title based on user message
       const words = userMessage.split(' ').slice(0, 4);
       const fallbackTitle = words.join(' ') + (userMessage.split(' ').length > 4 ? '...' : '');
       return fallbackTitle.charAt(0).toUpperCase() + fallbackTitle.slice(1);

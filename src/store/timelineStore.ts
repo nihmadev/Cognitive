@@ -42,7 +42,6 @@ export const useTimelineStore = create<TimelineStore>((set, get) => ({
                 await get().loadHistory(workspace, filePath);
             }
         } catch (e: any) {
-            console.error('Failed to save timeline snapshot:', e);
         }
     },
     

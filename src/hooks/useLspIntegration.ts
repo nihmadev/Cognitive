@@ -33,14 +33,12 @@ export function useLspIntegration({
     useEffect(() => {
         if (!currentWorkspace || lspInitializedRef.current) return;
 
-        console.log('[LSP] Initializing LSP for workspace:', currentWorkspace);
         lspInitialize(currentWorkspace)
             .then(() => {
-                console.log('[LSP] LSP initialized successfully');
                 lspInitializedRef.current = true;
             })
-            .catch((err) => {
-                console.error('[LSP] Failed to initialize LSP:', err);
+            .catch(() => {
+                // LSP initialization failed
             });
 
         return () => {
@@ -52,11 +50,9 @@ export function useLspIntegration({
 
     // Слушаем диагностику от LSP
     useEffect(() => {
-        console.log('[LSP] Setting up diagnostics listener');
         
         const setupListener = async () => {
             const unlisten = await listenToLspDiagnostics((payload: LspDiagnosticsPayload) => {
-                console.log('[LSP] Received diagnostics:', payload);
                 
                 // Конвертируем URI в путь файла
                 let filePath = payload.uri;
@@ -114,8 +110,6 @@ export function useLspIntegration({
                         // Нормализуем путь
                         modelPath = modelPath.replace(/\//g, '\\');
                         
-                        console.log('[LSP] Comparing paths:', { modelPath, filePath, modelUri });
-                        
                         if (modelPath === filePath) {
                             const markers = diagnostics.map(d => ({
                                 startLineNumber: d.line,
@@ -129,7 +123,6 @@ export function useLspIntegration({
                             }));
 
                             monacoRef.current.editor.setModelMarkers(model, 'lsp', markers);
-                            console.log('[LSP] Updated Monaco markers:', markers.length);
                         }
                     }
                 }
@@ -161,15 +154,12 @@ export function useLspIntegration({
         }
 
         if (!openFilesRef.current.has(activeFile)) {
-            console.log('[LSP] Opening file:', activeFile);
             lspDidOpen(activeFile, fileContent)
                 .then(() => {
                     openFilesRef.current.add(activeFile);
                     fileVersionsRef.current.set(activeFile, 1);
-                    console.log('[LSP] File opened successfully');
                 })
-                .catch((err) => {
-                    console.error('[LSP] Failed to open file:', err);
+                .catch(() => {
                 });
         }
     }, [activeFile, fileContent, lspInitializedRef.current]);
@@ -188,10 +178,9 @@ export function useLspIntegration({
         const newVersion = currentVersion + 1;
         fileVersionsRef.current.set(activeFile, newVersion);
 
-        console.log('[LSP] File changed:', activeFile, 'version:', newVersion);
         lspDidChange(activeFile, fileContent, newVersion)
-            .catch((err) => {
-                console.error('[LSP] Failed to notify file change:', err);
+            .catch(() => {
+                // LSP didChange failed
             });
     }, [fileContent, editorVersion]);
 }

@@ -9,7 +9,6 @@ const handleOpenFile = async (openFile: (path: string) => void) => {
             openFile(filePath);
         }
     } catch (error) {
-        console.error('Failed to open file:', error);
     }
 };
 
@@ -20,7 +19,6 @@ const handleOpenFolder = async (setWorkspace: (path: string) => void) => {
             setWorkspace(folderPath);
         }
     } catch (error) {
-        console.error('Failed to open folder:', error);
     }
 };
 
@@ -29,7 +27,6 @@ const handleSave = async (saveFn: () => Promise<void>) => {
     try {
         await saveFn();
     } catch (error) {
-        console.error('Failed to save file:', error);
     }
 };
 
@@ -37,7 +34,6 @@ const handleSaveAs = async (saveAsFn: () => Promise<void>) => {
     try {
         await saveAsFn();
     } catch (error) {
-        console.error('Failed to save file as:', error);
     }
 };
 
@@ -45,7 +41,6 @@ const handleNewWindow = async () => {
     try {
         await tauriApi.openNewWindow('', 'default');
     } catch (error) {
-        console.error('Failed to open new window:', error);
     }
 };
 
@@ -63,7 +58,6 @@ const handleSaveAllNow = async (autoSaveStore: any) => {
     try {
         await autoSaveStore.saveAllUnsaved();
     } catch (error) {
-        console.error('Failed to save all files:', error);
     }
 };
 

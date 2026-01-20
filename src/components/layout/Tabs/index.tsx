@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from 'react';
 import { useProjectStore } from '../../../store/projectStore';
-import { X, GitCompare, Settings, User, History } from 'lucide-react';
+import { X, GitCompare, Settings, User, History, Search } from 'lucide-react';
 import { getFileIcon } from '../../../utils/fileIcons';
 import { TabActions } from '../TabActions';
 import { useFileGitStatus } from '../Sidebar/useFileGitStatus';
@@ -56,11 +56,6 @@ const FileTab = ({
     
     const name = path.split(/[\\/]/).pop() || path;
     
-    
-    if (isDeleted) {
-        console.log('[FileTab] Rendering deleted file:', path, 'isDeleted:', isDeleted);
-    }
-
     const getGitStatusInfo = () => {
         if (!gitStatus.status) return null;
         
@@ -202,7 +197,9 @@ export const TabBar = () => {
         openDiffTabs, activeDiffTab, setActiveDiffTab, closeDiffTab,
         openSettingsTabs, activeSettingsTab, setActiveSettingsTab, closeSettingsTab,
         openProfilesTabs, activeProfilesTab, setActiveProfilesTab, closeProfilesTab,
-        openTimelineDiffTabs, activeTimelineDiffTab, setActiveTimelineDiffTab, closeTimelineDiffTab
+        openTimelineDiffTabs, activeTimelineDiffTab, setActiveTimelineDiffTab, closeTimelineDiffTab,
+        openCommitDiffTabs, activeCommitDiffTab, setActiveCommitDiffTab, closeCommitDiffTab,
+        openSearchTabs, activeSearchTab, setActiveSearchTab, closeSearchTab
     } = useProjectStore();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -218,7 +215,7 @@ export const TabBar = () => {
         }
     };
 
-    if (openFiles.length === 0 && openDiffTabs.length === 0 && openSettingsTabs.length === 0 && openProfilesTabs.length === 0 && openTimelineDiffTabs.length === 0) {
+    if (openFiles.length === 0 && openDiffTabs.length === 0 && openSettingsTabs.length === 0 && openProfilesTabs.length === 0 && openTimelineDiffTabs.length === 0 && openCommitDiffTabs.length === 0 && openSearchTabs.length === 0) {
         return null;
     }
 
@@ -234,11 +231,6 @@ export const TabBar = () => {
                     const isActive = activeFile === path && !activeDiffTab && !activeSettingsTab;
                     const hasUnsavedChanges = unsavedChanges[path];
                     const isDeleted = !!deletedFiles[path];
-                    
-                    
-                    if (isDeleted) {
-                        console.log('[TabBar] Rendering tab for deleted file:', path, 'deletedFiles:', deletedFiles);
-                    }
                     
                     return (
                         <FileTab
@@ -398,6 +390,86 @@ export const TabBar = () => {
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         closeTimelineDiffTab(timelineTab.id);
+                                    }}
+                                    className={clsx(
+                                        styles.closeButton,
+                                        isActive && styles.closeButtonActive
+                                    )}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onMouseUp={(e) => e.stopPropagation()}
+                                >
+                                    <X size={14} strokeWidth={2} className={styles.closeIcon} />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {/* Commit Diff Tabs */}
+                {openCommitDiffTabs.map((commitTab) => {
+                    const isActive = activeCommitDiffTab === commitTab.id;
+
+                    return (
+                        <div
+                            key={commitTab.id}
+                            className={clsx(
+                                styles.tab,
+                                isActive && styles.tabActive,
+                                !isActive && styles.tabInactive
+                            )}
+                            onClick={() => setActiveCommitDiffTab(commitTab.id)}
+                        >
+                            <div className={styles.tabContent}>
+                                <span className={styles.tabIcon}>
+                                    <GitCompare size={14} />
+                                </span>
+                                <span className={styles.tabLabel}>
+                                    {commitTab.fileName}
+                                </span>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        closeCommitDiffTab(commitTab.id);
+                                    }}
+                                    className={clsx(
+                                        styles.closeButton,
+                                        isActive && styles.closeButtonActive
+                                    )}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onMouseUp={(e) => e.stopPropagation()}
+                                >
+                                    <X size={14} strokeWidth={2} className={styles.closeIcon} />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {}
+                {openSearchTabs.map((searchTab) => {
+                    const isActive = activeSearchTab === searchTab.id;
+
+                    return (
+                        <div
+                            key={searchTab.id}
+                            className={clsx(
+                                styles.tab,
+                                isActive && styles.tabActive,
+                                !isActive && styles.tabInactive
+                            )}
+                            onClick={() => setActiveSearchTab(searchTab.id)}
+                        >
+                            <div className={styles.tabContent}>
+                                <span className={styles.tabIcon}>
+                                    <Search size={14} />
+                                </span>
+                                <span className={styles.tabLabel}>
+                                    {searchTab.title}
+                                </span>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        closeSearchTab(searchTab.id);
                                     }}
                                     className={clsx(
                                         styles.closeButton,

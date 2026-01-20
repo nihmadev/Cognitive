@@ -239,6 +239,7 @@ pub async fn search_in_files(
         let include_set = Arc::new(include_set);
         let exclude_set = Arc::new(exclude_set);
         let filter_set = Arc::new(filter_set);
+        let root_path_arc = Arc::new(root_path);
 
         walker.run(|| {
             let tx = tx.clone();
@@ -247,6 +248,7 @@ pub async fn search_in_files(
             let include_set = Arc::clone(&include_set);
             let exclude_set = Arc::clone(&exclude_set);
             let filter_set = Arc::clone(&filter_set);
+            let root_path_clone = Arc::clone(&root_path_arc);
 
             Box::new(move |entry| {
                 use ignore::WalkState;
@@ -302,10 +304,18 @@ pub async fn search_in_files(
 
                 if searcher.search_path(&*matcher, path, &mut sink).is_ok() && !sink.matches.is_empty() {
                     let file_name = entry.file_name().to_string_lossy().to_string();
+                    
+                    // Convert to relative path from root_path
+                    let relative_path = path.strip_prefix(&**root_path_clone)
+                        .ok()
+                        .and_then(|p| p.to_str())
+                        .unwrap_or_else(|| path.to_str().unwrap_or(""))
+                        .to_string();
+                    
                     let _ = tx.send(SearchResult {
                         file: SearchFile {
                             name: file_name,
-                            path: path.to_string_lossy().to_string(),
+                            path: relative_path,
                         },
                         matches: sink.matches,
                     });
@@ -608,17 +618,16 @@ pub fn start_file_watcher(
     path: String,
     state: tauri::State<'_, FileWatcherState>,
 ) -> Result<(), String> {
-    use notify::{Watcher, RecursiveMode, EventKind};
-use tauri::Emitter;
-use serde::Serialize;
+    use notify::{Watcher, RecursiveMode, EventKind, Config};
+    use tauri::Emitter;
+    use serde::Serialize;
+    use std::time::Duration;
 
-#[derive(Serialize, Clone)]
-struct FileChangeEvent {
-    kind: String,
-    paths: Vec<String>,
-}
-    
-    
+    #[derive(Serialize, Clone)]
+    struct FileChangeEvent {
+        kind: String,
+        paths: Vec<String>,
+    }
     
     {
         let watchers = state.watchers.lock().unwrap();
@@ -628,29 +637,32 @@ struct FileChangeEvent {
     }
     
     let window_clone = window.clone();
-    let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-        match res {
-            Ok(event) => {
-                
-                let should_emit = match &event.kind {
-                    EventKind::Create(_) | EventKind::Remove(_) | EventKind::Modify(_) => true,
-                    _ => false,
-                };
-                
-                if should_emit && !event.paths.is_empty() {
-                    let file_event = FileChangeEvent {
-                        kind: format!("{:?}", event.kind),
-                        paths: event.paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
+    
+    let config = Config::default()
+        .with_poll_interval(Duration::from_millis(100));
+    
+    let mut watcher = notify::RecommendedWatcher::new(
+        move |res: Result<notify::Event, notify::Error>| {
+            match res {
+                Ok(event) => {
+                    let should_emit = match &event.kind {
+                        EventKind::Create(_) | EventKind::Remove(_) | EventKind::Modify(_) | EventKind::Any => true,
+                        _ => false,
                     };
-                    if let Err(e) = window_clone.emit("file-change", &file_event) {
-                    } else {
+                    
+                    if should_emit && !event.paths.is_empty() {
+                        let file_event = FileChangeEvent {
+                            kind: format!("{:?}", event.kind),
+                            paths: event.paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
+                        };
+                        let _ = window_clone.emit("file-change", &file_event);
                     }
                 }
+                Err(_) => {}
             }
-            Err(e) => {
-            }
-        }
-    }).map_err(|e| e.to_string())?;
+        },
+        config,
+    ).map_err(|e| e.to_string())?;
     
     watcher.watch(std::path::Path::new(&path), RecursiveMode::Recursive)
         .map_err(|e| e.to_string())?;

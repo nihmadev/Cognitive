@@ -93,8 +93,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0.125rem 0;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
+  margin-right: auto;
 }
 
 .nameError {
@@ -156,4 +157,39 @@
 
 .renameInput:focus {
   box-shadow: 0 0 0 1px var(--theme-accent);
+}
+
+.diagnosticsCount {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  line-height: 1.2;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.diagnosticsError {
+  color: var(--theme-error, #f85149);
+}
+
+.diagnosticsWarning {
+  color: var(--theme-warning, #e3b341);
+}
+
+.statusSeparator {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  color: var(--theme-foreground-muted);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.nameIgnored {
+  opacity: 0.5;
+  font-style: italic;
+  color: var(--theme-foreground-muted, #8b949e);
 }

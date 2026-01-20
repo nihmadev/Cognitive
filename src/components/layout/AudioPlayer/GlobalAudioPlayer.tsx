@@ -9,8 +9,8 @@ export const GlobalAudioPlayer = () => {
         volume,
         setPlaying,
         setProgress,
-        stop,
-        seekTime
+        seekTime,
+        playNext,
     } = useAudioStore();
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -25,8 +25,7 @@ export const GlobalAudioPlayer = () => {
         if (!audioRef.current || !resolvedUrl) return;
 
         if (isPlaying) {
-            audioRef.current.play().catch(err => {
-                console.error('Failed to play audio:', err);
+            audioRef.current.play().catch(() => {
                 setPlaying(false);
             });
         } else {
@@ -57,7 +56,6 @@ export const GlobalAudioPlayer = () => {
                 const assetUrl = tauriApi.getAssetUrl(currentPath);
                 setResolvedUrl(assetUrl);
             } catch (e) {
-                console.error('Failed to get asset URL:', e);
             }
         };
 
@@ -71,7 +69,7 @@ export const GlobalAudioPlayer = () => {
     };
 
     const handleEnded = () => {
-        stop();
+        playNext();
     };
 
     return (

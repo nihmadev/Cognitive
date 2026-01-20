@@ -5,9 +5,10 @@ import styles from './GitStatusIndicator.module.css';
 interface GitStatusIndicatorProps {
     status: FileGitStatus;
     onClassName?: (className: string) => void;
+    showDot?: boolean; // Для папок показываем кружок вместо букв
 }
 
-export const GitStatusIndicator = ({ status, onClassName }: GitStatusIndicatorProps) => {
+export const GitStatusIndicator = ({ status, onClassName, showDot = false }: GitStatusIndicatorProps) => {
     
     useEffect(() => {
         if (!status.status) {
@@ -27,6 +28,8 @@ export const GitStatusIndicator = ({ status, onClassName }: GitStatusIndicatorPr
                     return styles.untracked;
                 case 'staged':
                     return styles.staged;
+                case 'ignored':
+                    return styles.ignored;
                 default:
                     return '';
             }
@@ -71,6 +74,12 @@ export const GitStatusIndicator = ({ status, onClassName }: GitStatusIndicatorPr
                     className: styles.staged,
                     title: 'Staged new file'
                 };
+            case 'ignored':
+                return {
+                    text: 'I',
+                    className: styles.ignored,
+                    title: '● Ignored by .gitignore'
+                };
             default:
                 return null;
         }
@@ -79,6 +88,16 @@ export const GitStatusIndicator = ({ status, onClassName }: GitStatusIndicatorPr
     const statusInfo = getStatusInfo();
     if (!statusInfo) {
         return null;
+    }
+
+    // Для папок показываем кружок
+    if (showDot) {
+        return (
+            <span 
+                className={`${styles.gitStatusDot} ${statusInfo.className}`}
+                title={statusInfo.title}
+            />
+        );
     }
 
     return (

@@ -13,7 +13,6 @@ export interface GoogleModel {
 
 export class GoogleModelsService {
   async fetchAvailableModels(_apiKey?: string): Promise<GoogleModel[]> {
-    console.log('GoogleModelsService: Returning predefined Gemini models...');
     return await this.getFallbackModels();
   }
 
@@ -74,7 +73,6 @@ export class GoogleModelsService {
       const models = await this.fetchAvailableModels();
       return models.find(model => model.id === modelId) || null;
     } catch (error) {
-      console.error(`Failed to get model details for ${modelId}:`, error);
       return null;
     }
   }
@@ -85,7 +83,6 @@ export class GoogleModelsService {
       const models = await this.fetchAvailableModels();
       return models.filter(model => model.capabilities.includes(capability));
     } catch (error) {
-      console.error(`Failed to get models by capability ${capability}:`, error);
       return [];
     }
   }
@@ -124,7 +121,6 @@ export class GoogleModelsService {
 
   
   clearCache(): void {
-    console.log('GoogleModelsService: Cache cleared (no-op)');
   }
 
   

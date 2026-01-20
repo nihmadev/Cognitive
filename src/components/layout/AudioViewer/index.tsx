@@ -1,6 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useAudioStore } from '../../../store/audioStore';
-import { Play, Pause, Music, Volume2 } from 'lucide-react';
+import { Play, Pause, Music, Volume2, SkipBack, SkipForward } from 'lucide-react';
+import { invoke } from '@tauri-apps/api/core';
+
+interface FileEntry {
+    name: string;
+    path: string;
+    is_dir: boolean;
+}
 
 interface AudioViewerProps {
     path: string;
@@ -16,18 +23,54 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
         setPlaying,
         setVolume,
         volume,
-        seek
+        seek,
+        playlist,
+        setPlaylist,
+        playNext,
+        playPrevious,
+        title
     } = useAudioStore();
 
-    const fileName = path.split(/[\\/]/).pop() || path;
-    const isThisFile = currentPath === path;
+    // Используем title из стора, если он есть, иначе берем из path
+    const displayTitle = title || path.split(/[\\/]/).pop() || path;
+    const displayPath = currentPath || path;
     const progressRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!isThisFile) {
-            play(path);
-        }
-    }, [path, isThisFile, play]);
+        const initPlaylist = async () => {
+            try {
+                // Получаем директорию файла
+                const pathParts = path.split(/[\\/]/);
+                pathParts.pop(); // Убираем имя файла
+                const dirPath = pathParts.join('/');
+                
+                // Читаем содержимое директории
+                const files = await invoke<FileEntry[]>('read_dir', { path: dirPath });
+                
+                // Фильтруем только аудиофайлы и сортируем по имени
+                const audioExtensions = ['.mp3', '.wav', '.ogg', '.flac', '.m4a', '.aac', '.wma', '.opus'];
+                const audioFiles = files
+                    .filter(file => !file.is_dir && audioExtensions.some(ext => file.path.toLowerCase().endsWith(ext)))
+                    .map(file => file.path)
+                    .sort();
+                
+                // Устанавливаем плейлист (индекс установится автоматически)
+                setPlaylist(audioFiles);
+                
+                // Запускаем воспроизведение если это не текущий файл
+                if (currentPath !== path) {
+                    play(path);
+                }
+            } catch (error) {
+                // Если не удалось создать плейлист, просто запускаем файл
+                if (currentPath !== path) {
+                    play(path);
+                }
+            }
+        };
+
+        initPlaylist();
+    }, [path]);
 
     const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -91,15 +134,24 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap'
                     }}>
-                        {fileName}
+                        {displayTitle}
                     </h2>
                     <p style={{
                         margin: 0,
                         fontSize: 13,
                         color: 'var(--theme-foreground-muted)'
                     }}>
-                        {path}
+                        {displayPath}
                     </p>
+                    {playlist.length > 1 && (
+                        <p style={{
+                            margin: '4px 0 0 0',
+                            fontSize: 12,
+                            color: 'var(--theme-foreground-muted)'
+                        }}>
+                            {playlist.length} треков в плейлисте
+                        </p>
+                    )}
                 </div>
 
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -131,7 +183,36 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    {playlist.length > 1 && (
+                        <button
+                            onClick={playPrevious}
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: '50%',
+                                background: 'var(--theme-background-tertiary)',
+                                color: 'var(--theme-foreground)',
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s, background 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.background = 'var(--theme-hover-overlay)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.background = 'var(--theme-background-tertiary)';
+                            }}
+                            title="Предыдущий трек"
+                        >
+                            <SkipBack size={24} />
+                        </button>
+                    )}
                     <button
                         onClick={() => setPlaying(!isPlaying)}
                         style={{
@@ -152,6 +233,35 @@ export const AudioViewer = ({ path }: AudioViewerProps) => {
                     >
                         {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" style={{ marginLeft: 4 }} />}
                     </button>
+                    {playlist.length > 1 && (
+                        <button
+                            onClick={playNext}
+                            style={{
+                                width: 48,
+                                height: 48,
+                                borderRadius: '50%',
+                                background: 'var(--theme-background-tertiary)',
+                                color: 'var(--theme-foreground)',
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s, background 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.background = 'var(--theme-hover-overlay)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.background = 'var(--theme-background-tertiary)';
+                            }}
+                            title="Следующий трек"
+                        >
+                            <SkipForward size={24} />
+                        </button>
+                    )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 200 }}>

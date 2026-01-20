@@ -8,6 +8,7 @@ import { useProjectStore } from '../../../store/projectStore';
 import { useFolderHierarchyDiagnostics } from './useFolderHierarchyDiagnostics';
 import { useFileDiagnosticStatus } from './useFileDiagnosticStatus';
 import { useFileGitStatus } from './useFileGitStatus';
+import { useFolderGitStatus } from './useFolderGitStatus';
 import { GitStatusIndicator } from './GitStatusIndicator';
 import { NewItemInput } from './NewItemInput';
 import styles from './FileItem.module.css';
@@ -49,10 +50,10 @@ export const FileItem = memo(({
 
 
     const gitStatus = useFileGitStatus(entry.path, entry.is_dir);
+    const folderGitStatus = useFolderGitStatus(entry.path, entry.is_dir);
 
 
     const { hasError, hasWarning } = entry.is_dir ? folderDiagnostics : fileDiagnostics;
-
     const [isRenaming, setIsRenaming] = useState(false);
     const [newName, setNewName] = useState(entry.name);
     const [gitStatusClassName, setGitStatusClassName] = useState('');
@@ -72,7 +73,6 @@ export const FileItem = memo(({
                     const files = await tauriApi.readDir(entry.path);
                     setChildren(files);
                 } catch (e) {
-                    console.error("Failed to read dir", e);
                 }
             }
         }
@@ -134,7 +134,6 @@ export const FileItem = memo(({
 
             await refreshWorkspace();
         } catch (error) {
-            console.error('Failed to rename:', error);
         } finally {
             setIsRenaming(false);
         }
@@ -184,7 +183,6 @@ export const FileItem = memo(({
                 const files = await tauriApi.readDir(entry.path);
                 setChildren(files);
             } catch (e) {
-                console.error("Failed to refresh dir", e);
             }
             refreshWorkspace();
         }
@@ -211,7 +209,46 @@ export const FileItem = memo(({
                 onClick={handleToggle}
                 data-file-path={entry.path}
                 data-is-dir={entry.is_dir}
-                title={`${entry.path}${gitStatus.status ? ` • ${gitStatus.status === 'modified' ? 'Modified' : gitStatus.status === 'untracked' ? 'Untracked' : gitStatus.status === 'deleted' ? 'Deleted' : gitStatus.status === 'staged' ? 'Staged' : gitStatus.status === 'conflicted' ? 'Conflicted' : ''}` : ''}`}
+                title={(() => {
+                    const parts = [entry.path];
+                    
+                    // Добавляем информацию о проблемах для файлов
+                    if (!entry.is_dir && (fileDiagnostics.hasError || fileDiagnostics.hasWarning)) {
+                        const errorCount = fileDiagnostics.errorCount || 0;
+                        const warningCount = fileDiagnostics.warningCount || 0;
+                        const details = [];
+                        
+                        if (errorCount > 0) {
+                            details.push(`${errorCount} error${errorCount !== 1 ? 's' : ''}`);
+                        }
+                        if (warningCount > 0) {
+                            details.push(`${warningCount} warning${warningCount !== 1 ? 's' : ''}`);
+                        }
+                        
+                        if (details.length > 0) {
+                            parts.push(details.join(', '));
+                        }
+                    }
+                    
+                    // Добавляем Git статус
+                    if (gitStatus.isIgnored || folderGitStatus.isIgnored) {
+                        parts.push('● Ignored');
+                    } else if (gitStatus.status) {
+                        const statusMap: Record<string, string> = {
+                            'modified': 'Modified',
+                            'untracked': 'Untracked',
+                            'deleted': 'Deleted',
+                            'staged': 'Staged',
+                            'conflicted': 'Conflicted'
+                        };
+                        const statusText = statusMap[gitStatus.status];
+                        if (statusText) {
+                            parts.push(statusText);
+                        }
+                    }
+                    
+                    return parts.join(' • ');
+                })()}
             >
                 {isActive && <div className={styles.activeIndicator} />}
 
@@ -250,15 +287,88 @@ export const FileItem = memo(({
                             styles.name,
                             hasError && styles.nameError,
                             !hasError && hasWarning && styles.nameWarning,
+                            (gitStatus.isIgnored || folderGitStatus.isIgnored) && styles.nameIgnored,
                             gitStatusClassName
                         )}>
                             {entry.name}
                         </span>
                         { }
-                        <GitStatusIndicator
-                            status={gitStatus}
-                            onClassName={setGitStatusClassName}
-                        />
+                        {!entry.is_dir && (hasError || hasWarning) && (() => {
+                            const errorCount = fileDiagnostics.errorCount || 0;
+                            const warningCount = fileDiagnostics.warningCount || 0;
+                            const totalCount = errorCount + warningCount;
+                            
+                            const tooltipParts = [];
+                            
+                            // Путь к файлу
+                            tooltipParts.push(entry.path);
+                            
+                            // Добавляем количество проблем
+                            if (totalCount === 1) {
+                                tooltipParts.push('1 problem in this file');
+                            } else if (totalCount > 1) {
+                                tooltipParts.push(`${totalCount} problems in this file`);
+                            }
+                            
+                            // Добавляем детализацию
+                            const details = [];
+                            if (errorCount > 0) {
+                                details.push(`${errorCount} error${errorCount !== 1 ? 's' : ''}`);
+                            }
+                            if (warningCount > 0) {
+                                details.push(`${warningCount} warning${warningCount !== 1 ? 's' : ''}`);
+                            }
+                            if (details.length > 0) {
+                                tooltipParts.push(`(${details.join(', ')})`);
+                            }
+                            
+                            // Добавляем Git статус
+                            if (gitStatus.isIgnored) {
+                                tooltipParts.push('● Ignored');
+                            } else if (gitStatus.status) {
+                                const statusMap: Record<string, string> = {
+                                    'modified': 'Modified',
+                                    'untracked': 'Untracked',
+                                    'deleted': 'Deleted',
+                                    'staged': 'Staged',
+                                    'conflicted': 'Conflicted'
+                                };
+                                const statusText = statusMap[gitStatus.status];
+                                if (statusText) {
+                                    tooltipParts.push(statusText);
+                                }
+                            }
+                            
+                            const tooltipText = tooltipParts.join(' • ');
+                            
+                            return (
+                                <span 
+                                    className={clsx(
+                                        styles.diagnosticsCount,
+                                        hasError && styles.diagnosticsError,
+                                        !hasError && hasWarning && styles.diagnosticsWarning
+                                    )}
+                                    title={tooltipText}
+                                >
+                                    {totalCount}
+                                </span>
+                            );
+                        })()}
+                        {!entry.is_dir && (hasError || hasWarning) && gitStatus.status && (
+                            <span className={styles.statusSeparator}>,</span>
+                        )}
+                        {entry.is_dir && folderGitStatus.status ? (
+                            <GitStatusIndicator
+                                status={folderGitStatus}
+                                showDot={true}
+                                onClassName={setGitStatusClassName}
+                            />
+                        ) : (
+                            <GitStatusIndicator
+                                status={gitStatus}
+                                onClassName={setGitStatusClassName}
+                            />
+                        )}
                     </>
                 )}
             </div>

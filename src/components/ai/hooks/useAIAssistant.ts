@@ -23,10 +23,6 @@ export const useAIAssistant = () => {
 
   
   useEffect(() => {
-    console.log('Available Ollama local models:', ollamaLocalModels);
-    console.log('Available models:', availableModels);
-    console.log('Active model ID:', activeModelId);
-    console.log('Active model status:', activeModelId ? getModelStatus(activeModelId) : 'N/A');
   }, [ollamaLocalModels, availableModels, activeModelId]);
 
   const [inputValue, setInputValue] = useState('');

@@ -143,12 +143,8 @@ export const AIAssistant = () => {
               appendMessageContent(convId, chunk);
             },
             
-            (tool: string, isStart: boolean, _result?: string) => {
-              if (isStart) {
-                console.log(`🔧 Executing tool: ${tool}`);
-              } else {
-                console.log(`✅ Tool ${tool} completed`);
-              }
+            (_tool: string, _isStart: boolean, _result?: string) => {
+              // Tool execution callback
             }
           );
           
@@ -168,12 +164,10 @@ export const AIAssistant = () => {
               
               aiStore.updateConversationTitle(convId, generatedTitle);
             } catch (titleError) {
-              console.error('Error generating title:', titleError);
               
             }
           }
         } catch (error) {
-          console.error('Error in chat service:', error);
           appendMessageContent(convId, `\n\n[Error: ${error instanceof Error ? error.message : String(error)}]`);
         }
       } else {

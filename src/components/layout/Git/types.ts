@@ -27,13 +27,14 @@ export interface GraphSectionProps {
     commits: GitCommit[];
     graphOpen: boolean;
     remoteName: string | null | undefined;
+    workspacePath?: string;
     onToggle: () => void;
     onCommitHover: (commit: GitCommit, e: React.MouseEvent) => void;
     onCommitLeave: () => void;
-    onPull?: () => void;
-    onPush?: () => void;
-    onFetch?: () => void;
-    onRefresh?: () => void;
+    onPull?: () => void | Promise<void>;
+    onPush?: () => void | Promise<void>;
+    onFetch?: () => void | Promise<void>;
+    onRefresh?: () => void | Promise<void>;
 }
 
 export interface ChangesSectionProps {
@@ -49,4 +50,5 @@ export interface ChangesSectionProps {
     onStageFile: (path: string) => void;
     onStageAll: () => void;
     onDiscardChanges: (path: string) => void;
+    onOpenFile?: (path: string) => void;
 }

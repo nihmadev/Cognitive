@@ -72,8 +72,6 @@ export function configureMonacoTypeScript(monaco: any) {
     tsDefaults.setEagerModelSync(true);
     jsDefaults.setEagerModelSync(true);
 
-    console.log('Monaco TypeScript configuration applied (LSP-only mode, like VSCode)');
-
     // Добавляем типы для CSS модулей и других ассетов
     const cssModuleDeclaration = `
 declare module '*.module.css' {
