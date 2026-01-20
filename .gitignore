@@ -12,7 +12,8 @@ dist
 dist-ssr
 *.local
 .timeline/
-.timeline
+
+
 
 
 # Editor directories and files
