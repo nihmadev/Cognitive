@@ -117,7 +117,7 @@ jobs:
             file
           
       - name: Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
         
       - name: Build Tauri (DEB and RPM only)
         env:
