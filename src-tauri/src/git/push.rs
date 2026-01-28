@@ -122,7 +122,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
     let mut callbacks = git2::RemoteCallbacks::new();
     
     // Add progress tracking to prevent hanging
-    callbacks.push_update_reference(|refname, status| {
+    callbacks.push_update_reference(|_refname, _status| {
         Ok(())
     });
     
@@ -131,7 +131,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
         ()
     });
     
-    callbacks.credentials(|url, username_from_url, allowed_types| {
+    callbacks.credentials(|_url, username_from_url, allowed_types| {
         let username = username_from_url.unwrap_or("git");
         if let Ok(token) = std::process::Command::new("gh")
             .args(&["auth", "token"])
@@ -158,7 +158,7 @@ pub fn git_push(repo_path: String, remote_name: Option<String>, branch_name: Opt
                 (format!("{}/.ssh/id_ecdsa", home), "id_ecdsa"),
             ];
             
-            for (key_path, key_name) in ssh_key_paths {
+            for (key_path, _key_name) in ssh_key_paths {
                 if std::path::Path::new(&key_path).exists() {
                     // Try without passphrase first
                     match git2::Cred::ssh_key(

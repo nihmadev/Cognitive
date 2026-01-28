@@ -68,7 +68,7 @@ pub async fn agentrouter_set_workspace(
         // Trigger indexing in the background with cold start optimization
         let rag_engine = state.rag_engine.clone();
         tokio::spawn(async move {
-            if let Err(e) = rag_engine.load_or_index(&path).await {
+            if let Err(_e) = rag_engine.load_or_index(&path).await {
                 // Failed to index workspace
             }
         });

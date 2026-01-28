@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 use tauri::AppHandle;
-use tauri::Manager;
 
 pub struct PathResolver;
 
