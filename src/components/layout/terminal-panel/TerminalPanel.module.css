@@ -1,0 +1,843 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  min-height: 200px;
+  max-height: 80vh;
+  background: var(--theme-background-primary);
+  border-top: 1px solid var(--theme-border);
+  flex-shrink: 0;
+  resize: vertical;
+  overflow: hidden;
+}
+
+.panelMaximized {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  height: 100%;
+  max-height: 100%;
+  min-height: 100%;
+  border-top: none;
+  resize: none;
+}
+
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  background: var(--theme-background-secondary);
+  border-bottom: 1px solid var(--theme-border);
+  flex-shrink: 0;
+  padding: 0 8px;
+  position: relative;
+  z-index: 10;
+}
+
+
+.tabs {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 1px;
+  /* Slight gap */
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  font-size: 11px;
+  /* VS Code often uses 11px for panel tabs UPPERCASE */
+  text-transform: uppercase;
+  font-weight: 400;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  transition: color 0.1s ease;
+  border-bottom: 1px solid transparent;
+  /* Using border bottom for active state */
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+.tab:hover {
+  color: var(--theme-foreground);
+}
+
+.tabActive {
+  color: var(--theme-foreground);
+  border-bottom-color: var(--theme-accent);
+}
+
+.badge {
+  background: var(--theme-accent);
+  /* Use accent for badge usually, or error if specifically problems */
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+  line-height: normal;
+}
+
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  z-index: 11;
+  position: relative;
+}
+
+
+.actionDropdown {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-radius: 4px;
+}
+
+.dropdownArrow {
+  padding-left: 0 !important;
+  padding-right: 2px !important;
+}
+
+.actionDropdownMenu {
+  position: absolute;
+  top: 100%;
+  /* Align below */
+  right: 0;
+  /* Align to right edge */
+  left: auto;
+  /* Reset left */
+  margin-top: 4px;
+  background: var(--theme-background-secondary);
+  /* Dropdown bg */
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  min-width: 250px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.actionDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.actionDropdownItem:hover {
+  background-color: var(--theme-hover-overlay);
+  /* Standard hover overlay */
+}
+
+.actionDropdownItem svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--theme-foreground-muted);
+}
+
+.keyboardShortcut {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--theme-foreground-subtle);
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.dropdownDivider {
+  border: none;
+  border-top: 1px solid var(--theme-border);
+  margin: 4px 0;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  /* Slightly larger targets */
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+  position: relative;
+  z-index: 12;
+}
+
+.actionButton:hover {
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground);
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  background: var(--theme-background);
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  background: var(--theme-background-primary);
+  overflow: hidden;
+}
+
+.terminalContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminalsWrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+  gap: 16px;
+}
+
+.emptyStateText {
+  color: var(--theme-foreground-muted);
+}
+
+.createTerminalButton {
+  padding: 8px 16px;
+  background: var(--theme-accent);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.createTerminalButton:hover {
+  filter: brightness(1.1);
+}
+
+.placeholderContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--theme-foreground-subtle);
+}
+
+
+/* Terminal Sidebar List */
+
+.terminalSidebar {
+  width: 200px;
+  /* Standard VS Code sidebar width approx */
+  min-width: 150px;
+  max-width: 300px;
+  background: var(--theme-background-secondary);
+  /* Usually slightly darker or same as header */
+  border-left: 1px solid var(--theme-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.terminalList {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 4px;
+}
+
+.terminalListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  /* Tighter padding */
+  cursor: pointer;
+  color: var(--theme-foreground-muted);
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  height: 28px;
+  border-left: 3px solid transparent;
+  /* Indicator strip */
+}
+
+.terminalListItem:hover {
+  background-color: var(--theme-hover-overlay);
+  color: var(--theme-foreground);
+}
+
+.activeTerminalItem {
+  background-color: var(--theme-selection-background-subtle, rgba(255, 255, 255, 0.04));
+  /* Use subtle selection color */
+  color: var(--theme-foreground);
+  border-left-color: var(--theme-accent);
+  /* Active indicator */
+}
+
+.terminalItemMain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.terminalItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.terminalItemName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  line-height: normal;
+}
+
+.terminalItemActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  /* Hidden by default */
+  transition: opacity 0.1s;
+}
+
+.terminalListItem:hover .terminalItemActions {
+  opacity: 1;
+  /* Show on hover */
+}
+
+.terminalItemAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: var(--theme-foreground-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.terminalItemAction:hover {
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground);
+}
+
+.terminalItemAction svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Problems Panel */
+.problemsContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--theme-background-primary);
+}
+
+.problemsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.problemItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.problemItem:hover {
+  background-color: var(--theme-hover-overlay);
+}
+
+.problemIcon {
+  padding-top: 2px;
+}
+
+.problemDetails {
+  flex: 1;
+  overflow: hidden;
+}
+
+.problemMessage {
+  color: var(--theme-foreground);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.problemLocation {
+  color: var(--theme-foreground-subtle);
+  font-size: 0.9em;
+}
+
+
+
+.terminalContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminalsWrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.terminalTabs {
+  display: flex;
+  background: var(--theme-background-tertiary);
+  border-bottom: 1px solid var(--theme-border);
+  flex-shrink: 0;
+  height: 35px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.terminalTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 100%;
+  border-bottom: 2px solid transparent;
+  position: relative;
+}
+
+.terminalTab:hover {
+  background: var(--theme-hover-overlay);
+}
+
+.terminalTabActive {
+  color: var(--theme-foreground);
+  background: var(--theme-background-primary);
+  border-bottom-color: var(--theme-accent);
+}
+
+.terminalTabClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-subtle);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.terminalTab:hover .terminalTabClose {
+  opacity: 1;
+}
+
+.terminalTabClose:hover {
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground-muted);
+}
+
+.terminalTabAdd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  flex-shrink: 0;
+}
+
+.terminalTabAdd:hover {
+  background: var(--theme-hover-overlay);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  gap: 12px;
+}
+
+.emptyStateText {
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+}
+
+.createTerminalButton {
+  padding: 6px 12px;
+  background: var(--theme-accent);
+  color: var(--theme-background);
+  border: none;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.createTerminalButton:hover {
+  background: var(--theme-accent-hover);
+}
+
+.placeholderContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.placeholderText {
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+}
+
+
+.hint {
+  padding: 4px 12px;
+  background: var(--theme-background);
+  border-top: 1px solid var(--theme-border);
+  color: var(--theme-foreground-subtle);
+  font-size: 11px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+
+.terminalSidebar {
+  width: 250px;
+  min-width: 180px;
+  max-width: min(350px, 30%);
+  background: var(--theme-background);
+  border-left: 1px solid var(--theme-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--theme-border);
+  height: 35px;
+  flex-shrink: 0;
+}
+
+.sidebarHeader h4 {
+  margin: 0;
+  color: var(--theme-foreground);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.sidebarCloseButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+}
+
+.sidebarCloseButton:hover {
+  background-color: var(--theme-hover-overlay-strong);
+}
+
+.terminalList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
+}
+
+.terminalList::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminalList::-webkit-scrollbar-track {
+  background: var(--theme-background-secondary);
+}
+
+.terminalList::-webkit-scrollbar-thumb {
+  background: var(--theme-scrollbar-thumb);
+  border-radius: 5px;
+}
+
+.terminalList::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-scrollbar-thumb-hover);
+}
+
+.terminalListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+  width: 100%;
+}
+
+.terminalListItem:hover {
+  background-color: var(--theme-hover-overlay);
+}
+
+.activeTerminalItem {
+  background-color: var(--theme-hover-overlay-strong);
+}
+
+.terminalItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.terminalItemMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.terminalItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--theme-foreground-subtle);
+  flex-shrink: 0;
+}
+
+.terminalItemIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.terminalItemName {
+  color: var(--theme-foreground-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+}
+
+.activeTerminalItem .terminalItemName {
+  color: var(--theme-foreground);
+}
+
+.activeTerminalItem .terminalItemIcon {
+  color: var(--theme-foreground);
+}
+
+.terminalItemClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-subtle);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.terminalListItem:hover .terminalItemClose {
+  opacity: 1;
+}
+
+.terminalItemClose:hover {
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground-muted);
+}
+
+
+.problemsContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--theme-background);
+}
+
+.problemsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.problemItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.problemItem.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid var(--theme-error);
+}
+
+.problemItem.warning {
+  background-color: rgba(255, 152, 0, 0.1);
+  border-left: 3px solid var(--theme-warning);
+}
+
+.problemIcon {
+  color: var(--theme-error);
+  font-weight: bold;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.problemItem.warning .problemIcon {
+  color: var(--theme-warning);
+}
+
+.problemDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.problemMessage {
+  color: var(--theme-foreground-muted);
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.problemLocation {
+  color: var(--theme-foreground-subtle);
+  font-size: 11px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}

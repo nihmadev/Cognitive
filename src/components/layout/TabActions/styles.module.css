@@ -1,0 +1,142 @@
+.tabActions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border-left: 1px solid var(--theme-border);
+    height: 100%;
+    background: var(--theme-tab-inactive-background);
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.actionButton:hover:not(:disabled) {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdownContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--theme-background-tertiary);
+    border: 1px solid var(--theme-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: max-content;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.dropdownItem {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+}
+
+.dropdownItemContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 16px;
+    white-space: nowrap;
+}
+
+.runButtonContainer {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.runButtonContainer:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.playButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--theme-foreground);
+}
+
+.chevronButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 2px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    border-left: 1px solid transparent;
+}
+
+.runButtonContainer:hover .chevronButton {
+    border-left-color: var(--theme-border);
+}
+
+.playButton:hover, .chevronButton:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.keybind {
+    font-size: 11px;
+    color: var(--theme-muted);
+    font-family: monospace;
+    margin-left: auto;
+}
+
+.lockIcon {
+    color: var(--theme-muted);
+}
+
+.dropdownItem:hover:not(:disabled) {
+    background: var(--theme-hover-overlay);
+}
+
+.dropdownItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdownItem:not(:last-child) {
+    border-bottom: 1px solid var(--theme-border);
+}

@@ -1,0 +1,82 @@
+/* Main container and layout styles */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+    background-color: var(--theme-background);
+    color: var(--theme-foreground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.mainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chatContainer {
+    position: relative;
+    background: var(--theme-background);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chatContainer .inputWrapper {
+    width: 100%;
+    margin: 0;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+/* When container is narrow (assistant window resized) */
+.chatContainer[data-narrow="true"] .inputWrapper {
+    margin: 0;
+    padding: 8px 12px;
+}
+
+.chatContainer[data-very-narrow="true"] .inputWrapper {
+    margin: 0;
+    padding: 8px 8px;
+}
+
+.settingsMainContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}

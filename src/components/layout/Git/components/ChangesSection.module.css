@@ -1,0 +1,179 @@
+.changesSection {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.changesSection.open {
+    flex: 1;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background-color: var(--theme-background-secondary);
+    border-top: 1px solid var(--theme-border);
+    cursor: pointer;
+    user-select: none;
+}
+
+.sectionHeader:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--theme-foreground);
+}
+
+.sectionCount {
+    background: var(--theme-background-tertiary);
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: var(--theme-foreground);
+}
+
+.sectionActions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.sectionHeader:hover .sectionActions {
+    opacity: 1;
+}
+
+.sectionBtn {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.sectionBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.filesList {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.fileItem {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    cursor: pointer;
+    gap: 6px;
+}
+
+.fileItem:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.fileIcon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.fileName.deleted {
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+    opacity: 0.6;
+}
+
+.fileName.ignored {
+    color: var(--theme-foreground-subtle, #8b949e);
+    opacity: 0.6;
+}
+
+.filePath {
+    color: var(--theme-foreground-subtle);
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+.fileStatus {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 4px;
+    border-radius: 2px;
+}
+
+.statusM {
+    color: var(--theme-git-modified);
+}
+
+.statusU {
+    color: var(--theme-git-added);
+}
+
+.statusD {
+    color: var(--theme-git-deleted);
+}
+
+.fileActions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.fileItem:hover .fileActions {
+    opacity: 1;
+}
+
+.fileActionBtn {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.fileActionBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.emptySection {
+    padding: 12px;
+    text-align: center;
+    color: var(--theme-foreground-subtle);
+    font-size: 12px;
+}

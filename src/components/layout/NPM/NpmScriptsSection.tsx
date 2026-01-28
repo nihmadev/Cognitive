@@ -1,0 +1,211 @@
+import { useState, useCallback, useEffect } from 'react';
+import { ChevronRight, ChevronDown, Play, Square, RefreshCw, Wrench, Bug } from 'lucide-react';
+import { useProjectStore } from '../../../store/projectStore';
+import { useTerminalStore } from '../../../store/terminalStore';
+import { useUIStore } from '../../../store/uiStore';
+import { tauriApi, type NpmScript } from '../../../lib/tauri-api';
+import { getFileIcon } from '../../../utils/fileIcons';
+import clsx from 'clsx';
+import styles from './NpmScriptsSection.module.css';
+
+interface ScriptItemProps {
+    script: NpmScript;
+    isRunning: boolean;
+    onRun: (scriptName: string) => void;
+    onStop: (scriptName: string) => void;
+}
+
+const ScriptItem = ({ script, isRunning, onRun, onStop }: ScriptItemProps) => {
+    const [showOptions, setShowOptions] = useState(false);
+
+    return (
+        <div 
+            className={styles.scriptItem}
+            onMouseEnter={() => setShowOptions(true)}
+            onMouseLeave={() => setShowOptions(false)}
+        >
+            <div className={styles.scriptRow}>
+                <div className={styles.scriptInfo}>
+                    <Wrench size={12} className={styles.scriptIcon} />
+                    <span className={styles.scriptName}>{script.name}</span>
+                </div>
+                {showOptions && (
+                    <div className={styles.scriptActions}>
+                        <button
+                            className={clsx(styles.scriptBtn, styles.runBtn)}
+                            title="Run script"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onRun(script.name);
+                            }}
+                        >
+                            <Play size={10} />
+                        </button>
+                        <button
+                            className={clsx(styles.scriptBtn, styles.debugBtn)}
+                            title="Debug script"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onRun(script.name);
+                            }}
+                        >
+                            <Bug size={10} />
+                        </button>
+                        {isRunning && (
+                            <button
+                                className={clsx(styles.scriptBtn, styles.stopBtn)}
+                                title="Stop script"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onStop(script.name);
+                                }}
+                            >
+                                <Square size={10} />
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+interface NpmScriptsSectionProps {
+    
+}
+
+export const NpmScriptsSection = ({}: NpmScriptsSectionProps) => {
+    const [isOpen, setIsOpen] = useState(true);
+    const [scripts, setScripts] = useState<NpmScript[]>([]);
+    const [runningScripts, setRunningScripts] = useState<Set<string>>(new Set());
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { currentWorkspace } = useProjectStore();
+    const { activeTerminalId, sendCommandToTerminal, addTerminal } = useTerminalStore();
+    const { setBottomPanelTab, setTerminalOpen } = useUIStore();
+
+    const loadScripts = useCallback(async () => {
+        if (!currentWorkspace) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const npmScripts = await tauriApi.npmGetScripts(currentWorkspace);
+            setScripts(npmScripts);
+        } catch (err) {
+            setError('Failed to load NPM scripts');
+            setScripts([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [currentWorkspace]);
+
+    const runScript = useCallback(async (scriptName: string) => {
+        if (!currentWorkspace) return;
+
+        try {
+            // Get the terminal command
+            const command = await tauriApi.npmGetTerminalCommand(currentWorkspace, scriptName);
+            
+            // Ensure we have an active terminal
+            let terminalId = activeTerminalId;
+            if (!terminalId) {
+                terminalId = addTerminal();
+            }
+            
+            // Open terminal panel if it's closed
+            setTerminalOpen(true);
+            
+            // Switch to terminal tab
+            setBottomPanelTab('terminal');
+            
+            // Small delay to ensure terminal is rendered and PTY is ready
+            setTimeout(() => {
+                // Send command to terminal
+                sendCommandToTerminal(terminalId, command);
+            }, 100);
+        } catch (err) {
+            // Failed to run npm script
+        }
+    }, [currentWorkspace, activeTerminalId, addTerminal, sendCommandToTerminal, setBottomPanelTab, setTerminalOpen]);
+
+    const stopScript = useCallback(async (scriptName: string) => {
+        try {
+            await tauriApi.npmStopScript(scriptName);
+            setRunningScripts(prev => {
+                const next = new Set(prev);
+                next.delete(scriptName);
+                return next;
+            });
+        } catch (err) {
+        }
+    }, []);
+
+    const updateRunningScripts = useCallback(async () => {
+        try {
+            const running = await tauriApi.npmGetRunningScripts();
+            setRunningScripts(new Set(running.map(script => script.name)));
+        } catch (err) {
+        }
+    }, []);
+
+    useEffect(() => {
+        loadScripts();
+        updateRunningScripts();
+    }, [loadScripts, updateRunningScripts]);
+
+    return (
+        <div className={styles.section}>
+            <div className={styles.sectionHeader} onClick={() => setIsOpen(!isOpen)}>
+                <div className={styles.sectionTitle}>
+                    <span className={styles.chev}>
+                        {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                    </span>
+                    {isOpen ? (
+                        <>
+                            {getFileIcon('package.json')}
+                            <span>package.json</span>
+                        </>
+                    ) : (
+                        <span>NPM Scripts</span>
+                    )}
+                </div>
+                {isOpen && (
+                    <div className={styles.sectionActions} onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className={styles.actionBtn}
+                            title="Refresh Scripts"
+                            onClick={loadScripts}
+                        >
+                            <RefreshCw size={14} />
+                        </button>
+                    </div>
+                )}
+            </div>
+            {isOpen && (
+                <div className={styles.sectionBody}>
+                    {isLoading ? (
+                        <div className={styles.loading}>Loading scripts...</div>
+                    ) : error ? (
+                        <div className={styles.error}>{error}</div>
+                    ) : scripts.length === 0 ? (
+                        <div className={styles.empty}>No scripts found</div>
+                    ) : (
+                        <div className={styles.scriptList}>
+                            {scripts.map((script) => (
+                                <ScriptItem
+                                    key={script.name}
+                                    script={script}
+                                    isRunning={runningScripts.has(script.name)}
+                                    onRun={runScript}
+                                    onStop={stopScript}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};

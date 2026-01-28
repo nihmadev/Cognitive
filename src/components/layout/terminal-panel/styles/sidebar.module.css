@@ -1,0 +1,135 @@
+.terminalSidebar {
+  width: 250px;
+  min-width: 180px;
+  max-width: min(350px, 30%);
+  background: var(--theme-background-secondary);
+  border-left: 1px solid var(--theme-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.terminalList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
+}
+
+.terminalList::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminalList::-webkit-scrollbar-track {
+  background: var(--theme-background-secondary);
+}
+
+.terminalList::-webkit-scrollbar-thumb {
+  background: var(--theme-scrollbar-thumb);
+  border-radius: 5px;
+}
+
+.terminalList::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-scrollbar-thumb-hover);
+}
+
+.terminalListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-muted);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.terminalListItem:hover {
+  background-color: var(--theme-hover-overlay);
+}
+
+.activeTerminalItem {
+  background-color: var(--theme-hover-overlay-strong);
+}
+
+.terminalItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.terminalItemMain {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.terminalItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--theme-foreground-muted);
+  flex-shrink: 0;
+}
+
+.terminalItemIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.terminalItemName {
+  color: var(--theme-foreground-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+}
+
+.activeTerminalItem .terminalItemName {
+  color: var(--theme-foreground);
+}
+
+.activeTerminalItem .terminalItemIcon {
+  color: var(--theme-foreground);
+}
+
+.terminalItemClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: var(--theme-foreground-subtle);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.1s ease;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.terminalListItem:hover .terminalItemClose {
+  opacity: 1;
+}
+
+.terminalItemClose:hover {
+  background-color: var(--theme-hover-overlay-strong);
+  color: var(--theme-foreground);
+}

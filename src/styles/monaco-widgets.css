@@ -1,0 +1,176 @@
+/* Monaco Editor Widget Fixes */
+
+/* Disable system selection color in Monaco Editor */
+.monaco-editor {
+  caret-color: var(--theme-accent) !important;
+}
+
+.monaco-editor .view-lines {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Force selection color in Monaco Editor */
+.monaco-editor .selected-text {
+  background-color: var(--theme-selection, #264f78) !important;
+  color: var(--theme-foreground, #cccccc) !important;
+}
+
+/* Fix for find widget close button and other widget icons */
+.monaco-editor .monaco-editor-widget .monaco-action-bar .action-label.codicon {
+  color: var(--vscode-editor-foreground, var(--theme-foreground)) !important;
+  background-color: var(--vscode-editor-background, var(--theme-background-secondary)) !important;
+  border-radius: 3px !important;
+  padding: 2px !important;
+  font-size: 12px !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Unused and Deprecated styles */
+.monaco-editor .unnecessary,
+.monaco-editor .view-line span.unnecessary {
+  opacity: 0.4 !important;
+}
+
+/* Hide squiggly lines for unnecessary code */
+.monaco-editor .squiggly-unnecessary {
+  display: none !important;
+}
+
+.monaco-editor .deprecated,
+.monaco-editor .view-line span.deprecated {
+  text-decoration: line-through !important;
+  opacity: 0.7 !important;
+}
+
+.monaco-editor .monaco-editor-widget .monaco-action-bar .action-label.codicon:hover {
+  background-color: var(--vscode-button-hoverBackground, var(--theme-border)) !important;
+  color: var(--vscode-editor-foreground, var(--theme-foreground)) !important;
+}
+
+/* Specific fix for find widget close button */
+.monaco-editor .find-widget .monaco-action-bar .action-label.codicon.codicon-close {
+  color: var(--vscode-editor-foreground, var(--theme-foreground-muted)) !important;
+  background-color: transparent !important;
+  border-radius: 3px !important;
+  padding: 3px !important;
+  font-size: 14px !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.8 !important;
+  transition: all 0.2s ease !important;
+}
+
+.monaco-editor .find-widget .monaco-action-bar .action-label.codicon.codicon-close:hover {
+  background-color: var(--vscode-button-hoverBackground, var(--theme-hover-overlay)) !important;
+  color: var(--vscode-editor-foreground, var(--theme-foreground)) !important;
+  opacity: 1 !important;
+}
+
+/* Fix for all widget close buttons */
+.monaco-editor .monaco-editor-widget .codicon-close {
+  color: var(--vscode-editor-foreground, var(--theme-foreground-muted)) !important;
+  opacity: 0.8 !important;
+  transition: all 0.2s ease !important;
+}
+
+.monaco-editor .monaco-editor-widget .codicon-close:hover {
+  color: var(--vscode-editor-foreground, var(--theme-foreground)) !important;
+  opacity: 1 !important;
+}
+
+/* Fix for find widget appearance */
+.monaco-editor .find-widget {
+  background-color: var(--vscode-editorWidget-background, var(--theme-background-secondary)) !important;
+  border: 1px solid var(--vscode-editorWidget-border, var(--theme-border)) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.monaco-editor .find-widget .monaco-findInput {
+  background-color: var(--vscode-input-background, var(--theme-input-background)) !important;
+  border: 1px solid var(--vscode-input-border, var(--theme-border)) !important;
+  color: var(--vscode-input-foreground, var(--theme-foreground)) !important;
+}
+
+.monaco-editor .find-widget .monaco-findInput input {
+  color: var(--vscode-input-foreground, var(--theme-foreground)) !important;
+  background-color: transparent !important;
+}
+
+.monaco-editor .find-widget .monaco-findInput .codicon {
+  color: var(--vscode-editor-foreground, var(--theme-foreground-muted)) !important;
+}
+
+/* Fix for replace widget */
+.monaco-editor .find-widget .replace-part {
+  background-color: var(--vscode-editorWidget-background, var(--theme-background-secondary)) !important;
+  border-top: 1px solid var(--vscode-editorWidget-border, var(--theme-border)) !important;
+}
+
+.monaco-editor .find-widget .replace-part .monaco-findInput {
+  background-color: var(--vscode-input-background, var(--theme-input-background)) !important;
+  border: 1px solid var(--vscode-input-border, var(--theme-border)) !important;
+  color: var(--vscode-input-foreground, var(--theme-foreground)) !important;
+}
+
+/* Fix for widget buttons */
+.monaco-editor .find-widget .button {
+  background-color: var(--vscode-button-background, var(--theme-accent)) !important;
+  color: var(--vscode-button-foreground, var(--theme-accent-foreground)) !important;
+  border: none !important;
+  border-radius: 3px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  opacity: 0.9 !important;
+  transition: all 0.2s ease !important;
+}
+
+.monaco-editor .find-widget .button:hover {
+  background-color: var(--vscode-button-hoverBackground, var(--theme-accent-hover, var(--theme-accent))) !important;
+  opacity: 1 !important;
+}
+
+.monaco-editor .find-widget .button.disabled {
+  background-color: var(--vscode-button-secondaryBackground, var(--theme-background-tertiary)) !important;
+  color: var(--vscode-button-secondaryForeground, var(--theme-foreground-muted)) !important;
+  opacity: 0.5 !important;
+}
+
+/* Fix for checkboxes in find widget */
+.monaco-editor .find-widget .monaco-checkbox .checkbox {
+  border: 1px solid var(--vscode-input-border, var(--theme-border)) !important;
+  background-color: var(--vscode-input-background, var(--theme-input-background)) !important;
+}
+
+.monaco-editor .find-widget .monaco-checkbox .checkbox.checked {
+  background-color: var(--vscode-accent, var(--theme-accent)) !important;
+  border-color: var(--vscode-accent, var(--theme-accent)) !important;
+}
+
+/* Fix for matches counter */
+.monaco-editor .find-widget .matches {
+  color: var(--vscode-editor-foreground, var(--theme-foreground-muted)) !important;
+  font-size: 11px !important;
+  opacity: 0.8 !important;
+}
+
+/* Ensure proper sizing for all codicons in widgets */
+.monaco-editor .monaco-editor-widget .codicon {
+  font-size: 14px !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

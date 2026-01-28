@@ -1,0 +1,86 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "types": ["node"],
+    "lib": [
+      "ES2023",
+      "ES2021",
+      "ES2020",
+      "ES2019"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@continuedev/config-yaml": [
+        "packages/config-yaml/src/index.ts"
+      ],
+      "@continuedev/terminal-security": [
+        "packages/terminal-security/src/index.ts"
+      ],
+      "core": [
+        "core/index.ts"
+      ],
+      "core/util": [
+        "core/util/index.ts"
+      ],
+      "core/util/ideUtils": [
+        "core/util/ideUtils"
+      ],
+      "core/util/errors": [
+        "core/util/errors"
+      ],
+      "core/util/incrementalParseJson": [
+        "core/util/incrementalParseJson"
+      ],
+      "core/tools": [
+        "core/tools/index.ts"
+      ],
+      "core/tools/builtIn": [
+        "core/tools/builtIn"
+      ],
+      "core/edit/searchAndReplace": [
+        "core/edit/searchAndReplace/index.ts"
+      ],
+      "core/edit/searchAndReplace/*": [
+        "core/edit/searchAndReplace/*"
+      ]
+    },
+    
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/**/*",
+    "src/types/**/*",
+    "core/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src-tauri"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

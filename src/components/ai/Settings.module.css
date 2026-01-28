@@ -1,0 +1,265 @@
+/* Settings overlay and configuration */
+
+.settingsOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+}
+
+.settingsTitle {
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.settingsTitle h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+}
+
+.settingsTitle p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--theme-foreground-muted);
+    line-height: 1.4;
+}
+
+.settingsSections {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.settingsSection {
+    background: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.settingsSection h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settingsSection h4 {
+    margin: 16px 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+}
+
+.settingsDescription {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: var(--theme-foreground-muted);
+    line-height: 1.5;
+}
+
+.apiKeyItem {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.apiKeyItem:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.providerInfo {
+    margin-bottom: 8px;
+}
+
+.providerName {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--theme-foreground);
+    margin-bottom: 2px;
+}
+
+.providerDescription {
+    font-size: 12px;
+    color: var(--theme-foreground-muted);
+}
+
+.apiKeyInput {
+    margin-top: 8px;
+}
+
+.apiKeyInput input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-background);
+    color: var(--theme-foreground);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.apiKeyInput input:focus {
+    outline: none;
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 0 2px rgba(var(--theme-accent-rgb), 0.1);
+}
+
+.settingsActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--theme-border);
+}
+
+.toggleVisibilityBtn {
+    background: transparent;
+    border: 1px solid var(--theme-border);
+    color: var(--theme-foreground);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggleVisibilityBtn:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.saveBtn {
+    background: var(--theme-accent);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.saveBtn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.settingItem {
+    margin-bottom: 20px;
+}
+
+.settingItem label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--theme-foreground);
+}
+
+.settingItem select,
+.settingItem input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    background: var(--theme-background);
+    color: var(--theme-foreground);
+    font-size: 13px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.refreshBtn {
+    background: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    color: var(--theme-foreground);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.refreshBtn:hover:not(:disabled) {
+    background: var(--theme-background-tertiary);
+    border-color: var(--theme-foreground-muted);
+}
+
+.refreshBtn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.modelsList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.modelItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--theme-background);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.modelName {
+    font-weight: 600;
+    color: var(--theme-foreground);
+}
+
+.modelSize {
+    color: var(--theme-foreground-muted);
+    font-family: monospace;
+    font-size: 12px;
+    background: var(--theme-background-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.noModels {
+    color: var(--theme-warning);
+    font-size: 13px;
+    padding: 12px;
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

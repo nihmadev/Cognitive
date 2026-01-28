@@ -1,0 +1,223 @@
+/* Input components and forms */
+
+.homeInputContainer {
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 32px;
+}
+
+.inputContainer {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.inputWrapper {
+    background-color: var(--theme-background-secondary);
+    border-top: 1px solid var(--theme-border);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+/* Responsive input for narrow chat containers */
+.chatContainer[data-narrow="true"] .inputWrapper {
+    padding: 8px 12px;
+}
+
+.chatContainer[data-very-narrow="true"] .inputWrapper {
+    padding: 8px 8px;
+}
+
+.inputWrapper:focus-within {
+    border-top-color: var(--theme-accent);
+}
+
+.sendButtonContainer {
+    display: flex;
+    flex-shrink: 0;
+    align-items: flex-end;
+    padding-bottom: 2px;
+}
+
+.textArea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground);
+    resize: none;
+    font-size: 14px;
+    outline: none;
+    min-height: 36px;
+    line-height: 1.5;
+    font-family: inherit;
+    padding: 6px 0;
+    overflow-y: auto;
+}
+
+.textArea::placeholder {
+    color: var(--theme-foreground-subtle);
+}
+
+.textArea::selection {
+    background-color: var(--theme-accent);
+    color: var(--theme-accent-foreground);
+}
+
+.inputFooter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.inputTools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolBtn {
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground-muted);
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.modelTag {
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground-muted);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.modelTag:hover {
+    color: var(--theme-foreground);
+    background: var(--theme-background-tertiary);
+}
+
+.modelSelectorWrapper {
+    position: relative;
+}
+
+.modelTag.active {
+    color: var(--theme-accent);
+}
+
+.inputActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sendIconBtn {
+    background: var(--theme-accent);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sendIconBtn:hover:not(:disabled) {
+    transform: scale(1.05);
+    background: var(--theme-accent-hover, var(--theme-accent));
+}
+
+.sendIconBtn:disabled {
+    opacity: 0.5;
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground-muted);
+    cursor: default;
+}
+
+.stopIconBtn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stopIconBtn:hover {
+    transform: scale(1.05);
+    background: #dc2626;
+}
+
+/* Remove border from model selector in input */
+.inputWrapper .modelTag {
+    border: none !important;
+    background: transparent !important;
+    padding: 4px 8px;
+}
+
+.inputWrapper .modelTag:hover {
+    background: var(--theme-background-tertiary) !important;
+}
+
+/* Also remove border from model selector in home view */
+.homeInputWrapper .modelTag {
+    border: none !important;
+    background: transparent !important;
+    padding: 4px 8px;
+}
+
+/* Model icon styles */
+.modelIcon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.modelIcon svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+}
+
+/* Ensure icons in dropdown items are properly sized */
+.dropdownItem .modelIcon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Ensure icon in model tag is properly sized */
+.modelTag .modelIcon {
+    width: 18px;
+    height: 18px;
+}

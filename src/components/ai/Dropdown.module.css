@@ -1,0 +1,210 @@
+/* Dropdown menus and selectors */
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: -20px;
+    margin-top: 8px;
+    background: var(--theme-background);
+    border: 1px solid var(--theme-border);
+    border-radius: 0;
+    width: 280px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    padding: 6px;
+    transform-origin: top left;
+    animation: scaleIn 0.2s ease;
+}
+
+.dropdownItem {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--theme-foreground);
+    cursor: pointer;
+    border-radius: 0;
+    transition: background 0.1s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.dropdownItem:hover {
+    background: var(--theme-background-secondary);
+}
+
+.dropdownItemActive {
+    background: var(--theme-background-secondary);
+    color: var(--theme-accent);
+    font-weight: 500;
+}
+
+.historyContainer {
+    padding: 20px;
+}
+
+.historyItem {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.historyItem:hover {
+    background: var(--theme-background-secondary);
+}
+
+.historyTitle {
+    font-size: 14px;
+    color: var(--theme-foreground);
+    font-weight: 400;
+}
+
+.historyTime {
+    font-size: 12px;
+    color: var(--theme-foreground-subtle);
+}
+
+.modelDropdownMenu {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.modelDropdownMenu.scrollable {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-border) transparent;
+}
+
+.modelDropdownMenu.scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modelDropdownMenu.scrollable::-webkit-scrollbar-thumb {
+    background: var(--theme-border);
+    border-radius: 3px;
+}
+
+.modelDropdownMenu.scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modeDropdownMenu {
+    width: 320px;
+    position: absolute !important;
+    right: 0 !important;
+    top: 100% !important;
+    margin-top: 8px;
+    transform-origin: top right;
+}
+
+.chatContainer .dropdownMenu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 8px;
+    margin-top: 0;
+    transform-origin: bottom left;
+}
+
+.chatContainer .modeDropdownMenu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-bottom: 8px;
+    margin-top: 0;
+    transform-origin: bottom right;
+}
+
+.homeInputWrapper .dropdownMenu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 8px;
+    margin-top: 0;
+    transform-origin: bottom left;
+}
+
+.dropdownHeader {
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--theme-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--theme-border);
+    margin-bottom: 4px;
+}
+
+.modeItem {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.1s;
+}
+
+.modeItem:hover {
+    background: var(--theme-background-secondary);
+}
+
+.modeItemActive {
+    background: var(--theme-background-secondary);
+    color: var(--theme-accent);
+}
+
+.modeTitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--theme-foreground);
+    margin-bottom: 4px;
+}
+
+.modeDescription {
+    font-size: 12px;
+    color: var(--theme-foreground-muted);
+    line-height: 1.4;
+}
+
+.iconBtn {
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground-muted);
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconBtn:hover {
+    color: var(--theme-foreground);
+    background: var(--theme-background-secondary);
+}
+
+.historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.seeAllBtn {
+    background: transparent;
+    border: 1px solid var(--theme-border);
+    color: var(--theme-foreground-muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+}
+
+.seeAllBtn:hover {
+    background: var(--theme-background-secondary);
+    color: var(--theme-foreground);
+    border-color: var(--theme-foreground-muted);
+}

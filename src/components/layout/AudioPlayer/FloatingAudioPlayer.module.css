@@ -1,0 +1,138 @@
+.floatingPlayer {
+    position: fixed;
+    bottom: 48px;
+    right: 24px;
+    height: 48px;
+    min-width: 200px;
+    max-width: 280px;
+    background: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+    cursor: grab;
+    user-select: none;
+}
+
+.floatingPlayer:active {
+    cursor: grabbing;
+}
+
+.iconWrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--theme-accent-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-accent);
+    flex-shrink: 0;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progressBarWrapper {
+    height: 3px;
+    background: var(--theme-background-tertiary);
+    border-radius: 1.5px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.progressBar {
+    height: 100%;
+    background: var(--theme-accent);
+    transition: width 0.1s linear;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.controlButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--theme-foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.controlButton:hover {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-accent);
+}
+
+.controlButton:active {
+    transform: scale(0.9);
+}
+
+.controlButtonMain {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--theme-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.controlButtonMain:hover {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-accent-hover);
+}
+
+.controlButtonMain:active {
+    transform: scale(0.9);
+}
+
+.closeButton {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--theme-foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.closeButton:hover {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-error);
+}

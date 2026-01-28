@@ -1,0 +1,41 @@
+{
+  "identifier": "default",
+  "description": "Default permissions for the application",
+  "windows": ["main"],
+  "permissions": [
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-is-maximized",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:webview:allow-internal-toggle-devtools",
+    "core:default",
+    "dialog:default",
+    "opener:default",
+    "pty:allow-spawn",
+    "pty:default"
+  ],
+  "commands": {
+    "allow": [
+      "get_initial_state",
+      "open_folder_dialog",
+      "open_file_dialog",
+      "read_dir",
+      "read_file",
+      "write_file",
+      "create_file",
+      "create_folder",
+      "delete_path",
+      "rename_path",
+      "get_all_files",
+      "search_in_files",
+      "git_status",
+      "git_info",
+      "git_clone"
+    ]
+  }
+}

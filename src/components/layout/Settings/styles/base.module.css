@@ -1,0 +1,358 @@
+.settingsPane {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: var(--theme-background);
+  color: var(--theme-foreground);
+  overflow: hidden;
+  font-family: "Segoe UI", SegoeUI, -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.settingsHeader {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-background);
+  padding: 11px 24px 3px 24px;
+  z-index: 10;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: auto;
+  max-width: 1200px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.searchContainerWidgets {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin-right: 1px;
+}
+
+.mainSearchInput {
+  width: 100%;
+  background-color: var(--theme-input-background);
+  border: 1px solid var(--theme-border);
+  padding: 4px 8px;
+  color: var(--theme-foreground);
+  font-size: 13px;
+  outline: none;
+  height: 26px;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.mainSearchInput:focus {
+  border-color: var(--theme-accent);
+  background-color: var(--theme-input-background);
+}
+
+.searchIcons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  color: var(--theme-descriptionForeground);
+}
+
+.searchIcons {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  color: var(--theme-foreground-muted);
+  opacity: 0.8;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.tab {
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--theme-foreground-subtle);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab:hover {
+  color: var(--theme-foreground-muted);
+}
+
+.activeTab {
+  color: var(--theme-foreground);
+}
+
+.activeTab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--theme-accent);
+}
+
+.contentBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background-color: var(--theme-background);
+}
+
+.contentBodyHeader {
+  padding: 8px 24px;
+  margin-top: 10px;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--theme-foreground);
+  margin-bottom: 12px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbLink {
+  cursor: pointer;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+  opacity: 0.6;
+}
+
+.contentTitle {
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--theme-foreground);
+  margin: 0 0 8px 0;
+}
+
+.sectionTitle {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--theme-foreground);
+  margin: 24px 0 12px 0;
+}
+
+.settingItemV2 {
+  margin-bottom: 32px;
+  max-width: 800px;
+  padding: 12px 24px;
+  position: relative;
+  border-left: 1px solid transparent;
+}
+
+.settingItemV2:hover {
+  background-color: var(--theme-background-secondary);
+}
+
+.settingItemV2:focus-within {
+  border-left-color: var(--theme-accent);
+}
+
+.settingLabelV2 {
+  font-size: 14px;
+  color: var(--theme-foreground);
+  margin-bottom: 4px;
+}
+
+.settingLabelV2 b {
+  font-weight: 600;
+}
+
+.settingDescriptionV2 {
+  font-size: 13px;
+  color: var(--theme-foreground-subtle);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.settingControlV2 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modifiedElsewhere {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--theme-foreground-subtle);
+  margin-left: 8px;
+}
+
+.contentBody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.contentBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.contentBody::-webkit-scrollbar-thumb {
+  background-color: var(--theme-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.contentBody::-webkit-scrollbar-thumb:hover {
+  background-color: var(--theme-scrollbar-thumb-hover);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--theme-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-foreground);
+  margin-bottom: 16px;
+}
+
+.emptyStateTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  margin-bottom: 4px;
+}
+
+.emptyStateText {
+  font-size: 12px;
+  color: var(--theme-foreground-muted);
+  max-width: 280px;
+}
+
+.infoCard {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: var(--theme-accent-muted);
+  border: 1px solid var(--theme-accent);
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.infoCardIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--theme-info);
+  flex-shrink: 0;
+}
+
+.infoCardContent {
+  flex: 1;
+}
+
+.infoCardTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-foreground);
+  margin-bottom: 2px;
+}
+
+.infoCardText {
+  font-size: 12px;
+  color: var(--theme-foreground-muted);
+  line-height: 1.4;
+}
+
+/* Search suggestions dropdown */
+.searchSuggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--theme-background);
+  border: 1px solid var(--theme-border);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.searchSuggestion {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--theme-foreground);
+  border-bottom: 1px solid var(--theme-border);
+  transition: background-color 0.1s ease;
+}
+
+.searchSuggestion:last-child {
+  border-bottom: none;
+}
+
+.searchSuggestion:hover,
+.searchSuggestion.selected {
+  background-color: var(--theme-background-secondary);
+  color: var(--theme-foreground);
+}
+
+.searchSuggestion.selected {
+  background-color: var(--theme-accent-muted);
+}
+
+@media (max-width: 768px) {
+  .contentBody {
+    padding: 16px;
+  }
+
+  .contentHeader {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .searchSuggestions {
+    max-height: 150px;
+  }
+}

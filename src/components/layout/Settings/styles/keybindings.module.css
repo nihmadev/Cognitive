@@ -1,0 +1,59 @@
+
+
+
+.shortcutBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: var(--theme-background-tertiary);
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--theme-foreground);
+  cursor: pointer;
+}
+
+.shortcutBadge:hover {
+  background-color: var(--theme-background-secondary);
+}
+
+.shortcutKey {
+  padding: 1px 4px;
+  background-color: var(--theme-background-secondary);
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+
+.keybindingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: var(--theme-background-secondary);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.keybindingItem:hover {
+  background-color: var(--theme-background-tertiary);
+}
+
+.keybindingAction {
+  font-size: 13px;
+  color: var(--theme-foreground);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.keybindingIcon {
+  color: var(--theme-foreground-muted);
+}
+
+.keybindingKeys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

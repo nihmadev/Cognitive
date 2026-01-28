@@ -1,0 +1,105 @@
+.fileSelector {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    background: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.selectButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground);
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+.selectButton:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: var(--theme-background);
+    border: 1px solid var(--theme-border);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.fileOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.fileOption:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.selectedFile {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fileIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.fileName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.clearButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--theme-foreground-muted);
+    flex-shrink: 0;
+}
+
+.clearButton:hover {
+    background: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}

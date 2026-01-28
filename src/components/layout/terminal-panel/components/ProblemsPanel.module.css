@@ -1,0 +1,247 @@
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    background: var(--theme-background-primary);
+    overflow: hidden;
+    position: relative;
+}
+
+.list {
+    flex: 1;
+    overflow-y: auto;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: #858585;
+    font-size: 13px;
+    gap: 8px;
+    min-height: 80px;
+    padding: 20px;
+    text-align: center;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    font-size: 16px;
+    color: #858585;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.retryButton {
+    padding: 4px 12px;
+    background: var(--theme-accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.retryButton:hover {
+    background: var(--theme-accent-hover);
+}
+
+
+.fileGroup {
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.fileHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: var(--theme-foreground);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.fileHeader:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.chevron {
+    color: var(--theme-foreground-muted);
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+    transition: transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.chevronExpanded {
+    transform: rotate(90deg);
+}
+
+.fileIcon {
+    color: #519aba;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.fileName {
+    color: var(--theme-foreground);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.filePath {
+    color: var(--theme-foreground-muted);
+    font-size: 12px;
+    margin-left: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.problemCount {
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.problemCountInline {
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-left: 4px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.errorCount {
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground);
+}
+
+.warningCount {
+    background: var(--theme-background-tertiary);
+    color: var(--theme-foreground);
+}
+
+
+.problemsList {
+    padding-left: 24px;
+}
+
+.problemItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    user-select: none;
+}
+
+.problemItem:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.problemItem:active {
+    background: var(--theme-accent-muted);
+}
+
+.problemIcon {
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.errorIcon {
+    color: var(--vscode-problemsErrorIcon-foreground, #f14c4c);
+}
+
+.warningIcon {
+    color: var(--vscode-problemsWarningIcon-foreground, #cca700);
+}
+
+.problemContent {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex: 1;
+    line-height: 1.4;
+    min-width: 0;
+}
+
+.problemMessage {
+    color: var(--theme-foreground);
+    word-break: break-word;
+}
+
+.problemCode {
+    color: var(--theme-foreground-muted);
+    font-size: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.problemLocation {
+    color: var(--theme-foreground-muted);
+    font-size: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+
+
+.statsBar {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #252526;
+    border-bottom: 1px solid #2d2d30;
+    color: #6a9955;
+    font-size: 11px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    gap: 8px;
+}
+
+.inlineSpinner {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #858585;
+}
+
+.scanStats {
+    color: #6a9955;
+    font-size: 11px;
+}
+
+.errorText {
+    color: #f14c4c;
+}

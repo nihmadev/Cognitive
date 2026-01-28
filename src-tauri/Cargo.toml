@@ -1,0 +1,76 @@
+[package]
+name = "cognitive"
+version = "0.1.0"
+description = "AI-Powered Code Editor"
+authors = ["Cognitive"]
+edition = "2021"
+
+[lib]
+name = "cognitive_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+cc = "1.0"
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-pty = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+git2 = "0.20"
+walkdir = "2"
+tokio = { version = "1", features = ["full"] }
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json"] }
+reqwest = { version = "0.12", features = ["json", "blocking", "stream"] }
+thiserror = "2"
+anyhow = "1"
+regex = "1"
+globset = "0.4"
+rayon = "1.10"
+ignore = "0.4"
+memmap2 = "0.9"
+grep-searcher = "0.1"
+grep-regex = "0.1"
+grep-matcher = "0.1"
+num_cpus = "1.16"
+uuid = { version = "1", features = ["v4", "serde"] }
+md-5 = "0.10"
+notify = "6"
+futures-util = "0.3"
+oxc_allocator = "0.56"
+oxc_parser = "0.56"
+oxc_ast = "0.56"
+oxc_span = "0.56"
+oxc_syntax = "0.56"
+oxc_ast_visit = "0.56"
+chrono = { version = "0.4", features = ["serde"] }
+flate2 = "1"
+sha2 = "0.10"
+lazy_static = "1"
+dirs = "5"
+lsp-types = "0.97.0"
+lofty = "0.21"
+base64 = "0.22"
+async-trait = "0.1.89"
+bincode = "1"
+fuzzy-matcher = "0.3"
+quick-xml = { version = "0.37", features = ["serialize"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.24"
+objc = "0.2.7"
+objc_id = "0.1"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[[bin]]
+name = "cognitive"
+path = "src/main.rs"

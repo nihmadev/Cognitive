@@ -1,0 +1,239 @@
+.extensionsPane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: var(--sidebar-width, 16rem);
+    background: var(--theme-background-secondary);
+    color: var(--theme-foreground);
+    border-right: 1px solid var(--theme-border);
+    flex-shrink: 0;
+}
+
+.header {
+    padding: 10px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--theme-foreground-muted);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.searchContainer {
+    padding: 10px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 4px 8px;
+    background: var(--theme-background-tertiary);
+    border: 1px solid var(--theme-border);
+    color: var(--theme-foreground);
+    font-size: 13px;
+    outline: none;
+}
+
+.searchInput:focus {
+    border-color: var(--theme-accent);
+}
+
+.sections {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.section {
+    margin-bottom: 8px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    padding: 4px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--theme-foreground-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.sectionHeader:hover {
+    color: var(--theme-foreground);
+}
+
+.extensionList {
+    display: flex;
+    flex-direction: column;
+}
+
+.extensionItem {
+    display: flex;
+    padding: 8px 16px;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+}
+
+.extensionItem:hover {
+    background: var(--theme-background-tertiary);
+}
+
+.extensionIcon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.extensionIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.extensionInfo {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.extensionName {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.extensionPublisher {
+    font-size: 12px;
+    color: var(--theme-foreground-muted);
+}
+
+.extensionDescription {
+    font-size: 12px;
+    color: var(--theme-foreground-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+/* Detail Page */
+.detailPage {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: var(--sidebar-width, 16rem);
+    background: var(--theme-background-secondary);
+    border-right: 1px solid var(--theme-border);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.detailHeader {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+}
+
+.detailIcon {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+}
+
+.detailIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.detailMainInfo {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.detailName {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.detailPublisher {
+    font-size: 13px;
+    color: var(--theme-accent);
+    font-weight: 500;
+}
+
+.installButton {
+    background: var(--theme-accent);
+    color: white;
+    border: none;
+    padding: 4px 16px;
+    border-radius: 2px;
+    font-size: 13px;
+    cursor: pointer;
+    width: fit-content;
+    margin-top: 12px;
+}
+
+.installButton:hover {
+    background: var(--theme-accent-hover);
+}
+
+.installButton.installed {
+    background: transparent;
+    border: 1px solid var(--theme-border);
+    color: var(--theme-foreground);
+}
+
+.detailTabs {
+    display: flex;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--theme-border);
+    gap: 16px;
+}
+
+.detailTab {
+    padding: 6px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+}
+
+.detailTab.active {
+    border-bottom-color: var(--theme-accent);
+}
+
+.detailContent {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--theme-foreground);
+}
+
+.backButton {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--theme-foreground-muted);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.backButton:hover {
+    color: var(--theme-foreground);
+    background: var(--theme-background-tertiary);
+}

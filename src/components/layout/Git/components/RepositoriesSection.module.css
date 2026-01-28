@@ -1,0 +1,196 @@
+.repositoriesSection {
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--theme-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.chevron {
+    margin-right: 6px;
+    transition: transform 0.2s;
+    color: var(--theme-foreground);
+    opacity: 0.6;
+}
+
+.chevronOpen {
+    transform: rotate(90deg);
+}
+
+.content {
+    padding: 0;
+}
+
+.repoItem {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 8px;
+    cursor: pointer;
+    background: var(--theme-background-tertiary);
+    border-left: 2px solid var(--theme-accent);
+}
+
+.repoItem:hover {
+    background: var(--theme-hover-overlay);
+}
+
+.repoIcon {
+    color: var(--theme-foreground);
+    opacity: 0.8;
+}
+
+.repoInfo {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.repoName {
+    font-size: 13px;
+    color: var(--theme-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.repoType {
+    font-size: 11px;
+    color: var(--theme-foreground-muted);
+    opacity: 0.7;
+}
+
+.branchInfo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--theme-foreground);
+    opacity: 0.7;
+    font-size: 11px;
+}
+
+.branchName {
+    white-space: nowrap;
+}
+
+.branchModified {
+    color: var(--theme-accent);
+    font-weight: bold;
+    margin-left: 1px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0;
+}
+
+.repoItem:hover .actions {
+    opacity: 1;
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+    background: var(--theme-hover-overlay);
+    opacity: 1;
+    color: var(--theme-accent);
+}
+
+/* Dropdown specific styles */
+.menuOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.dropdownMenu {
+    position: fixed;
+    background: var(--theme-background-secondary);
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    min-width: 200px;
+    padding: 4px 0;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+    animation: menuFadeIn 0.15s ease-out;
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--theme-foreground);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.1s;
+}
+
+.menuItem:hover {
+    background: var(--theme-accent);
+    color: var(--theme-background);
+}
+
+.menuSeparator {
+    height: 1px;
+    background: var(--theme-border);
+    margin: 4px 0;
+    opacity: 0.5;
+}
+
+.menuItemLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chevronRight {
+    opacity: 0.5;
+}

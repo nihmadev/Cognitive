@@ -1,0 +1,334 @@
+.searchEditor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--theme-background);
+    color: var(--theme-foreground);
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--theme-sidebar-background);
+    border-bottom: 1px solid var(--theme-border);
+    height: 40px;
+}
+
+.toolbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--theme-foreground);
+}
+
+.toolbarRight {
+    display: flex;
+    gap: 4px;
+}
+
+.toolbarBtn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    background: transparent;
+    border: none;
+    padding: 0;
+    transition: background-color 0.1s;
+}
+
+.toolbarBtn:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.toolbarBtn.active {
+    background-color: var(--theme-accent-muted);
+    color: var(--theme-accent);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.searchInputs {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--theme-sidebar-background);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.textArea {
+    width: 100%;
+    min-height: 36px;
+    padding: 8px 40px 8px 10px;
+    background-color: var(--theme-input-background);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--theme-foreground);
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+}
+
+.textArea:focus-within {
+    border-color: var(--theme-accent);
+}
+
+.inputActions {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    display: flex;
+    gap: 2px;
+}
+
+.actionBtn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    background: transparent;
+    border: none;
+    padding: 0;
+    transition: background-color 0.1s;
+}
+
+.actionBtn:hover:not(:disabled) {
+    background-color: var(--theme-hover-overlay);
+}
+
+.actionBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.actionBtn.active {
+    background-color: var(--theme-accent-muted);
+    color: var(--theme-accent);
+}
+
+.replaceToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detailsToggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--theme-foreground);
+    cursor: pointer;
+    font-size: 12px;
+    user-select: none;
+    margin-left: 2px;
+}
+
+.detailsContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.detailInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.detailInput {
+    background: var(--theme-input-background);
+    border: 1px solid transparent;
+    color: var(--theme-foreground);
+    padding: 6px 30px 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+}
+
+.detailInput:focus {
+    border-color: var(--theme-accent);
+}
+
+.clearBtn {
+    position: absolute;
+    right: 6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    transition: all 0.1s;
+}
+
+.clearBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-foreground);
+}
+
+.resultsHeader {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--theme-foreground);
+    background-color: var(--theme-background-secondary);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.resultsList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.fileResult {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4px;
+}
+
+.fileHeader {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--theme-foreground);
+    font-weight: 500;
+}
+
+.fileHeader:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.folderIcon {
+    margin-right: 6px;
+    color: var(--theme-foreground);
+}
+
+.matchCount {
+    margin-left: auto;
+    background: var(--theme-background-tertiary);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--theme-foreground);
+}
+
+.matches {
+    display: flex;
+    flex-direction: column;
+}
+
+.matchItem {
+    padding: 4px 16px 4px 40px;
+    cursor: pointer;
+    color: var(--theme-foreground);
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.matchItem:hover {
+    background-color: var(--theme-hover-overlay);
+}
+
+.lineNum {
+    color: var(--theme-foreground-muted);
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.highlight {
+    background-color: var(--theme-selection);
+    color: var(--theme-accent);
+    font-weight: bold;
+}
+
+.flatFileResult {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--theme-border);
+    margin-bottom: 4px;
+}
+
+.flatFileHeader {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    background-color: var(--theme-background-secondary);
+    color: var(--theme-foreground);
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.flatFileName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.replaceFileBtn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--theme-foreground-muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 8px;
+    transition: all 0.1s;
+}
+
+.replaceFileBtn:hover {
+    background-color: var(--theme-hover-overlay);
+    color: var(--theme-accent);
+}

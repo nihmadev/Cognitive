@@ -1,0 +1,91 @@
+.gitStatus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Segoe UI', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1.2;
+    letter-spacing: normal;
+}
+
+.gitStatusDot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 6px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.gitStatusAsDot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    margin-right: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Segoe UI', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    line-height: 1.2;
+    letter-spacing: normal;
+}
+
+.conflicted {
+    color: #f85149;
+}
+
+.deleted {
+    color: #f85149;
+}
+
+.modified {
+    color: #e3b341;
+}
+
+.untracked {
+    color: #73c991;
+}
+
+.staged {
+    color: #73c991;
+}
+
+.ignored {
+    color: #8b949e;
+    opacity: 0.7;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .conflicted {
+        color: #f85149;
+    }
+    
+    .deleted {
+        color: #f85149;
+    }
+    
+    .modified {
+        color: #e3b341;
+    }
+    
+    .untracked {
+        color: #73c991;
+    }
+    
+    .staged {
+        color: #73c991;
+    }
+    
+    .ignored {
+        color: #8b949e;
+        opacity: 0.7;
+    }
+}

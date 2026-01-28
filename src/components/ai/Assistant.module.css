@@ -1,0 +1,12 @@
+/* Assistant.module.css - Main entry point that imports all modular CSS files */
+
+/* Import all modular CSS files */
+@import './Container.module.css';
+@import './Header.module.css';
+@import './Chat.module.css';
+@import './Input.module.css';
+@import './Dropdown.module.css';
+@import './Settings.module.css';
+@import './Home.module.css';
+@import './History.module.css';
+@import './Common.module.css';

@@ -1,0 +1,96 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  min-height: 200px;
+  background: var(--theme-background);
+  border-top: 1px solid var(--theme-border);
+  flex-shrink: 0;
+}
+
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  background: var(--theme-background);
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  background: var(--theme-background);
+  overflow: hidden;
+}
+
+
+.hint {
+  padding: 4px 12px;
+  background: var(--theme-background);
+  border-top: 1px solid var(--theme-border);
+  color: var(--theme-foreground-muted);
+  font-size: 11px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.terminalContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminalsWrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  gap: 12px;
+}
+
+.emptyStateText {
+  color: var(--theme-foreground-subtle);
+  font-size: 13px;
+}
+
+.createTerminalButton {
+  padding: 6px 12px;
+  background: var(--theme-accent);
+  color: var(--theme-background);
+  border: none;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.createTerminalButton:hover {
+  background: var(--theme-accent-hover);
+}
